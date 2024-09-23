@@ -1,0 +1,7 @@
+data dependencies:
+LU Control Output -> Commanded Save
+LU Control Output -> Automatic Save
+AC Control Output -> Temperature Control
+device dependencies:
+LU Control Output -> Initialization
+AC Control Output -> Initialization

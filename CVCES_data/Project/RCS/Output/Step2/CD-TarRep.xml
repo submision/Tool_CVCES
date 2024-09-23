@@ -1,0 +1,10 @@
+@startuml
+skinparam componentStyle uml1
+component [TarRep] #DAE3F3
+component [TAI] #E2F0D9
+component [DCD] #FFF2CC
+[TarRep] -> interface1
+interface1 - [TAI]
+[TarRep] -> interface2
+interface2 - [DCD]
+@enduml

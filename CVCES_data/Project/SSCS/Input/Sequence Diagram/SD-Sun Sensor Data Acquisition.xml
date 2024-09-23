@@ -1,0 +1,15 @@
+Controller as SSDA
+Entity as SS
+Datastorage as SSD
+SSDA -> SS : Sun visible sign acquisition instruction[event]
+SSDA -> SS : Angle analog acquisition instruction[event]
+SSDA -> SS : Sun sensor power state perception instruction[event]
+SS -> SSDA : Sun visible sign[value]
+SS -> SSDA : Angle analog[value]
+SS -> SSDA : Sun sensor power state[state]
+SSDA -> SSD : Sun visible sign storage instruction[event]              
+SSDA -> SSD : Sun measurement angle storage instruction[event]    
+SSDA -> SSD : Sun sensor power state storage instruction[event]
+SSD -> SSDA : Sun visible sign[value]
+SSD -> SSDA : Sun measurement angle[value]
+SSD -> SSDA : Sun sensor power state[state]

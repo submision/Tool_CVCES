@@ -1,0 +1,7 @@
+Controller as TDA
+Entity as TCT
+Datastorage as TD
+TDA -> TCT : Thruster power state perception instruction[event]
+TCT -> TDA : Thruster power state[state]
+TDA -> TD : Thruster power state storage instruction[event]
+TD -> TDA : Thruster power state[state]

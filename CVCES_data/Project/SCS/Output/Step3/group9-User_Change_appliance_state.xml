@@ -1,0 +1,1177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan humidityacquisition,humidityacq,humidityacqF,humidityregulation;
+chan temperatureacquisition,temperatureacq,temperatureacqF,temperatureregulation;
+chan sendreport;
+chan powerstateacquisition,powerstateacqF,turnpowerswitchon,turnpowerswitchoff,
+turnlighton,turnlightoff,turnaudioon,turnaudiooff,turndooron,turndooroff,turnwindowon,turnwindowoff;
+chan planacquisition,doorentryvalueacquisition,windowentryvalueacquisition;
+chan readtemperature,readhumidity,turnon,turnoff;
+chan activatesoundalarm,activatelightalarm;
+chan lightpowerAcqIns,audiopowerAcqIns,setplan;
+chan temperatureplan,humidityplan,settemperatureplan,sethumidityplan;
+
+chan turnhumidityoff,turntemperatureoff;
+
+int[0,1] t_cmd=0;
+int[0,1] h_state=0;
+int[0,1] t_state=0;
+
+int[0,1] doorstate=0;
+int[0,1] windowstate=0;
+
+chan temperatureplanStoIns,humidityplanStoIns,temperatureplanLoadIns,humidityplanLoadIns,temperatureLoadIns,humidityLoadIns;
+
+int[0,1] loadtemperatureplan=0;
+int[0,1] loadhumidityplan=0;
+
+
+chan humidityStoIns;
+
+int roomhumidity=50;
+
+
+chan temperatureStoIns;
+
+int roomtemperature=15;
+
+
+int[0,1] reportacquisition=0;
+chan appstatusStoIns,appstatusLoadIns;
+chan planStoIns,planLaodIns;
+int[0,1] securitybreachvalueStoIns=0;
+int[0,1] safe=0;
+int[0,1] lightstate=0;
+int[0,1] audiostate=0;
+
+int[0,1] audioon=0;
+int[0,1] lighton=0;
+int[0,1] powerswitchon=0;
+int[0,1] displayreport=0;
+
+int doorsafe,windowsafe;
+
+int setTemperature=25;
+int setHumidity=30;
+
+int setTemperatureplan[7]={23,26,25,24,26,22,23};
+int setHumidityplan[7]={50,30,45,55,60,50,35};
+
+int ind=0;
+int inx=0;
+
+clock Mtt,Ctt,Mht,Cht,Mat,Cat,Rt,St,Et,Cst,SAt,LAt,WRDt,Ut,DCSt,WCSt,Tt,Ht;
+clock NEt;
+
+
+
+
+</declaration>
+	<template>
+		<name x="5" y="5">Monitor_temperature</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="-348" y="-229">
+		</location>
+		<location id="id1" x="-187" y="-229">
+		</location>
+		<location id="id2" x="-263" y="-161">
+			<label kind="invariant" x="-273" y="-144">Mtt&lt;=5</label>
+		</location>
+		<init ref="id0"/>
+		<transition id="id3">
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-348" y="-187">Mtt&gt;=5</label>
+		</transition>
+		<transition id="id4">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-204" y="-204">temperatureStoIns!</label>
+			<label kind="assignment" x="-204" y="-187">Mtt=0</label>
+		</transition>
+		<transition id="id5">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-365" y="-263">temperatureacquisition!</label>
+		</transition>
+	</template>
+	<template>
+		<name>TD</name>
+		<location id="id6" x="0" y="0">
+		</location>
+		<init ref="id6"/>
+		<transition id="id7">
+			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-59" y="76">temperatureLoadIns!</label>
+			<nail x="-25" y="76"/>
+			<nail x="42" y="76"/>
+		</transition>
+		<transition id="id8">
+			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-51" y="-110">temperatureStoIns?</label>
+			<nail x="-42" y="-85"/>
+			<nail x="34" y="-85"/>
+		</transition>
+	</template>
+	<template>
+		<name>Control_temperature</name>
+		<location id="id9" x="-119" y="-17">
+			<label kind="invariant" x="-129" y="0">Ctt&lt;=5</label>
+		</location>
+		<location id="id10" x="-204" y="-93">
+		</location>
+		<location id="id11" x="-42" y="-93">
+		</location>
+		<init ref="id10"/>
+		<transition id="id12">
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-221" y="-59">Ctt&gt;=5</label>
+			<label kind="assignment" x="-221" y="-42">t_cmd=0</label>
+		</transition>
+		<transition id="id13">
+			<source ref="id11"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-68" y="-68">temperatureregulation!</label>
+			<label kind="assignment" x="-85" y="-25">Ctt=0,t_cmd=1</label>
+		</transition>
+		<transition id="id14">
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-204" y="-127">temperatureLoadIns?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Monitor_humidity</name>
+		<location id="id15" x="-136" y="-59">
+		</location>
+		<location id="id16" x="25" y="-59">
+		</location>
+		<location id="id17" x="-51" y="25">
+			<label kind="invariant" x="-61" y="42">Mht&lt;=5</label>
+		</location>
+		<init ref="id15"/>
+		<transition id="id18">
+			<source ref="id17"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-153" y="-17">Mht&gt;=5</label>
+		</transition>
+		<transition id="id19">
+			<source ref="id16"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-17" y="0">humidityStoIns!</label>
+			<label kind="assignment" x="-8" y="-17">Mht=0</label>
+		</transition>
+		<transition id="id20">
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="-110" y="-93">humidityacquisition!</label>
+		</transition>
+	</template>
+	<template>
+		<name>HD</name>
+		<location id="id21" x="0" y="0">
+		</location>
+		<init ref="id21"/>
+		<transition id="id22">
+			<source ref="id21"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-34" y="76">humidityLoadIns!</label>
+			<nail x="-25" y="76"/>
+			<nail x="42" y="76"/>
+		</transition>
+		<transition id="id23">
+			<source ref="id21"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-51" y="-110">humidityStoIns?</label>
+			<nail x="-42" y="-85"/>
+			<nail x="34" y="-85"/>
+		</transition>
+	</template>
+	<template>
+		<name>Control_humidity</name>
+		<location id="id24" x="-204" y="-93">
+		</location>
+		<location id="id25" x="-42" y="-93">
+		</location>
+		<location id="id26" x="-119" y="-17">
+			<label kind="invariant" x="-129" y="0">Cht&lt;=5</label>
+		</location>
+		<init ref="id24"/>
+		<transition id="id27">
+			<source ref="id26"/>
+			<target ref="id24"/>
+			<label kind="guard" x="-229" y="-68">Cht&gt;=5</label>
+		</transition>
+		<transition id="id28">
+			<source ref="id25"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-68" y="-68">humidityregulation!</label>
+			<label kind="assignment" x="-76" y="-42">Cht=0</label>
+		</transition>
+		<transition id="id29">
+			<source ref="id24"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="-187" y="-119">humidityLoadIns?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Monitor_appliance_state</name>
+		<location id="id30" x="-170" y="-86">
+			<label kind="invariant" x="-180" y="-69">Mat&lt;=5</label>
+		</location>
+		<location id="id31" x="-255" y="-170">
+		</location>
+		<location id="id32" x="-94" y="-170">
+		</location>
+		<init ref="id31"/>
+		<transition id="id33">
+			<source ref="id30"/>
+			<target ref="id31"/>
+			<label kind="guard" x="-289" y="-136">Mat&gt;=5</label>
+			<label kind="synchronisation" x="-237" y="-145">appstatusStoIns!</label>
+		</transition>
+		<transition id="id34">
+			<source ref="id32"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="-119" y="-127">powerstateacqF?</label>
+			<label kind="assignment" x="-110" y="-144">Mat=0</label>
+		</transition>
+		<transition id="id35">
+			<source ref="id31"/>
+			<target ref="id32"/>
+			<label kind="synchronisation" x="-238" y="-204">powerstateacquisition!</label>
+		</transition>
+	</template>
+	<template>
+		<name>ASD</name>
+		<location id="id36" x="0" y="0">
+		</location>
+		<init ref="id36"/>
+		<transition id="id37">
+			<source ref="id36"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-51" y="93">appstatusLoadIns!</label>
+			<nail x="-25" y="85"/>
+			<nail x="42" y="85"/>
+		</transition>
+		<transition id="id38">
+			<source ref="id36"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-51" y="-102">appstatusStoIns?</label>
+			<nail x="-25" y="-76"/>
+			<nail x="34" y="-76"/>
+		</transition>
+	</template>
+	<template>
+		<name>Control_appliance_state</name>
+		<location id="id39" x="-306" y="-76">
+		</location>
+		<location id="id40" x="-178" y="-76">
+		</location>
+		<location id="id41" x="-93" y="-119">
+			<name x="-103" y="-153">AOn</name>
+		</location>
+		<location id="id42" x="-93" y="-42">
+			<name x="-103" y="-76">AOff</name>
+		</location>
+		<location id="id43" x="0" y="-76">
+		</location>
+		<location id="id44" x="68" y="-110">
+		</location>
+		<location id="id45" x="68" y="-42">
+		</location>
+		<location id="id46" x="136" y="-76">
+		</location>
+		<location id="id47" x="221" y="-119">
+		</location>
+		<location id="id48" x="221" y="-34">
+		</location>
+		<location id="id49" x="306" y="-76">
+		</location>
+		<init ref="id39"/>
+		<transition id="id50">
+			<source ref="id48"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="263" y="-51">turnaudiooff!</label>
+		</transition>
+		<transition id="id51">
+			<source ref="id47"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="255" y="-127">turnaudioon!</label>
+		</transition>
+		<transition id="id52">
+			<source ref="id46"/>
+			<target ref="id48"/>
+			<label kind="guard" x="110" y="-51">audioon==0</label>
+		</transition>
+		<transition id="id53">
+			<source ref="id46"/>
+			<target ref="id47"/>
+			<label kind="guard" x="119" y="-127">audioon==1</label>
+		</transition>
+		<transition id="id54">
+			<source ref="id45"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="59" y="-25">turnlightoff!</label>
+		</transition>
+		<transition id="id55">
+			<source ref="id44"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="59" y="-153">turnlighton!</label>
+		</transition>
+		<transition id="id56">
+			<source ref="id43"/>
+			<target ref="id45"/>
+			<label kind="guard" x="-34" y="-51">lighton==0</label>
+		</transition>
+		<transition id="id57">
+			<source ref="id43"/>
+			<target ref="id44"/>
+			<label kind="guard" x="-25" y="-136">lighton==1</label>
+		</transition>
+		<transition id="id58">
+			<source ref="id42"/>
+			<target ref="id43"/>
+			<label kind="synchronisation" x="-110" y="-17">turnpowerswitchoff!</label>
+		</transition>
+		<transition id="id59">
+			<source ref="id41"/>
+			<target ref="id43"/>
+			<label kind="synchronisation" x="-110" y="-170">turnpowerswitchon!</label>
+		</transition>
+		<transition id="id60">
+			<source ref="id40"/>
+			<target ref="id42"/>
+			<label kind="guard" x="-246" y="-51">powerswitchon==0</label>
+		</transition>
+		<transition id="id61">
+			<source ref="id40"/>
+			<target ref="id41"/>
+			<label kind="guard" x="-255" y="-153">powerswitchon==1</label>
+		</transition>
+		<transition id="id62">
+			<source ref="id49"/>
+			<target ref="id39"/>
+			<nail x="306" y="17"/>
+			<nail x="-306" y="17"/>
+		</transition>
+		<transition id="id63">
+			<source ref="id39"/>
+			<target ref="id40"/>
+			<label kind="synchronisation" x="-340" y="-110">appstatusLoadIns?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Reporting</name>
+		<location id="id64" x="-255" y="-110">
+		</location>
+		<location id="id65" x="-110" y="-110">
+		</location>
+		<location id="id66" x="-178" y="-51">
+			<label kind="invariant" x="-188" y="-34">Rt&lt;=5</label>
+		</location>
+		<init ref="id64"/>
+		<transition id="id67">
+			<source ref="id66"/>
+			<target ref="id64"/>
+			<label kind="guard" x="-255" y="-68">Rt&gt;=5</label>
+		</transition>
+		<transition id="id68">
+			<source ref="id65"/>
+			<target ref="id66"/>
+			<label kind="synchronisation" x="-136" y="-85">sendreport!</label>
+			<label kind="assignment" x="-153" y="-59">Rt=0</label>
+		</transition>
+		<transition id="id69">
+			<source ref="id64"/>
+			<target ref="id65"/>
+			<label kind="assignment" x="-255" y="-144">reportacquisition=1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Setplan</name>
+		<location id="id70" x="-229" y="-119">
+		</location>
+		<location id="id71" x="-93" y="-119">
+		</location>
+		<location id="id72" x="-93" y="-42">
+		</location>
+		<location id="id73" x="-229" y="-42">
+			<label kind="invariant" x="-272" y="-25">St&lt;=5</label>
+		</location>
+		<location id="id74" x="-153" y="8">
+		</location>
+		<init ref="id70"/>
+		<transition id="id75">
+			<source ref="id72"/>
+			<target ref="id74"/>
+			<label kind="synchronisation" x="-119" y="-17">humidityplanStoIns!</label>
+		</transition>
+		<transition id="id76">
+			<source ref="id73"/>
+			<target ref="id70"/>
+			<label kind="guard" x="-272" y="-85">St&gt;=5</label>
+		</transition>
+		<transition id="id77">
+			<source ref="id74"/>
+			<target ref="id73"/>
+			<label kind="synchronisation" x="-289" y="17">temperatureplanStoIns!</label>
+			<label kind="assignment" x="-221" y="0">St=0</label>
+		</transition>
+		<transition id="id78">
+			<source ref="id71"/>
+			<target ref="id72"/>
+			<label kind="synchronisation" x="-85" y="-93">humidityplan?</label>
+		</transition>
+		<transition id="id79">
+			<source ref="id70"/>
+			<target ref="id71"/>
+			<label kind="synchronisation" x="-212" y="-153">temperatureplan?</label>
+		</transition>
+	</template>
+	<template>
+		<name>PD</name>
+		<location id="id80" x="-246" y="-51">
+		</location>
+		<init ref="id80"/>
+		<transition id="id81">
+			<source ref="id80"/>
+			<target ref="id80"/>
+			<label kind="synchronisation" x="-289" y="51">temperatureplanLoadIns!</label>
+			<nail x="-263" y="42"/>
+			<nail x="-212" y="42"/>
+		</transition>
+		<transition id="id82">
+			<source ref="id80"/>
+			<target ref="id80"/>
+			<label kind="synchronisation" x="-187" y="0">temperatureplanStoIns?</label>
+			<nail x="-136" y="-42"/>
+			<nail x="-144" y="0"/>
+		</transition>
+		<transition id="id83">
+			<source ref="id80"/>
+			<target ref="id80"/>
+			<label kind="synchronisation" x="-204" y="-144">humidityplanLoadIns!</label>
+			<nail x="-170" y="-127"/>
+			<nail x="-136" y="-102"/>
+		</transition>
+		<transition id="id84">
+			<source ref="id80"/>
+			<target ref="id80"/>
+			<label kind="synchronisation" x="-323" y="-170">humidityplanStoIns?</label>
+			<nail x="-289" y="-136"/>
+			<nail x="-238" y="-136"/>
+		</transition>
+	</template>
+	<template>
+		<name>Executeplan</name>
+		<location id="id85" x="-323" y="-221">
+		</location>
+		<location id="id86" x="-187" y="-221">
+		</location>
+		<location id="id87" x="-187" y="-128">
+		</location>
+		<location id="id88" x="-323" y="-128">
+		</location>
+		<location id="id89" x="-383" y="-170">
+			<label kind="invariant" x="-442" y="-178">Et&lt;=5</label>
+		</location>
+		<init ref="id85"/>
+		<transition id="id90">
+			<source ref="id89"/>
+			<target ref="id85"/>
+			<label kind="guard" x="-399" y="-212">Et&gt;=5</label>
+		</transition>
+		<transition id="id91">
+			<source ref="id88"/>
+			<target ref="id89"/>
+			<label kind="synchronisation" x="-510" y="-127">humidityregulation!</label>
+			<label kind="assignment" x="-416" y="-153">Et=0</label>
+		</transition>
+		<transition id="id92">
+			<source ref="id87"/>
+			<target ref="id88"/>
+			<label kind="synchronisation" x="-306" y="-111">temperatureregulation!</label>
+		</transition>
+		<transition id="id93">
+			<source ref="id86"/>
+			<target ref="id87"/>
+			<label kind="synchronisation" x="-170" y="-195">humidityplanLoadIns?</label>
+			<label kind="assignment" x="-170" y="-178">loadhumidityplan=1</label>
+		</transition>
+		<transition id="id94">
+			<source ref="id85"/>
+			<target ref="id86"/>
+			<label kind="synchronisation" x="-306" y="-255">temperatureplanLoadIns?</label>
+			<label kind="assignment" x="-315" y="-281">loadtemperatureplan=1</label>
+		</transition>
+	</template>
+	<template>
+		<name>User_Change_appliance_state</name>
+		<location id="id95" x="-407" y="-238">
+		</location>
+		<location id="id96" x="-306" y="-238">
+		</location>
+		<location id="id97" x="-195" y="-136">
+		</location>
+		<location id="id98" x="-195" y="-238">
+		</location>
+		<location id="id99" x="-306" y="-136">
+		</location>
+		<location id="id100" x="-408" y="-136">
+			<name x="-459" y="-153">TOn</name>
+		</location>
+		<location id="id101" x="-306" y="-187">
+			<name x="-289" y="-204">TOff</name>
+		</location>
+		<init ref="id95"/>
+		<transition id="id102">
+			<source ref="id101"/>
+			<target ref="id95"/>
+			<label kind="synchronisation" x="-357" y="-229">turnpowerswitchoff!</label>
+		</transition>
+		<transition id="id103">
+			<source ref="id100"/>
+			<target ref="id95"/>
+			<label kind="synchronisation" x="-561" y="-187">turnpowerswitchon!</label>
+		</transition>
+		<transition id="id104">
+			<source ref="id99"/>
+			<target ref="id101"/>
+			<label kind="synchronisation" x="-289" y="-170">turnoff?</label>
+		</transition>
+		<transition id="id105">
+			<source ref="id99"/>
+			<target ref="id100"/>
+			<label kind="synchronisation" x="-374" y="-161">turnon?</label>
+		</transition>
+		<transition id="id106">
+			<source ref="id97"/>
+			<target ref="id99"/>
+			<label kind="synchronisation" x="-289" y="-119">humidityacquisition!</label>
+		</transition>
+		<transition id="id107">
+			<source ref="id96"/>
+			<target ref="id98"/>
+			<label kind="synchronisation" x="-306" y="-280">temperatureacquisition!</label>
+		</transition>
+		<transition id="id108">
+			<source ref="id98"/>
+			<target ref="id97"/>
+			<label kind="synchronisation" x="-187" y="-204">readhumidity?</label>
+		</transition>
+		<transition id="id109">
+			<source ref="id95"/>
+			<target ref="id96"/>
+			<label kind="synchronisation" x="-467" y="-280">readtemperature?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Control_security</name>
+		<location id="id110" x="-476" y="-374">
+		</location>
+		<location id="id111" x="-595" y="-442">
+		</location>
+		<location id="id112" x="-476" y="-442">
+		</location>
+		<location id="id113" x="-365" y="-442">
+		</location>
+		<location id="id114" x="-365" y="-374">
+		</location>
+		<location id="id115" x="-595" y="-374">
+			<name x="-586" y="-408">Unsafe</name>
+			<label kind="invariant" x="-671" y="-382">Cst&lt;=5</label>
+		</location>
+		<init ref="id111"/>
+		<transition id="id116">
+			<source ref="id115"/>
+			<target ref="id111"/>
+			<label kind="guard" x="-663" y="-408">Cst&gt;=5</label>
+			<label kind="assignment" x="-833" y="-433">securitybreachvalueStoIns=1</label>
+		</transition>
+		<transition id="id117">
+			<source ref="id110"/>
+			<target ref="id115"/>
+			<label kind="synchronisation" x="-629" y="-365">activatelightalarm!</label>
+			<label kind="assignment" x="-561" y="-391">Cst=0</label>
+		</transition>
+		<transition id="id118">
+			<source ref="id114"/>
+			<target ref="id110"/>
+			<label kind="synchronisation" x="-450" y="-365">activatesoundalarm!</label>
+		</transition>
+		<transition id="id119">
+			<source ref="id113"/>
+			<target ref="id114"/>
+			<label kind="guard" x="-357" y="-416">doorsafe==2 || windowsafe==2</label>
+		</transition>
+		<transition id="id120">
+			<source ref="id113"/>
+			<target ref="id111"/>
+			<label kind="guard" x="-569" y="-535">doorsafe==1 &amp;&amp; windowsafe==1</label>
+			<nail x="-476" y="-518"/>
+		</transition>
+		<transition id="id121">
+			<source ref="id112"/>
+			<target ref="id113"/>
+			<label kind="synchronisation" x="-459" y="-476">windowentryvalueacquisition!</label>
+		</transition>
+		<transition id="id122">
+			<source ref="id111"/>
+			<target ref="id112"/>
+			<label kind="synchronisation" x="-705" y="-484">doorentryvalueacquisition!</label>
+		</transition>
+	</template>
+	<template>
+		<name>NE</name>
+		<location id="id123" x="-110" y="51">
+			<name x="-120" y="17">Night</name>
+			<label kind="invariant" x="-120" y="68">NEt&lt;=100</label>
+		</location>
+		<location id="id124" x="-255" y="-17">
+			<name x="-323" y="-34">Morning</name>
+			<label kind="invariant" x="-323" y="-8">NEt&lt;=80</label>
+		</location>
+		<location id="id125" x="-110" y="-85">
+			<name x="-120" y="-119">Noon</name>
+			<label kind="invariant" x="-136" y="-68">NEt&lt;=100</label>
+		</location>
+		<location id="id126" x="34" y="-17">
+			<name x="24" y="-51">Dawn</name>
+			<label kind="invariant" x="24" y="0">NEt&lt;=80</label>
+		</location>
+		<init ref="id124"/>
+		<transition id="id127">
+			<source ref="id123"/>
+			<target ref="id124"/>
+			<label kind="guard" x="-255" y="8">NEt&gt;=100</label>
+			<label kind="assignment" x="-297" y="42">roomhumidity=45,NEt=0,
+roomtemperature=18</label>
+		</transition>
+		<transition id="id128">
+			<source ref="id126"/>
+			<target ref="id123"/>
+			<label kind="guard" x="-42" y="17">NEt&gt;=80</label>
+			<label kind="assignment" x="-42" y="34">roomhumidity=60,NEt=0,
+roomtemperature=10</label>
+		</transition>
+		<transition id="id129">
+			<source ref="id125"/>
+			<target ref="id126"/>
+			<label kind="guard" x="-59" y="-85">NEt&gt;=100</label>
+			<label kind="assignment" x="-51" y="-119">roomhumidity=40,NEt=0,
+roomtemperature=23</label>
+		</transition>
+		<transition id="id130">
+			<source ref="id124"/>
+			<target ref="id125"/>
+			<label kind="guard" x="-246" y="-76">NEt&gt;=80</label>
+			<label kind="assignment" x="-289" y="-119">roomhumidity=20,NEt=0,
+roomtemperature=40</label>
+		</transition>
+	</template>
+	<template>
+		<name>Humidistat</name>
+		<location id="id131" x="-510" y="-255">
+			<name x="-527" y="-289">Off</name>
+		</location>
+		<init ref="id131"/>
+		<transition id="id132">
+			<source ref="id131"/>
+			<target ref="id131"/>
+			<label kind="guard" x="-680" y="-178">ind&gt;=7</label>
+			<label kind="assignment" x="-875" y="-153">setHumidity=setHumidityplan[0],ind=1</label>
+			<nail x="-620" y="-187"/>
+			<nail x="-620" y="-153"/>
+		</transition>
+		<transition id="id133">
+			<source ref="id131"/>
+			<target ref="id131"/>
+			<label kind="guard" x="-671" y="-221">ind&lt;7</label>
+			<label kind="assignment" x="-892" y="-238">setHumidity=setHumidityplan[ind],
+ind=ind+1</label>
+			<nail x="-620" y="-229"/>
+			<nail x="-620" y="-204"/>
+		</transition>
+		<transition id="id134">
+			<source ref="id131"/>
+			<target ref="id131"/>
+			<label kind="synchronisation" x="-671" y="-348">turnhumidityoff?</label>
+			<label kind="assignment" x="-646" y="-365">h_state=0</label>
+			<nail x="-578" y="-323"/>
+			<nail x="-629" y="-323"/>
+		</transition>
+		<transition id="id135">
+			<source ref="id131"/>
+			<target ref="id131"/>
+			<label kind="synchronisation" x="-782" y="-272">humidityregulation?</label>
+			<label kind="assignment" x="-909" y="-289">h_state=1,roomhumidity=setHumidity</label>
+			<nail x="-620" y="-289"/>
+			<nail x="-620" y="-255"/>
+		</transition>
+	</template>
+	<template>
+		<name>Humidity</name>
+		<location id="id136" x="-187" y="-85">
+		</location>
+		<init ref="id136"/>
+		<transition id="id137">
+			<source ref="id136"/>
+			<target ref="id136"/>
+			<label kind="synchronisation" x="-110" y="-110">humidityacquisition?</label>
+			<nail x="-119" y="-119"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>Thermostat</name>
+		<location id="id138" x="-748" y="-510">
+			<name x="-790" y="-527">Off</name>
+		</location>
+		<init ref="id138"/>
+		<transition id="id139">
+			<source ref="id138"/>
+			<target ref="id138"/>
+			<label kind="guard" x="-646" y="-527">inx&gt;=7</label>
+			<label kind="assignment" x="-646" y="-544">setHumidity=setTemperatureplan[0],inx=1</label>
+			<nail x="-646" y="-544"/>
+			<nail x="-646" y="-518"/>
+		</transition>
+		<transition id="id140">
+			<source ref="id138"/>
+			<target ref="id138"/>
+			<label kind="guard" x="-646" y="-476">inx&lt;7</label>
+			<label kind="assignment" x="-739" y="-459">setHumidity=setTemperatureplan[inx],
+inx=inx+1</label>
+			<nail x="-654" y="-484"/>
+			<nail x="-654" y="-459"/>
+		</transition>
+		<transition id="id141">
+			<source ref="id138"/>
+			<target ref="id138"/>
+			<label kind="synchronisation" x="-952" y="-629">turntemperatureoff?</label>
+			<label kind="assignment" x="-884" y="-646">t_state=0</label>
+			<nail x="-799" y="-603"/>
+			<nail x="-850" y="-603"/>
+		</transition>
+		<transition id="id142">
+			<source ref="id138"/>
+			<target ref="id138"/>
+			<label kind="synchronisation" x="-773" y="-620">temperatureregulation?</label>
+			<label kind="assignment" x="-773" y="-637">t_state=1,roomtemperature=setTemperature</label>
+			<nail x="-765" y="-603"/>
+			<nail x="-731" y="-603"/>
+		</transition>
+	</template>
+	<template>
+		<name>Temperature</name>
+		<location id="id143" x="-102" y="-17">
+		</location>
+		<init ref="id143"/>
+		<transition id="id144">
+			<source ref="id143"/>
+			<target ref="id143"/>
+			<label kind="synchronisation" x="-17" y="-34">temperatureacquisition?</label>
+			<nail x="-42" y="-42"/>
+			<nail x="-42" y="17"/>
+		</transition>
+	</template>
+	<template>
+		<name>WebReadyDevice</name>
+		<location id="id145" x="-153" y="-8">
+		</location>
+		<init ref="id145"/>
+		<transition id="id146">
+			<source ref="id145"/>
+			<target ref="id145"/>
+			<label kind="synchronisation" x="-331" y="-42">humidityplan!</label>
+			<nail x="-221" y="-17"/>
+			<nail x="-204" y="-51"/>
+		</transition>
+		<transition id="id147">
+			<source ref="id145"/>
+			<target ref="id145"/>
+			<label kind="synchronisation" x="-348" y="17">sethumidityplan?</label>
+			<nail x="-221" y="8"/>
+			<nail x="-204" y="42"/>
+		</transition>
+		<transition id="id148">
+			<source ref="id145"/>
+			<target ref="id145"/>
+			<label kind="synchronisation" x="-297" y="59">temperatureplan!</label>
+			<nail x="-187" y="51"/>
+			<nail x="-161" y="59"/>
+		</transition>
+		<transition id="id149">
+			<source ref="id145"/>
+			<target ref="id145"/>
+			<label kind="synchronisation" x="-280" y="-85">settemperatureplan?</label>
+			<nail x="-178" y="-59"/>
+			<nail x="-144" y="-59"/>
+		</transition>
+		<transition id="id150">
+			<source ref="id145"/>
+			<target ref="id145"/>
+			<label kind="synchronisation" x="-110" y="-68">sendreport?</label>
+			<nail x="-119" y="-51"/>
+			<nail x="-85" y="-25"/>
+		</transition>
+	</template>
+	<template>
+		<name>User</name>
+		<location id="id151" x="-238" y="-68">
+		</location>
+		<branchpoint id="id152" x="-348" y="-1"/>
+		<init ref="id151"/>
+		<transition id="id153">
+			<source ref="id151"/>
+			<target ref="id151"/>
+			<label kind="synchronisation" x="-221" y="-8">sethumidityplan!</label>
+			<nail x="-221" y="-8"/>
+			<nail x="-187" y="-8"/>
+		</transition>
+		<transition id="id154">
+			<source ref="id151"/>
+			<target ref="id152"/>
+		</transition>
+		<transition id="id155">
+			<source ref="id152"/>
+			<target ref="id151"/>
+			<label kind="synchronisation" x="-306" y="25">turnoff!</label>
+			<label kind="probability" x="-314" y="8">5</label>
+			<nail x="-238" y="25"/>
+		</transition>
+		<transition id="id156">
+			<source ref="id152"/>
+			<target ref="id151"/>
+			<label kind="synchronisation" x="-297" y="-8">turnon!</label>
+			<label kind="probability" x="-289" y="-25">5</label>
+			<nail x="-263" y="-8"/>
+		</transition>
+		<transition id="id157">
+			<source ref="id151"/>
+			<target ref="id151"/>
+			<label kind="synchronisation" x="-450" y="-59">readhumidity!</label>
+			<nail x="-340" y="-68"/>
+			<nail x="-340" y="-25"/>
+		</transition>
+		<transition id="id158">
+			<source ref="id151"/>
+			<target ref="id151"/>
+			<label kind="synchronisation" x="-442" y="-144">readtemperature!</label>
+			<nail x="-289" y="-136"/>
+			<nail x="-306" y="-110"/>
+		</transition>
+		<transition id="id159">
+			<source ref="id151"/>
+			<target ref="id151"/>
+			<label kind="synchronisation" x="-212" y="-68">settemperatureplan!</label>
+			<nail x="-204" y="-119"/>
+			<nail x="-187" y="-76"/>
+		</transition>
+	</template>
+	<template>
+		<name>PowerSwitch</name>
+		<location id="id160" x="-204" y="-17">
+			<name x="-246" y="-25">Off</name>
+		</location>
+		<init ref="id160"/>
+		<transition id="id161">
+			<source ref="id160"/>
+			<target ref="id160"/>
+			<label kind="guard" x="-425" y="-144">h_state==1</label>
+			<label kind="synchronisation" x="-459" y="-161">turnhumidityoff!</label>
+			<nail x="-323" y="-144"/>
+			<nail x="-340" y="-119"/>
+		</transition>
+		<transition id="id162">
+			<source ref="id160"/>
+			<target ref="id160"/>
+			<label kind="guard" x="-441" y="-85">t_state==1</label>
+			<label kind="synchronisation" x="-501" y="-102">turntemperatureoff!</label>
+			<nail x="-348" y="-68"/>
+			<nail x="-348" y="-102"/>
+		</transition>
+		<transition id="id163">
+			<source ref="id160"/>
+			<target ref="id160"/>
+			<label kind="guard" x="-425" y="68">h_state==0</label>
+			<label kind="synchronisation" x="-493" y="85">humidityregulation!</label>
+			<nail x="-331" y="102"/>
+			<nail x="-331" y="68"/>
+		</transition>
+		<transition id="id164">
+			<source ref="id160"/>
+			<target ref="id160"/>
+			<label kind="guard" x="-433" y="17">t_state==0</label>
+			<label kind="synchronisation" x="-527" y="34">temperatureregulation!</label>
+			<nail x="-340" y="25"/>
+			<nail x="-340" y="51"/>
+		</transition>
+		<transition id="id165">
+			<source ref="id160"/>
+			<target ref="id160"/>
+			<label kind="synchronisation" x="-76" y="34">powerstateacqF!</label>
+			<nail x="-93" y="51"/>
+			<nail x="-68" y="25"/>
+		</transition>
+		<transition id="id166">
+			<source ref="id160"/>
+			<target ref="id160"/>
+			<label kind="synchronisation" x="-51" y="-17">audiopowerAcqIns!</label>
+			<nail x="-59" y="-17"/>
+			<nail x="-59" y="8"/>
+		</transition>
+		<transition id="id167">
+			<source ref="id160"/>
+			<target ref="id160"/>
+			<label kind="synchronisation" x="-59" y="-68">lightpowerAcqIns!</label>
+			<nail x="-76" y="-59"/>
+			<nail x="-59" y="-42"/>
+		</transition>
+		<transition id="id168">
+			<source ref="id160"/>
+			<target ref="id160"/>
+			<label kind="synchronisation" x="-144" y="-110">powerstateacquisition?</label>
+			<nail x="-119" y="-93"/>
+			<nail x="-102" y="-68"/>
+		</transition>
+		<transition id="id169">
+			<source ref="id160"/>
+			<target ref="id160"/>
+			<label kind="synchronisation" x="-501" y="-51">turnpowerswitchoff?</label>
+			<nail x="-340" y="-34"/>
+			<nail x="-340" y="-59"/>
+		</transition>
+		<transition id="id170">
+			<source ref="id160"/>
+			<target ref="id160"/>
+			<label kind="synchronisation" x="-493" y="-17">turnpowerswitchon?</label>
+			<nail x="-340" y="-17"/>
+			<nail x="-340" y="8"/>
+		</transition>
+	</template>
+	<template>
+		<name>LightAlarmSubsystem</name>
+		<location id="id171" x="-68" y="8">
+		</location>
+		<init ref="id171"/>
+		<transition id="id172">
+			<source ref="id171"/>
+			<target ref="id171"/>
+			<label kind="synchronisation" x="8" y="-25">turnlighton!</label>
+			<nail x="0" y="-25"/>
+			<nail x="0" y="17"/>
+		</transition>
+		<transition id="id173">
+			<source ref="id171"/>
+			<target ref="id171"/>
+			<label kind="synchronisation" x="-170" y="-68">activatelightalarm?</label>
+			<nail x="-110" y="-42"/>
+			<nail x="-59" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>SoundAlarmSubsystem</name>
+		<location id="id174" x="-195" y="-25">
+		</location>
+		<init ref="id174"/>
+		<transition id="id175">
+			<source ref="id174"/>
+			<target ref="id174"/>
+			<label kind="synchronisation" x="-119" y="-25">turnaudioon!</label>
+			<nail x="-127" y="-42"/>
+			<nail x="-127" y="0"/>
+		</transition>
+		<transition id="id176">
+			<source ref="id174"/>
+			<target ref="id174"/>
+			<label kind="synchronisation" x="-272" y="-93">activatesoundalarm?</label>
+			<nail x="-229" y="-68"/>
+			<nail x="-153" y="-68"/>
+		</transition>
+	</template>
+	<template>
+		<name>DoorContactSensor</name>
+		<location id="id177" x="-195" y="-42">
+		</location>
+		<branchpoint id="id178" x="-136" y="-42"/>
+		<init ref="id177"/>
+		<transition id="id179">
+			<source ref="id178"/>
+			<target ref="id177"/>
+			<label kind="assignment" x="-76" y="-42">doorsafe=1,DCSt=0</label>
+			<label kind="probability" x="-119" y="-34">9</label>
+			<nail x="-68" y="-17"/>
+			<nail x="-93" y="8"/>
+		</transition>
+		<transition id="id180">
+			<source ref="id178"/>
+			<target ref="id177"/>
+			<label kind="assignment" x="-93" y="-93">doorsafe=2,DCSt=0</label>
+			<label kind="probability" x="-119" y="-68">1</label>
+			<nail x="-68" y="-59"/>
+			<nail x="-110" y="-85"/>
+		</transition>
+		<transition id="id181">
+			<source ref="id177"/>
+			<target ref="id178"/>
+		</transition>
+		<transition id="id182">
+			<source ref="id177"/>
+			<target ref="id177"/>
+			<label kind="synchronisation" x="-416" y="-102">doorentryvalueacquisition?</label>
+			<label kind="assignment" x="-382" y="-59">doorsafe=0</label>
+			<nail x="-289" y="-76"/>
+			<nail x="-289" y="-17"/>
+		</transition>
+	</template>
+	<template>
+		<name>WindowContactSensor</name>
+		<location id="id183" x="-42" y="17">
+		</location>
+		<branchpoint id="id184" x="178" y="17"/>
+		<init ref="id183"/>
+		<transition id="id185">
+			<source ref="id184"/>
+			<target ref="id183"/>
+			<label kind="assignment" x="153" y="34">windowsafe=1,WCSt=0</label>
+			<label kind="probability" x="127" y="42">9</label>
+			<nail x="85" y="51"/>
+		</transition>
+		<transition id="id186">
+			<source ref="id184"/>
+			<target ref="id183"/>
+			<label kind="assignment" x="127" y="-17">windowsafe=2,WCSt=0</label>
+			<label kind="probability" x="110" y="-25">1</label>
+			<nail x="76" y="-8"/>
+		</transition>
+		<transition id="id187">
+			<source ref="id183"/>
+			<target ref="id184"/>
+		</transition>
+		<transition id="id188">
+			<source ref="id183"/>
+			<target ref="id183"/>
+			<label kind="synchronisation" x="-348" y="-17">windowentryvalueacquisition?</label>
+			<label kind="assignment" x="-238" y="0">windowsafe=0</label>
+			<nail x="-110" y="-17"/>
+			<nail x="-110" y="34"/>
+		</transition>
+	</template>
+	<template>
+		<name>Light</name>
+		<location id="id189" x="-170" y="-25">
+		</location>
+		<init ref="id189"/>
+		<transition id="id190">
+			<source ref="id189"/>
+			<target ref="id189"/>
+			<label kind="synchronisation" x="-391" y="-59">lightpowerAcqIns?</label>
+			<nail x="-238" y="-25"/>
+			<nail x="-238" y="-59"/>
+		</transition>
+		<transition id="id191">
+			<source ref="id189"/>
+			<target ref="id189"/>
+			<label kind="synchronisation" x="-212" y="42">turnlightoff?</label>
+			<label kind="assignment" x="-204" y="25">lightstate=0</label>
+			<nail x="-187" y="25"/>
+			<nail x="-144" y="25"/>
+		</transition>
+		<transition id="id192">
+			<source ref="id189"/>
+			<target ref="id189"/>
+			<label kind="synchronisation" x="-221" y="-110">turnlighton?</label>
+			<label kind="assignment" x="-221" y="-93">lightstate=1</label>
+			<nail x="-187" y="-76"/>
+			<nail x="-153" y="-76"/>
+		</transition>
+	</template>
+	<template>
+		<name>Audio</name>
+		<location id="id193" x="-127" y="0">
+		</location>
+		<init ref="id193"/>
+		<transition id="id194">
+			<source ref="id193"/>
+			<target ref="id193"/>
+			<label kind="synchronisation" x="-187" y="68">turnaudiooff?</label>
+			<label kind="assignment" x="-195" y="85">audiostate=0</label>
+			<nail x="-161" y="59"/>
+			<nail x="-110" y="59"/>
+		</transition>
+		<transition id="id195">
+			<source ref="id193"/>
+			<target ref="id193"/>
+			<label kind="synchronisation" x="-340" y="-17">audiopowerAcqIns?</label>
+			<nail x="-195" y="0"/>
+			<nail x="-195" y="-34"/>
+		</transition>
+		<transition id="id196">
+			<source ref="id193"/>
+			<target ref="id193"/>
+			<label kind="synchronisation" x="-204" y="-119">turnaudioon?</label>
+			<label kind="assignment" x="-195" y="-102">audiostate=1</label>
+			<nail x="-170" y="-76"/>
+			<nail x="-119" y="-76"/>
+		</transition>
+	</template>
+	<template>
+		<name>Door</name>
+		<location id="id197" x="-119" y="0">
+		</location>
+		<init ref="id197"/>
+		<transition id="id198">
+			<source ref="id197"/>
+			<target ref="id197"/>
+			<label kind="synchronisation" x="-187" y="76">turndooroff?</label>
+			<label kind="assignment" x="-187" y="59">doorstate=0</label>
+			<nail x="-102" y="59"/>
+			<nail x="-161" y="59"/>
+		</transition>
+		<transition id="id199">
+			<source ref="id197"/>
+			<target ref="id197"/>
+			<label kind="synchronisation" x="-195" y="-85">turndooron?</label>
+			<label kind="assignment" x="-187" y="-68">doorstate=1</label>
+			<nail x="-161" y="-51"/>
+			<nail x="-102" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>Window</name>
+		<location id="id200" x="-119" y="17">
+		</location>
+		<init ref="id200"/>
+		<transition id="id201">
+			<source ref="id200"/>
+			<target ref="id200"/>
+			<label kind="synchronisation" x="-161" y="76">turnwindowoff?</label>
+			<label kind="assignment" x="-170" y="93">windowstate=0</label>
+			<nail x="-102" y="76"/>
+			<nail x="-153" y="76"/>
+		</transition>
+		<transition id="id202">
+			<source ref="id200"/>
+			<target ref="id200"/>
+			<label kind="synchronisation" x="-170" y="-51">turnwindowon?</label>
+			<label kind="assignment" x="-170" y="-68">windowstate=1</label>
+			<nail x="-153" y="-34"/>
+			<nail x="-85" y="-34"/>
+		</transition>
+	</template>
+	<system>//User_Change_appliance_state
+system User_Change_appliance_state,User,PowerSwitch,Temperature,Humidity;</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment/>
+		</query>
+	</queries>
+</nta>

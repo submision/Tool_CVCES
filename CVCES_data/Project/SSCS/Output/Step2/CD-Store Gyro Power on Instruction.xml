@@ -1,0 +1,7 @@
+@startuml
+skinparam componentStyle uml1
+component [SGPonI] #DAE3F3
+component [GI] #E2F0D9
+[SGPonI] -> interface1
+interface1 - [GI]
+@enduml

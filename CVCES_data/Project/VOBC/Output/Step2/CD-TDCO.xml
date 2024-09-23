@@ -1,0 +1,16 @@
+@startuml
+skinparam componentStyle uml1
+component [TDCO] #DAE3F3
+component [OpenDoors] #DAE3F3
+component [TrainData] #E2F0D9
+component [CL] #FFF2CC
+component [TrainDoor] #FFF2CC
+[OpenDoors] --> interface1
+interface1 - [TrainData]
+[OpenDoors] -> interface2
+interface2 - [CL]
+[TDCO] --> interface3
+interface3 - [TrainData]
+[TDCO] -> interface4
+interface4 - [TrainDoor]
+@enduml

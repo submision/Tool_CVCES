@@ -1,0 +1,7 @@
+@startuml
+skinparam componentStyle rectangle
+[TDControlOutput] --> [OpenDoors]
+[TDControlOutput] --> [CloseDoors]
+[SDControlOutput] --> [OpenDoors]
+[SDControlOutput] --> [CloseDoors]
+@enduml

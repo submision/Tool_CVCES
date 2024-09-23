@@ -1,0 +1,9 @@
+Controller as CloseDoors
+Entity as CL, Driver
+Datastorage as StationData
+Driver -> CloseDoors : CloseDoor[event]
+...5ms...
+CloseDoors -> CL : TVCClose[event]
+CL -> CloseDoors : TCVClose[event]
+CloseDoors -> StationData : CloseSDInsStoIns[event]
+StationData -> CloseDoors : CloseSDIns[event]

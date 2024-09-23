@@ -1,0 +1,10 @@
+Controller as TR
+Entity as DCD, ICUS, SPUS, JPUS,CRUS
+Datastorage as TD
+...5ms...
+ICUS -> TR : ICUTemperate[event]
+CRUS -> TR : CRUTemperate[event]
+SPUS -> TR : SPUTemperate[event]
+JPUS -> TR : JPUTemperate[event]
+TR -> TD : TemperateDataSend[event]
+TR -> DCD : TemperateDataToDCD[event]

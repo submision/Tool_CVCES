@@ -1,0 +1,5 @@
+Controller as JPUPOC
+Entity as DCD
+Datastorage as WCC
+DCD -> JPUPOC : JPUWorkingCurrentOpenCommandFormOP1[event]
+JPUPOC -> WCC : JPUWorkingCurrentOpenCommandFromOPSend[event]

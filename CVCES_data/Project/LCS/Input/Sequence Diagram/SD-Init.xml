@@ -1,0 +1,9 @@
+Controller as Init
+Entity as LU, AC 
+par
+	Init -> LU : LUInitPulse[event]
+	LU -> Init : LUOff, PowerOn[state]
+else
+	Init -> AC : ACInitPulse[event]
+	AC -> Init : ACOff, PowerOn[state]
+end

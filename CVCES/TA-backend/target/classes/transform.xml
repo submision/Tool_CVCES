@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nta>
+    <declaration>// Place global declarations here.
+    </declaration>
+    <template>
+        <name>InterruptTimer</name>
+        <declaration>first shengming</declaration>
+        <location id="id0" x="-960" y="-357">
+            <label kind="invariant" x="-986" y="-340">timer&lt;=32</label>
+        </location>
+        <location id="id1" x="-807" y="-357">
+            <urgent/>
+        </location>
+        <init ref="id0"/>
+        <transition>
+            <source ref="id1"/>
+            <target ref="id0"/>
+            <label kind="assignment" x="-858" y="-331">count:=count+1,
+                timer:=0</label>
+            <nail x="-884" y="-331"/>
+        </transition>
+        <transition>
+            <source ref="id0"/>
+            <target ref="id0"/>
+            <label kind="guard" x="-1130" y="-382">count==4</label>
+            <label kind="synchronisation" x="-1181" y="-365">ThrusterOutputIns!</label>
+            <nail x="-1054" y="-382"/>
+            <nail x="-1054" y="-340"/>
+        </transition>
+        <transition>
+            <source ref="id0"/>
+            <target ref="id1"/>
+            <label kind="guard" x="-884" y="-408">timer==32 &amp;&amp; flag==1 &amp;&amp; count&lt;5</label>
+            <nail x="-884" y="-382"/>
+        </transition>
+        <transition>
+            <source ref="id0"/>
+            <target ref="id0"/>
+            <label kind="synchronisation" x="-1011" y="-442">InterruptSignal!</label>
+            <label kind="assignment" x="-986" y="-467">flag:=1</label>
+            <nail x="-935" y="-416"/>
+            <nail x="-986" y="-416"/>
+        </transition>
+    </template>
+    <template>
+        <name>logicflow</name>
+        <declaration>// Place local declarations here.</declaration>
+        <location id="id0" x="8" y="-127">
+            <name x="-49" y="-172">GyroInitializationSC</name>
+        </location>
+        <location id="id1" x="-165" y="-128">
+        </location>
+        <location id="id2" x="177" y="-126">
+        </location>
+        <location id="id3" x="-170" y="51">
+        </location>
+        <location id="id4" x="177" y="50">
+        </location>
+        <location id="id5" x="-3" y="50">
+        </location>
+        <init ref="id0"/>
+        <transition>
+            <source ref="id3"/>
+            <target ref="id1"/>
+            <label kind="synchronisation" x="-229" y="-68">GyroControlPonFIns?</label>
+        </transition>
+        <transition>
+            <source ref="id5"/>
+            <target ref="id3"/>
+            <label kind="synchronisation" x="-153" y="25">GyroControloutputIns!</label>
+        </transition>
+        <transition>
+            <source ref="id4"/>
+            <target ref="id5"/>
+            <label kind="synchronisation" x="33" y="30">StoreGyroPonFIns?</label>
+        </transition>
+        <transition>
+            <source ref="id2"/>
+            <target ref="id4"/>
+            <label kind="synchronisation" x="117" y="-106">StoreGyroPoweronIns!</label>
+        </transition>
+        <transition>
+            <source ref="id0"/>
+            <target ref="id2"/>
+            <label kind="synchronisation" x="30" y="-147">GyroInitializationIns?</label>
+        </transition>
+        <transition>
+            <source ref="id1"/>
+            <target ref="id0"/>
+            <label kind="synchronisation" x="-140" y="-148">GyroInitFinshIns!</label>
+        </transition>
+    </template>
+    <system>// Place template instantiations here.
+        // List one or more processes to be composed into a system.
+    </system>
+    <queries>
+        <query>
+            <formula>MasterController.ThrusterOutput --&gt; Thruster.Output</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.Initialization --&gt; Thruster.On</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.Initialization --&gt; SunSensor.On</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.Initialization --&gt; Gyro.On</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.TelemetryProcess --&gt; TelemetrydataStorageIns==1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>DataManagementComputer.TeleControl --&gt; NextcyclemodeStorageIns==1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.DataAcq --&gt; Thrusterpowerstate == 1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.DataAcq --&gt; JetIntervalStorage==1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.DataAcq --&gt; Sunsensorpowerstate == 1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.DataAcq --&gt; SunmeasurementangleStorage==1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.DataAcq --&gt; SunvisiblesignStorage==1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.DataAcq --&gt; Gyropowerstate==1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.DataAcq --&gt; PulsecountStorage==1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.Initialization --&gt; Thrusterpowerstate == 1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.Initialization --&gt; Sunsensorpowerstate == 1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>MasterController.Initialization --&gt; Gyropowerstate == 1</formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula></formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; MasterController.MasterControllerSC imply t==160</formula>
+            <comment>周期结束</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; Thruster.Output imply t==128</formula>
+            <comment>128ms推力器输出</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; TelemetryProcessing.TelemetryProcessingSC imply t&gt;=100&amp;&amp;t&lt;=110</formula>
+            <comment>遥测处理</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; FaultDiagnosisProcessing.FaultDiagnosisProcessingSC imply t&gt;=80&amp;&amp;t&lt;=90</formula>
+            <comment>故障诊断</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; ControlComputing.ControlComputingSC imply t&gt;=70&amp;&amp;t&lt;=80</formula>
+            <comment>控制计算</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; ModeSwitchingManagement.ModeSwitchingManagementSC imply t&gt;=60&amp;&amp;t&lt;=70</formula>
+            <comment>模式切换管理</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; AttitudeDetermination.AttitudeDeterminationSC imply t&gt;=50&amp;&amp;t&lt;=60</formula>
+            <comment>姿态确定</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; ThrusterDataAcquisition.ThrusterDataAcqSC imply t&gt;=45&amp;&amp;t&lt;=50</formula>
+            <comment>推力器数据采集</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; SunsensorDataAcquisition.SunsensorDataAcqSC imply t&gt;=35&amp;&amp;t&lt;=45</formula>
+            <comment>太敏数据采集</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; GyroDataAcquisition.GyroDataAcqSC imply t&gt;=20&amp;&amp;t&lt;=35</formula>
+            <comment>陀螺数据采集</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; TelecontrolInstructionProcessing.TelecontrolSC imply t&gt;=5&amp;&amp;t&lt;=15</formula>
+            <comment>遥控处理</comment>
+        </query>
+        <query>
+            <formula></formula>
+            <comment></comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; TelemetrydataStorageIns==1</formula>
+            <comment>遥测处理遥测数据存储</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; SunsensorpowerIns==1</formula>
+            <comment>太阳敏感器加电指令</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; ThrusterpowerIns==1</formula>
+            <comment>推力器加电指令</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; GyropowerIns==1</formula>
+            <comment>陀螺加电指令</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; TriaxialcontrolquantityStorageIns==1</formula>
+            <comment>控制计算结果三轴控制量存储</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; Nextcyclemode==0</formula>
+            <comment>模式切换管理设置速率阻尼模式</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; TriaxialattitudeangleStorageIns==1 and TriaxialangularvelocityStorageIns==1</formula>
+            <comment>姿态确定计算结果存储</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; ThrusterpowerstateStorageIns==1 and JetintervalStorageIns==1</formula>
+            <comment>推力器数据采集数据存储</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; SunsensorpowerstateStorageIns==1 and SunvisiblesignStorageIns==1 and SunmeasurementangleStorageIns==1</formula>
+            <comment>太敏数据采集数据存储</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; AngularvelocityanalogStorageIns == 1 and GyropowerstateStorageIns==1</formula>
+            <comment>陀螺数据采集数据存储</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; NextcyclemodeStorageIns==1</formula>
+            <comment>遥控处理设置下一周期模式字</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; SunSensor.On</formula>
+            <comment>所有路径都有使得太敏处于开启状态</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; Thruster.On</formula>
+            <comment>所有路径都有使得推力器处于开启状态</comment>
+        </query>
+        <query>
+            <formula>A&lt;&gt; Gyro.On</formula>
+            <comment>所有路径都有使得陀螺处于开启状态</comment>
+        </query>
+        <query>
+            <formula>E&lt;&gt; not deadlock</formula>
+            <comment>有路径不存在死锁</comment>
+        </query>
+        <query>
+            <formula>A[] not deadlock</formula>
+            <comment></comment>
+        </query>
+    </queries>
+</nta>

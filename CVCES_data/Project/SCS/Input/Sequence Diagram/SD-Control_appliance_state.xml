@@ -1,0 +1,19 @@
+Controller as CAS
+Entity as PS, LI, AD
+Datastorage as HD
+CAS -> HD : appliance status load instruction[event]
+opt powerswitchon == 1
+	CAS -> PS : turn power switch on[event]
+else powerswitchon == 0
+	CAS -> PS : turn power switch off[event]
+end
+opt lighton == 1
+	CAS -> LI : turn light on[event]
+else lighton == 0
+	CAS -> LI : turn light off[event]
+end
+opt audioon == 1
+	CAS -> AD : turn audio on[event]
+else audioon == 0
+	CAS -> AD : turn audio off[event]
+end

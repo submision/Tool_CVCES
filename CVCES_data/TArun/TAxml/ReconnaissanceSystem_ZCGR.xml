@@ -1,0 +1,4275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>
+
+
+
+
+
+
+
+
+
+
+
+
+// Place global declarations here.
+clock t;
+chan InitializationRequest,Policysettingallow,
+Policysettingblocking,Sendfullpulsedata,Sendspectrumdata,Sendtemperaturedata;
+int[0,1] FullpulsedataStoIns=0,SpectrumdataStoIns=0,TemperaturedataStoIns=0;
+
+chan CRUInitCommand,ReceivePolicyToCRU,TrapPolicyToCRU,CRUInitResult,OringinalPDW,SpectrumData,CRUTemperate;
+int SpectrumSurveillanceStoIns=0;
+int TemperatureReportStoIns=0;
+int OriginalPDWReportStoIns=0;
+
+chan DeviceInitCommand,DeviceInitResult,DeviceDataLoadCommand,DeviceDataLoadResult,TargetInfo,SpectrumDataSend,TemperateDataToDCD;
+
+chan ICUInitCommand,ICUInitResult,ICUDataLoadCommand,ICUDataLib,ICUDataLoadResult,DeviceDataLoadCommand1;
+
+chan SPUInitCommand,SPUInitResult,FilteredPDW,SPUDataLoadCommand,SPUDataLoadResult,SPUTemperate,TrapPolicyToSPU,ReceivePolicyToSPU;
+
+int FilteredPDWReportStoIns=0;
+
+chan CRUWorkingCurrentOpenCommandFormOP1,CRUWorkingCurrentCloseCommandFormOP1,CollectSignal;
+chan ICUWorkingCurrentOpenCommandFormOP1,ICUWorkingCurrentOpenCommandFormOP0,SPUWorkingCurrentOpenCommandFormOP1,
+CRUWorkingCurrentOpenCommandFormOP0,SPUWorkingCurrentOpenCommandFormOP0,ICUWorkingCurrentCloseCommandFormOP0,ICUWorkingCurrentCloseCommandFormOP1,
+CRUWorkingCurrentCloseCommandFormOP0,SPUWorkingCurrentCloseCommandFormOP1,SPUWorkingCurrentCloseCommandFormOP0;
+
+chan ReceivePolicy,TrapPolicy,DataLoadCommand,DataLib;
+
+chan CRUWorkingCurrentOpen,CRUWorkingCurrentOpenResult,CRUWorkingCurrentClose,CRUWorkingCurrentCloseResult,CRUSensorWorkingCurrentOpen,CRUSensorWorkingCurrentClose;
+//clock CRUt=50.0;
+int CRUt=26;
+int CRUcount=0;
+clock CRU_workt;
+
+chan DeviceWorkingCurrentControlResult,DeviceInitCommand1,DataLib1,ReceivePolicy1,TrapPolicy1;
+
+chan ICUWorkingCurrentOpen,ICUWorkingCurrentOpenResult,ICUWorkingCurrentCloseResult,ICUWorkingCurrentClose,ICUTemperate,ICUSensorWorkingCurrentOpen,ICUSensorWorkingCurrentClose;
+clock ICU_workt;
+//clock ICUt=50.0;
+int ICUt=26;
+int ICUcount=0;
+
+chan SPUWorkingCurrentOpen,SPUWorkingCurrentOpenResult,SPUWorkingCurrentClose,OriginalPDWToSPU,SPUDataLib,SPUWorkingCurrentCloseResult,
+SPUSensorWorkingCurrentOpen,SPUSensorWorkingCurrentClose;
+clock SPU_workt;
+//clock SPUt=50.0;
+int SPUt=26;
+int SPUcount=0;
+
+
+chan JPUWorkingCurrentOpen,JPUWorkingCurrentOpenResult,JPUWorkingCurrentClose,JPUDataLib,JPUWorkingCurrentCloseResult,
+JPUSensorWorkingCurrentOpen,JPUSensorWorkingCurrentClose;
+chan JPUInitCommand,JPUInitResult,JPUDataLoadCommand,JPUDataLoadResult,JPUTemperate,JPUTemperateRead;
+int JPU_Open,JPU_Load;
+clock JPU_workt;
+int JPUt=26;
+int JPUcount=0;
+
+chan JPUWorkingCurrentCloseCommandRead,JPUWorkingCurrentCloseCommandFromOPSend,JPUWorkingCurrentCloseCommandFromOTPSend,
+JPUWorkingCurrentOpenCommandFromOPSend,JPUWorkingCurrentOpenCommandRead,JPUWorkingCurrentOpenCommandFromOTPSend,
+JPUWorkingCurrentOpenCommandFormOP1,JPUWorkingCurrentOpenCommandFormOP0,JPUWorkingCurrentCloseCommandFormOP1,JPUWorkingCurrentCloseCommandFormOP0;
+
+chan SPUWorkingCurrentOpenCommandFromOTPSend,ICUWorkingCurrentCloseCommandFromOTPSend,ICUWorkingCurrentOpenCommandFromOTPSend,
+SPUWorkingCurrentCloseCommandRead,SPUWorkingCurrentCloseCommandFromOPSend,SPUWorkingCurrentCloseCommandFromOTPSend,CRUWorkingCurrentOpenCommandFromOTPSend,
+CRUWorkingCurrentCloseCommandFromOTPSend,ICUWorkingCurrentCloseCommandFromOPSend,ICUWorkingCurrentCloseCommandRead,ICUWorkingCurrentOpenCommandFromOPSend,
+ICUWorkingCurrentOpenCommandRead,CRUWorkingCurrentOpenCommandFromOPSend,CRUWorkingCurrentOpenCommandRead,CRUWorkingCurrentCloseCommandFromOPSend,
+CRUWorkingCurrentCloseCommandRead,SPUWorkingCurrentOpenCommandFromOPSend,SPUWorkingCurrentOpenCommandRead;
+
+clock SS_time;
+
+chan DataLibSend,DataLibRead,SortedTargetSend,SortedTargetRead,IdentifiedTargetSend,IdentifiedTargetRead,TemperateDataSend,
+ICUTemperateRead,SPUTemperateRead,CRUTemperateRead;
+
+int ICUflag=0,CRUflag=0,SPUflag=0;
+int Resultflag=0;
+clock Res_time;
+
+chan OriginalPDW;
+int ICU_res=0,CRU_res=0,SPU_res=0;
+clock DL_time;
+clock TR_time;
+
+clock ICUOffFlag;
+clock CRUOffFlag;
+clock SPUOffFlag;
+clock Init_time;
+clock C_time;
+clock I_time;
+clock S_time;
+clock Dataload_time;
+
+int Device_state=0;
+clock OP_time;
+int Init_state=0;
+int SSFlag=0;
+
+int ICU_Open=0,ICU_Init=0,CRU_Open=0,CRU_Init=0,SPU_Open=0,SPU_Init=0,JPU_Init=0,DCD_Init=0;
+int ICU_Load=0,SPU_Load=0,DCD_Load=0;
+clock Q_time;
+clock DCD_time;
+
+clock FSJt;
+int FSJ_state;
+chan FSJOffCommand,FSJOnCommand;
+chan HighOff,HighOn,JamSignal;
+chan TargetJamLib,TargetJamLib1,JamStyle,JamStyle1,TargetDelete,TargetDelete1,JamAllowed,JamAllowed1,JamProhibited,JamProhibited1,JamConfigureValue0,JamConfigureValue1;
+int jmflag;
+clock Jamt;
+int QLJ_state;
+clock J_time,Cont;
+
+clock FSJct,Hct;
+int Jama=0,JamFlag=0,JPUOffFlag;
+
+int JPUflag,JPU_res;
+
+chan FSJStatus,QLJStatus,NoJaming,Jaming,JamResult,NoJamResult;
+int Jam_state;
+
+
+
+int WCC_CRUPowerCloseControl_CRUWorkingCurrentCloseCommandFromOP=0;
+int WCC_CRUPowerOpenControl_CRUWorkingCurrentOpenCommandFromOP=0;
+int DB_DataLoad_DataLibBak=0;
+int DCD_DataLoad_DeviceDataLoadResultDisplay=0;
+int ICU_DataLoad_DataLoad=0;
+int SPU_DataLoad_DataLoad=0;
+int JPU_DataLoad_DataLoad=0;
+int ICU_DataLoad_ICUWork=0;
+int SPU_DataLoad_SPUWork=0;
+int JPU_DataLoad_JPUWork=0;
+int WCC_ICUPowerCloseControl_ICUWorkingCurrentCloseCommandFromOP=0;
+int WCC_ICUPowerOpenControl_ICUWorkingCurrentOpenCommandFromOP=0;
+int DCD_Init_DeviceInitResultDisplay=0;
+int ICU_Init_ICUInit=0;
+int SPU_Init_SPUInit=0;
+int CRU_Init_CRUInit=0;
+int JPU_Init_JPUInit=0;
+int ICU_Init_ICUWork=0;
+int SPU_Init_SPUWork=0;
+int CRU_Init_CRUWork=0;
+int JPU_Init_JPUWork=0;
+int JPU_JamProcess_JPUWork=0;
+int JPU_JamProcess_JamProcess=0;
+int DCD_JamProcess_NoJamStatusDisplay=0;
+int DCD_JamProcess_JamStatusDisplay=0;
+int WCC_JPUPowerCloseControl_JPUWorkingCurrentCloseCommandFromOP=0;
+int WCC_JPUPowerOpenControl_JPUWorkingCurrentOpenCommandFromOP=0;
+int WCC_OverTempProtect_ICUWorkingCurrentOpenCommandFromOTP=0;
+int WCC_OverTempProtect_ICUWorkingCurrentCloseCommandFromOTP=0;
+int WCC_OverTempProtect_SPUWorkingCurrentOpenCommandFromOTP=0;
+int WCC_OverTempProtect_SPUWorkingCurrentCloseCommandFromOTP=0;
+int WCC_OverTempProtect_CRUWorkingCurrentOpenCommandFromOTP=0;
+int WCC_OverTempProtect_CRUWorkingCurrentCloseCommandFromOTP=0;
+int WCC_OverTempProtect_JPUWorkingCurrentCloseCommandFromOTP=0;
+int WCC_OverTempProtect_JPUWorkingCurrentOpenCommandFromOTP=0;
+int CRU_ReconnaissanceGuide_WorkFollowReceivePolicyExecute=0;
+int CRU_ReconnaissanceGuide_WorkFollowTrapPolicyExecute=0;
+int TAI_SignalIdentify_IdentifiedTarget=0;
+int TAS_SignalSort_SortedTarget=0;
+int DCD_SpectrumSurveillance_SpectrumDisplay=0;
+int WCC_SPUPowerCloseControl_SPUWorkingCurrentCloseCommandFromOP=0;
+int WCC_SPUPowerOpenControl_SPUWorkingCurrentOpenCommandFromOP=0;
+int DCD_TargetReport_TargetInfoDisplay=0;
+int TD_TemperatureReport_ICUTemperate=0;
+int TD_TemperatureReport_SPUTemperate=0;
+int TD_TemperatureReport_CRUTemperate=0;
+int TD_TemperatureReport_JPUTemperate=0;
+int DCD_TemperatureReport_TemperateDataDisplay=0;
+int DCD_WorkingCurrentControl_DeviceWorkingCurrentStatusDisplay=0;
+int ICU_WorkingCurrentControl_ICUOn=0;
+int ICUS_WorkingCurrentControl_ICUSensorOn=0;
+int ICU_WorkingCurrentControl_ICUOff=0;
+int ICUS_WorkingCurrentControl_ICUSensorOff=0;
+int SPU_WorkingCurrentControl_SPUOn=0;
+int SPUS_WorkingCurrentControl_SPUSensorOn=0;
+int SPU_WorkingCurrentControl_SPUOff=0;
+int SPUS_WorkingCurrentControl_SPUSensorOff=0;
+int CRU_WorkingCurrentControl_CRUOn=0;
+int CRUS_WorkingCurrentControl_CRUSensorOn=0;
+int CRU_WorkingCurrentControl_CRUOff=0;
+int CRUS_WorkingCurrentControl_CRUSensorOff=0;
+int JPU_WorkingCurrentControl_JPUOn=0;
+int JPU_WorkingCurrentControl_JPUOff=0;
+int JPUS_WorkingCurrentControl_JPUSensorOn=0;
+int JPUS_WorkingCurrentControl_JPUSensorOff=0;
+</declaration>
+	<template>
+		<name x="5" y="5">CollecteReceiveUnit</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="-603" y="-153">
+			<urgent/>
+		</location>
+		<location id="id1" x="-603" y="-221">
+			<urgent/>
+		</location>
+		<location id="id2" x="161" y="-518">
+			<urgent/>
+		</location>
+		<location id="id3" x="-365" y="-195">
+			<name x="-348" y="-204">CRUOff</name>
+		</location>
+		<location id="id4" x="59" y="-357">
+			<name x="76" y="-357">CRUWork</name>
+		</location>
+		<location id="id5" x="-85" y="-510">
+			<name x="-289" y="-544">WorkFollowReceivePolicyExecute</name>
+			<urgent/>
+		</location>
+		<location id="id6" x="-195" y="-357">
+			<label kind="invariant" x="-238" y="-391">C_time&lt;=4</label>
+		</location>
+		<location id="id7" x="60" y="-212">
+			<urgent/>
+		</location>
+		<location id="id8" x="-365" y="-357">
+			<urgent/>
+		</location>
+		<location id="id9" x="391" y="-357">
+			<urgent/>
+		</location>
+		<location id="id10" x="-306" y="-357">
+			<name x="-323" y="-391">CRUOn</name>
+		</location>
+		<location id="id11" x="-365" y="-272">
+			<urgent/>
+		</location>
+		<location id="id12" x="102" y="-127">
+			<urgent/>
+		</location>
+		<location id="id13" x="-25" y="-527">
+			<name x="-187" y="-569">WorkFollowTrapPolicyExecute</name>
+			<urgent/>
+		</location>
+		<location id="id14" x="153" y="-212">
+			<urgent/>
+		</location>
+		<location id="id15" x="255" y="-476">
+			<urgent/>
+		</location>
+		<location id="id16" x="-42" y="-357">
+			<name x="-67" y="-391">CRUInit</name>
+			<urgent/>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-67" y="-391">CRU_Init_CRUWork=1</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-654" y="-136">CRUWorkingCurrentCloseResult!</label>
+			<label kind="assignment" x="-67" y="-391">CRU_WorkingCurrentControl_CRUOff=1</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-756" y="-204">CRUSensorWorkingCurrentClose!</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-620" y="-255">CRUWorkingCurrentClose?</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="127" y="-442">CRUWorkingCurrentOpenResult!</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="187" y="-527">CRUSensorWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="59" y="-484">CRUWorkingCurrentOpen?</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id4"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="153" y="-128">CRUSensorWorkingCurrentClose!</label>
+			<nail x="391" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-586" y="-314">CRUSensorWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-314" y="-127">CRUWorkingCurrentCloseResult!</label>
+			<nail x="-365" y="-128"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-535" y="-391">CRUWorkingCurrentOpenResult!</label>
+			<label kind="assignment" x="-399" y="-416">CRU_Open=1,CRU_WorkingCurrentControl_CRUOn=1</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="161" y="-382">CRUWorkingCurrentClose?</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-433" y="-238">CRUWorkingCurrentOpen?</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-42" y="-280">SpectrumData!</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="51" y="-195">OringinalPDW!</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-170" y="-382">C_time&gt;=4</label>
+			<label kind="synchronisation" x="-178" y="-357">CRUInitResult!</label>
+			<label kind="assignment" x="-187" y="-340">CRU_Open=0,CRU_Init=1,CRU_Init_CRUInit=1</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="0" y="-527">TrapPolicyToCRU?</label>
+			<label kind="assignment" x="-187" y="-340">CRU_ReconnaissanceGuide_WorkFollowTrapPolicyExecute=1</label>
+			<nail x="42" y="-476"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-178" y="-467">ReceivePolicyToCRU?</label>
+			<label kind="assignment" x="42" y="-476">CRU_ReconnaissanceGuide_WorkFollowReceivePolicyExecute=1</label>
+			<nail x="-34" y="-399"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="119" y="-289">CollectSignal?</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-314" y="-340">CRUInitCommand?</label>
+			<label kind="assignment" x="-289" y="-357">C_time=0</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">CommandOperator</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id17" x="510" y="-229">
+		</location>
+		<location id="id18" x="-59" y="-238">
+			<name x="-144" y="-246">JPUOPOff1</name>
+			<urgent/>
+		</location>
+		<location id="id19" x="-42" y="-144">
+			<name x="-127" y="-153">JPUOPOn1</name>
+			<urgent/>
+		</location>
+		<location id="id20" x="-51" y="221">
+			<name x="-85" y="238">CRUOPOff</name>
+			<urgent/>
+		</location>
+		<location id="id21" x="221" y="221">
+			<name x="238" y="204">ICUOPOff</name>
+			<urgent/>
+		</location>
+		<location id="id22" x="-731" y="-85">
+			<name x="-756" y="-119">ICUOPOn</name>
+		</location>
+		<location id="id23" x="-187" y="-85">
+			<urgent/>
+		</location>
+		<location id="id24" x="-119" y="-85">
+		</location>
+		<location id="id25" x="102" y="51">
+			<name x="17" y="51">DataLoad</name>
+		</location>
+		<location id="id26" x="-42" y="17">
+			<name x="-110" y="25">ReconnaissanceGuide</name>
+			<urgent/>
+		</location>
+		<location id="id27" x="221" y="-85">
+			<name x="187" y="-51">OPWork</name>
+		</location>
+		<location id="id28" x="-620" y="-85">
+			<name x="-645" y="-119">CRUOPOn</name>
+			<urgent/>
+		</location>
+		<location id="id29" x="-544" y="-85">
+			<name x="-578" y="-119">SPUOPOn</name>
+			<urgent/>
+		</location>
+		<location id="id30" x="-406" y="221">
+			<name x="-442" y="238">SPUOPOff</name>
+			<urgent/>
+		</location>
+		<location id="id31" x="-263" y="-85">
+			<name x="-280" y="-136">OPInit</name>
+			<urgent/>
+		</location>
+		<location id="id32" x="170" y="-442">
+			<name x="76" y="-450">SPUOPOn1</name>
+			<urgent/>
+		</location>
+		<location id="id33" x="263" y="-450">
+			<name x="280" y="-459">SPUOPOff1</name>
+			<urgent/>
+		</location>
+		<location id="id34" x="467" y="-323">
+			<name x="484" y="-323">CRUOPOn1</name>
+			<urgent/>
+		</location>
+		<location id="id35" x="382" y="-433">
+			<name x="399" y="-442">CRUOPOff1</name>
+			<urgent/>
+		</location>
+		<location id="id36" x="85" y="-382">
+			<name x="0" y="-391">ICUOPOff1</name>
+			<urgent/>
+		</location>
+		<location id="id37" x="-8" y="-323">
+			<name x="-93" y="-331">ICUOPOn1</name>
+			<urgent/>
+		</location>
+		<location id="id38" x="-25" y="-85">
+		</location>
+		<location id="id39" x="-357" y="-85">
+			<name x="-391" y="-119">FSJOPOn</name>
+			<urgent/>
+		</location>
+		<location id="id40" x="-459" y="-85">
+			<name x="-484" y="-119">JPUOPOn</name>
+			<urgent/>
+		</location>
+		<location id="id41" x="-731" y="221">
+			<name x="-748" y="238">JPUOPOff</name>
+			<urgent/>
+		</location>
+		<init ref="id22"/>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id27"/>
+			<label kind="guard" x="340" y="178">FSJct&gt;=15</label>
+			<label kind="synchronisation" x="323" y="212">FSJOffCommand!</label>
+			<label kind="assignment" x="348" y="195">FSJct=0</label>
+			<nail x="374" y="178"/>
+			<nail x="408" y="153"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id27"/>
+			<label kind="guard" x="433" y="170">FSJt&gt;=15</label>
+			<label kind="synchronisation" x="433" y="136">FSJOnCommand!</label>
+			<label kind="assignment" x="433" y="153">FSJt=0</label>
+			<nail x="425" y="144"/>
+			<nail x="459" y="119"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id27"/>
+			<label kind="guard" x="535" y="8">Hct&gt;=15</label>
+			<label kind="synchronisation" x="535" y="42">HighOff!</label>
+			<label kind="assignment" x="535" y="25">Hct=0</label>
+			<nail x="510" y="51"/>
+			<nail x="527" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id27"/>
+			<label kind="guard" x="484" y="93">Hct&gt;=15</label>
+			<label kind="synchronisation" x="493" y="76">HighOn!</label>
+			<label kind="assignment" x="493" y="110">Hct=0</label>
+			<nail x="476" y="110"/>
+			<nail x="501" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id27"/>
+			<label kind="guard" x="552" y="-42">Jama==1</label>
+			<label kind="synchronisation" x="552" y="-59">JamProhibited!</label>
+			<label kind="assignment" x="552" y="-25">Jama=0</label>
+			<nail x="544" y="-51"/>
+			<nail x="535" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="552" y="-85">JamAllowed!</label>
+			<label kind="assignment" x="561" y="-102">Jama=1</label>
+			<nail x="544" y="-102"/>
+			<nail x="544" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id27"/>
+			<label kind="guard" x="544" y="-144">JamFlag==1</label>
+			<label kind="synchronisation" x="544" y="-161">TargetDelete!</label>
+			<label kind="assignment" x="544" y="-127">JamFlag=0</label>
+			<nail x="535" y="-161"/>
+			<nail x="544" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="510" y="-212">JamStyle!</label>
+			<label kind="assignment" x="510" y="-187">JamFlag=1</label>
+			<nail x="501" y="-170"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="391" y="-195">TargetJamLib!</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="-229" y="-272">JPUWorkingCurrentCloseCommandFormOP0!</label>
+			<nail x="0" y="-238"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id18"/>
+			<label kind="guard" x="-127" y="-221">JPUOffFlag&gt;=15</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id27"/>
+			<label kind="assignment" x="-8" y="-153">JPUOffFlag=0</label>
+			<nail x="17" y="-161"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="-255" y="-187">JPUWorkingCurrentOpenCommandFormOP0!</label>
+		</transition>
+		<transition>
+			<source ref="id41"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-841" y="8">JPUWorkingCurrentCloseCommandFormOP0!</label>
+			<label kind="assignment" x="-799" y="34">SSFlag=1</label>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id39"/>
+			<label kind="synchronisation" x="-561" y="-153">JPUWorkingCurrentOpenCommandFormOP0!</label>
+		</transition>
+		<transition>
+			<source ref="id39"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="-365" y="-68">FSJOnCommand!</label>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id38"/>
+			<label kind="guard" x="-127" y="-119">Init_state==1</label>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id37"/>
+			<label kind="guard" x="-93" y="-306">ICUOffFlag&gt;=15</label>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id36"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id35"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id34"/>
+			<label kind="guard" x="382" y="-272">CRUOffFlag&gt;=15</label>
+			<nail x="459" y="-255"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id33"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id32"/>
+			<label kind="guard" x="136" y="-416">SPUOffFlag&gt;=15</label>
+			<nail x="221" y="-391"/>
+		</transition>
+		<transition>
+			<source ref="id31"/>
+			<target ref="id23"/>
+			<label kind="guard" x="-280" y="-119">Device_state==4</label>
+		</transition>
+		<transition>
+			<source ref="id30"/>
+			<target ref="id41"/>
+			<label kind="synchronisation" x="-705" y="195">SPUWorkingCurrentCloseCommandFormOP0!</label>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="-382" y="195">CRUWorkingCurrentCloseCommandFormOP0!</label>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-76" y="187">ICUWorkingCurrentCloseCommandFormOP0!</label>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id21"/>
+			<label kind="guard" x="119" y="153">OP_time&gt;100</label>
+		</transition>
+		<transition>
+			<source ref="id34"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="357" y="-297">CRUWorkingCurrentOpenCommandFormOP0!</label>
+		</transition>
+		<transition>
+			<source ref="id32"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="110" y="-399">SPUWorkingCurrentOpenCommandFormOP0!</label>
+		</transition>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="-161" y="-289">ICUWorkingCurrentOpenCommandFormOP0!</label>
+			<nail x="59" y="-314"/>
+		</transition>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="229" y="-382">SPUWorkingCurrentCloseCommandFormOP0!</label>
+			<label kind="assignment" x="263" y="-416">SPUOffFlag=0</label>
+			<nail x="306" y="-408"/>
+		</transition>
+		<transition>
+			<source ref="id35"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="297" y="-357">CRUWorkingCurrentCloseCommandFormOP0!</label>
+			<label kind="assignment" x="340" y="-340">CRUOffFlag=0</label>
+			<nail x="391" y="-357"/>
+		</transition>
+		<transition>
+			<source ref="id36"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="-102" y="-365">ICUWorkingCurrentCloseCommandFormOP0!</label>
+			<label kind="assignment" x="93" y="-340">ICUOffFlag=0</label>
+			<nail x="136" y="-365"/>
+		</transition>
+		<transition>
+			<source ref="id29"/>
+			<target ref="id40"/>
+			<label kind="synchronisation" x="-646" y="-51">SPUWorkingCurrentOpenCommandFormOP0!</label>
+		</transition>
+		<transition>
+			<source ref="id28"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="-705" y="-68">CRUWorkingCurrentOpenCommandFormOP0!</label>
+		</transition>
+		<transition>
+			<source ref="id38"/>
+			<target ref="id27"/>
+			<label kind="assignment" x="0" y="-110">OP_time=0</label>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id27"/>
+			<nail x="-42" y="-42"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="25" y="-8">TrapPolicy!</label>
+			<nail x="51" y="17"/>
+		</transition>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="119" y="8">DataLib!</label>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="-8" y="-34">ReceivePolicy!</label>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id25"/>
+			<label kind="synchronisation" x="85" y="59">DataLoadCommand!</label>
+			<nail x="187" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-212" y="-68">DeviceInitCommand!</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-807" y="-136">ICUWorkingCurrentOpenCommandFormOP0!</label>
+		</transition>
+	</template>
+	<template>
+		<name>CRUSensor</name>
+		<location id="id42" x="110" y="-17">
+			<name x="42" y="-68">CRUSensorOn</name>
+			<label kind="invariant" x="34" y="-51">CRU_workt&lt;=1</label>
+		</location>
+		<location id="id43" x="-136" y="-17">
+			<name x="-170" y="-68">CRUSensorOff</name>
+			<label kind="invariant" x="-162" y="-51">CRU_workt&lt;=1</label>
+		</location>
+		<location id="id44" x="-323" y="-17">
+			<urgent/>
+		</location>
+		<location id="id45" x="280" y="-17">
+			<urgent/>
+		</location>
+		<init ref="id43"/>
+		<transition>
+			<source ref="id43"/>
+			<target ref="id44"/>
+			<label kind="guard" x="-332" y="118">CRU_workt&gt;=1 &amp;&amp; CRUt&lt;=26</label>
+			<label kind="assignment" x="-272" y="93">CRUcount+=1</label>
+			<nail x="-153" y="118"/>
+			<nail x="-289" y="118"/>
+		</transition>
+		<transition>
+			<source ref="id45"/>
+			<target ref="id42"/>
+			<label kind="guard" x="153" y="-42">CRUcount&lt;5</label>
+			<label kind="assignment" x="152" y="-17">CRU_workt=0,CRUS_WorkingCurrentControl_CRUSensorOn=1</label>
+		</transition>
+		<transition>
+			<source ref="id42"/>
+			<target ref="id45"/>
+			<label kind="guard" x="152" y="25">CRU_workt&gt;=1</label>
+			<label kind="assignment" x="127" y="42">CRUt+=2,CRUcount+=1</label>
+			<nail x="152" y="25"/>
+			<nail x="246" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id44"/>
+			<target ref="id43"/>
+			<label kind="guard" x="-272" y="-42">CRUcount&lt;5</label>
+			<label kind="assignment" x="-272" y="-17">CRU_workt=0,CRUS_WorkingCurrentControl_CRUSensorOff=1</label>
+		</transition>
+		<transition>
+			<source ref="id43"/>
+			<target ref="id44"/>
+			<label kind="guard" x="-332" y="25">CRU_workt&gt;=1 &amp;&amp; CRUt&gt;26</label>
+			<label kind="assignment" x="-306" y="42">CRUt-=5,CRUcount+=1</label>
+			<nail x="-179" y="25"/>
+			<nail x="-272" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id42"/>
+			<target ref="id43"/>
+			<label kind="synchronisation" x="-119" y="42">CRUSensorWorkingCurrentClose?</label>
+			<label kind="assignment" x="-51" y="59">CRU_workt=0</label>
+			<nail x="93" y="42"/>
+			<nail x="-111" y="42"/>
+		</transition>
+		<transition>
+			<source ref="id44"/>
+			<target ref="id43"/>
+			<label kind="guard" x="-374" y="-60">CRUcount==5</label>
+			<label kind="synchronisation" x="-349" y="-94">CRUTemperate!</label>
+			<label kind="assignment" x="-374" y="-77">CRU_workt=0,CRUcount=0</label>
+			<nail x="-230" y="-60"/>
+		</transition>
+		<transition>
+			<source ref="id43"/>
+			<target ref="id42"/>
+			<label kind="synchronisation" x="-119" y="-9">CRUSensorWorkingCurrentOpen?</label>
+			<label kind="assignment" x="-60" y="8">CRU_workt=0</label>
+		</transition>
+		<transition>
+			<source ref="id45"/>
+			<target ref="id42"/>
+			<label kind="guard" x="203" y="-85">CRUcount==5</label>
+			<label kind="synchronisation" x="93" y="-85">CRUTemperate!</label>
+			<label kind="assignment" x="102" y="-102">CRU_workt=0,CRUcount=0</label>
+			<nail x="186" y="-68"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">DisplayControlDevice</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id46" x="-348" y="-442">
+			<name x="-425" y="-476">JamStatusDisplay</name>
+			<urgent/>
+		</location>
+		<location id="id47" x="102" y="-314">
+			<urgent/>
+		</location>
+		<location id="id48" x="-51" y="-416">
+			<urgent/>
+		</location>
+		<location id="id49" x="42" y="-374">
+			<urgent/>
+		</location>
+		<location id="id50" x="-144" y="-425">
+			<urgent/>
+		</location>
+		<location id="id51" x="153" y="229">
+			<name x="170" y="221">DCDJPUOff</name>
+			<urgent/>
+		</location>
+		<location id="id52" x="-433" y="-416">
+			<urgent/>
+		</location>
+		<location id="id53" x="-510" y="-348">
+			<name x="-671" y="-357">ReconnaissanceGuide</name>
+			<urgent/>
+		</location>
+		<location id="id54" x="-272" y="-93">
+			<name x="-348" y="-68">DCDWork</name>
+		</location>
+		<location id="id55" x="-612" y="68">
+			<urgent/>
+		</location>
+		<location id="id56" x="-484" y="-374">
+			<name x="-612" y="-391">TargetInfoDisplay</name>
+			<urgent/>
+		</location>
+		<location id="id57" x="-654" y="-102">
+			<name x="-765" y="-136">TemperatureReport</name>
+			<urgent/>
+		</location>
+		<location id="id58" x="-646" y="8">
+			<name x="-765" y="-8">SpectrumDisplay</name>
+			<urgent/>
+		</location>
+		<location id="id59" x="-501" y="-161">
+			<name x="-552" y="-195">DataLoad</name>
+		</location>
+		<location id="id60" x="195" y="-102">
+			<name x="212" y="-111">DCDICUOn</name>
+			<urgent/>
+		</location>
+		<location id="id61" x="204" y="85">
+			<name x="221" y="77">DCDSPUOn</name>
+			<urgent/>
+		</location>
+		<location id="id62" x="178" y="161">
+			<name x="195" y="153">DCDICUOff</name>
+			<urgent/>
+		</location>
+		<location id="id63" x="-654" y="136">
+		</location>
+		<location id="id64" x="-612" y="-161">
+			<urgent/>
+		</location>
+		<location id="id65" x="-697" y="-195">
+			<urgent/>
+		</location>
+		<location id="id66" x="-612" y="-221">
+		</location>
+		<location id="id67" x="-595" y="238">
+			<name x="-739" y="246">DeviceWorkingCurrentStatusDisplay</name>
+			<urgent/>
+		</location>
+		<location id="id68" x="-493" y="-221">
+			<name x="-595" y="-212">DeviceDataLoadResultDisplay</name>
+			<urgent/>
+		</location>
+		<location id="id69" x="-569" y="119">
+			<name x="-586" y="85">DeviceInitResultDisplay</name>
+			<urgent/>
+		</location>
+		<location id="id70" x="212" y="-25">
+			<name x="229" y="-42">DCDCRUOn</name>
+			<urgent/>
+		</location>
+		<location id="id71" x="85" y="297">
+			<name x="102" y="289">DCDCRUOff</name>
+			<urgent/>
+		</location>
+		<location id="id72" x="17" y="331">
+			<name x="42" y="323">DCDSPUOff</name>
+			<urgent/>
+		</location>
+		<location id="id73" x="161" y="-170">
+			<name x="178" y="-178">DCDJPUOn</name>
+			<urgent/>
+		</location>
+		<location id="id74" x="153" y="-255">
+			<urgent/>
+		</location>
+		<location id="id75" x="-255" y="-459">
+			<name x="-238" y="-467">NoJamStatusDisplay</name>
+			<urgent/>
+		</location>
+		<init ref="id54"/>
+		<transition>
+			<source ref="id75"/>
+			<target ref="id54"/>
+			<label kind="assignment" x="-255" y="-433">Jam_state=0</label>
+			<nail x="-212" y="-408"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id75"/>
+			<label kind="synchronisation" x="-255" y="-408">NoJamResult?</label>
+			<label kind="assignment" x="-212" y="-408">DCD_JamProcess_NoJamStatusDisplay=1</label>
+		</transition>
+		<transition>
+			<source ref="id46"/>
+			<target ref="id54"/>
+			<label kind="assignment" x="-365" y="-416">Jam_state=1</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="-340" y="-399">JamResult?</label>
+			<label kind="assignment" x="-365" y="-416">DCD_JamProcess_JamStatusDisplay=1</label>
+			<nail x="-297" y="-416"/>
+		</transition>
+		<transition>
+			<source ref="id74"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="76" y="-221">JamProhibited1!</label>
+			<nail x="144" y="-212"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id74"/>
+			<label kind="synchronisation" x="51" y="-246">JamProhibited?</label>
+		</transition>
+		<transition>
+			<source ref="id47"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="34" y="-280">JamAllowed1!</label>
+			<nail x="93" y="-272"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id47"/>
+			<label kind="synchronisation" x="25" y="-297">JamAllowed?</label>
+		</transition>
+		<transition>
+			<source ref="id48"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-85" y="-374">TargetDelete1!</label>
+			<nail x="-51" y="-340"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="-102" y="-391">TargetDelete?</label>
+		</transition>
+		<transition>
+			<source ref="id49"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-17" y="-331">JamStyle1!</label>
+			<nail x="34" y="-314"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-34" y="-348">JamStyle?</label>
+		</transition>
+		<transition>
+			<source ref="id50"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-212" y="-374">TargetJamLib1!</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id50"/>
+			<label kind="synchronisation" x="-204" y="-391">TargetJamLib?</label>
+			<nail x="-119" y="-357"/>
+		</transition>
+		<transition>
+			<source ref="id51"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-25" y="178">JPUWorkingCurrentCloseCommandFormOP1!</label>
+			<nail x="119" y="170"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id51"/>
+			<label kind="synchronisation" x="-25" y="195">JPUWorkingCurrentCloseCommandFormOP0?</label>
+		</transition>
+		<transition>
+			<source ref="id73"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-25" y="-136">JPUWorkingCurrentOpenCommandFormOP1!</label>
+			<nail x="102" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id73"/>
+			<label kind="synchronisation" x="-25" y="-153">JPUWorkingCurrentOpenCommandFormOP0?</label>
+		</transition>
+		<transition>
+			<source ref="id69"/>
+			<target ref="id54"/>
+		</transition>
+		<transition>
+			<source ref="id68"/>
+			<target ref="id54"/>
+		</transition>
+		<transition>
+			<source ref="id67"/>
+			<target ref="id54"/>
+			<label kind="assignment" x="-561" y="229">Device_state+=1</label>
+			<nail x="-476" y="212"/>
+		</transition>
+		<transition>
+			<source ref="id52"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-416" y="-365">TrapPolicy1!</label>
+			<nail x="-374" y="-391"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id52"/>
+			<label kind="synchronisation" x="-433" y="-382">TrapPolicy?</label>
+		</transition>
+		<transition>
+			<source ref="id53"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-612" y="-323">ReceivePolicy1!</label>
+			<nail x="-510" y="-297"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id53"/>
+			<label kind="synchronisation" x="-561" y="-306">ReceivePolicy?</label>
+		</transition>
+		<transition>
+			<source ref="id65"/>
+			<target ref="id66"/>
+			<label kind="synchronisation" x="-705" y="-238">DataLib1!</label>
+		</transition>
+		<transition>
+			<source ref="id64"/>
+			<target ref="id65"/>
+			<label kind="synchronisation" x="-816" y="-170">DeviceDataLoadCommand1!</label>
+			<label kind="assignment" x="-790" y="-187">Dataload_time=0</label>
+		</transition>
+		<transition>
+			<source ref="id59"/>
+			<target ref="id64"/>
+			<label kind="synchronisation" x="-578" y="-161">DataLib?</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id67"/>
+			<label kind="synchronisation" x="-731" y="195">DeviceWorkingCurrentControlResult?</label>
+			<label kind="assignment" x="-578" y="-161">DCD_WorkingCurrentControl_DeviceWorkingCurrentStatusDisplay=1</label>
+		</transition>
+		<transition>
+			<source ref="id55"/>
+			<target ref="id63"/>
+			<label kind="synchronisation" x="-765" y="68">DeviceInitCommand1!</label>
+			<label kind="assignment" x="-714" y="85">Init_time=0</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id72"/>
+			<label kind="synchronisation" x="-246" y="280">SPUWorkingCurrentCloseCommandFormOP0?</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id71"/>
+			<label kind="synchronisation" x="-8" y="263">CRUWorkingCurrentCloseCommandFormOP0?</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="8" y="119">ICUWorkingCurrentCloseCommandFormOP0?</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id61"/>
+			<label kind="synchronisation" x="34" y="51">SPUWorkingCurrentOpenCommandFormOP0?</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id70"/>
+			<label kind="synchronisation" x="25" y="-17">CRUWorkingCurrentOpenCommandFormOP0?</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id60"/>
+			<label kind="synchronisation" x="0" y="-93">ICUWorkingCurrentOpenCommandFormOP0?</label>
+		</transition>
+		<transition>
+			<source ref="id72"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-255" y="297">SPUWorkingCurrentCloseCommandFormOP1!</label>
+			<nail x="-76" y="280"/>
+		</transition>
+		<transition>
+			<source ref="id71"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-17" y="246">CRUWorkingCurrentCloseCommandFormOP1!</label>
+			<nail x="59" y="212"/>
+		</transition>
+		<transition>
+			<source ref="id62"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="8" y="102">ICUWorkingCurrentCloseCommandFormOP1!</label>
+			<nail x="136" y="93"/>
+		</transition>
+		<transition>
+			<source ref="id61"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="34" y="34">SPUWorkingCurrentOpenCommandFormOP1!</label>
+			<nail x="161" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id70"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="25" y="0">CRUWorkingCurrentOpenCommandFormOP1!</label>
+			<nail x="144" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id60"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="8" y="-68">ICUWorkingCurrentOpenCommandFormOP1!</label>
+			<nail x="119" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id66"/>
+			<target ref="id68"/>
+			<label kind="guard" x="-620" y="-280">Dataload_time&lt;=20</label>
+			<label kind="synchronisation" x="-620" y="-263">DeviceDataLoadResult?</label>
+			<label kind="assignment" x="-595" y="-246">DCD_Load=1,DCD_DataLoad_DeviceDataLoadResultDisplay=1</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id59"/>
+			<label kind="synchronisation" x="-493" y="-144">DeviceDataLoadCommand?</label>
+		</transition>
+		<transition>
+			<source ref="id56"/>
+			<target ref="id54"/>
+			<nail x="-442" y="-374"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id58"/>
+			<label kind="synchronisation" x="-688" y="-34">SpectrumDataSend?</label>
+			<label kind="assignment" x="-442" y="-374">DCD_SpectrumSurveillance_SpectrumDisplay=1</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id57"/>
+			<label kind="synchronisation" x="-629" y="-119">TemperateDataToDCD?</label>
+		</transition>
+		<transition>
+			<source ref="id63"/>
+			<target ref="id69"/>
+			<label kind="guard" x="-646" y="153">Init_time&lt;=10</label>
+			<label kind="synchronisation" x="-637" y="136">DeviceInitResult?</label>
+			<label kind="assignment" x="-688" y="170">Init_state=1,DCD_Init=1,DCD_Init_DeviceInitResultDisplay=1</label>
+		</transition>
+		<transition>
+			<source ref="id57"/>
+			<target ref="id54"/>
+			<label kind="assignment" x="-671" y="-68">TemperatureReportStoIns=1</label>
+			<nail x="-612" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id58"/>
+			<target ref="id54"/>
+			<label kind="assignment" x="-629" y="8">SpectrumSurveillanceStoIns=1</label>
+			<nail x="-561" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id56"/>
+			<label kind="synchronisation" x="-476" y="-348">TargetInfo?</label>
+			<label kind="assignment" x="-561" y="8">DCD_TargetReport_TargetInfoDisplay=1</label>
+		</transition>
+		<transition>
+			<source ref="id54"/>
+			<target ref="id55"/>
+			<label kind="synchronisation" x="-705" y="34">DeviceInitCommand?</label>
+		</transition>
+	</template>
+	<template>
+		<name>ICUSensor</name>
+		<location id="id76" x="-144" y="17">
+			<name x="-178" y="-34">ICUSensorOff</name>
+			<label kind="invariant" x="-170" y="-17">ICU_workt&lt;=1</label>
+		</location>
+		<location id="id77" x="-331" y="17">
+			<urgent/>
+		</location>
+		<location id="id78" x="272" y="17">
+			<urgent/>
+		</location>
+		<location id="id79" x="102" y="17">
+			<name x="34" y="-34">ICUSensorOn</name>
+			<label kind="invariant" x="26" y="-17">ICU_workt&lt;=1</label>
+		</location>
+		<init ref="id76"/>
+		<transition>
+			<source ref="id76"/>
+			<target ref="id77"/>
+			<label kind="guard" x="-340" y="153">ICU_workt&gt;=1 &amp;&amp; ICUt&lt;=26</label>
+			<label kind="assignment" x="-280" y="135">ICUcount+=1</label>
+			<nail x="-161" y="152"/>
+			<nail x="-297" y="152"/>
+		</transition>
+		<transition>
+			<source ref="id78"/>
+			<target ref="id79"/>
+			<label kind="guard" x="153" y="-8">ICUcount&lt;5</label>
+			<label kind="assignment" x="144" y="17">ICU_workt=0,ICUS_WorkingCurrentControl_ICUSensorOn=1</label>
+		</transition>
+		<transition>
+			<source ref="id79"/>
+			<target ref="id78"/>
+			<label kind="guard" x="144" y="59">ICU_workt&gt;=1</label>
+			<label kind="assignment" x="119" y="76">ICUt+=2,ICUcount+=1</label>
+			<nail x="144" y="59"/>
+			<nail x="238" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id77"/>
+			<target ref="id76"/>
+			<label kind="guard" x="-272" y="-8">ICUcount&lt;5</label>
+			<label kind="assignment" x="-280" y="17">ICU_workt=0,ICUS_WorkingCurrentControl_ICUSensorOff=1</label>
+		</transition>
+		<transition>
+			<source ref="id76"/>
+			<target ref="id77"/>
+			<label kind="guard" x="-323" y="59">ICU_workt&gt;=1 &amp;&amp; ICUt&gt;26</label>
+			<label kind="assignment" x="-306" y="76">ICUt-=5,ICUcount+=1</label>
+			<nail x="-187" y="59"/>
+			<nail x="-280" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id79"/>
+			<target ref="id76"/>
+			<label kind="synchronisation" x="-127" y="76">ICUSensorWorkingCurrentClose?</label>
+			<label kind="assignment" x="-59" y="93">ICU_workt=0</label>
+			<nail x="85" y="76"/>
+			<nail x="-119" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id77"/>
+			<target ref="id76"/>
+			<label kind="guard" x="-382" y="-26">ICUcount==5</label>
+			<label kind="synchronisation" x="-357" y="-60">ICUTemperate!</label>
+			<label kind="assignment" x="-382" y="-43">ICU_workt=0,ICUcount=0</label>
+			<nail x="-238" y="-26"/>
+		</transition>
+		<transition>
+			<source ref="id76"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="-127" y="25">ICUSensorWorkingCurrentOpen?</label>
+			<label kind="assignment" x="-68" y="42">ICU_workt=0</label>
+		</transition>
+		<transition>
+			<source ref="id78"/>
+			<target ref="id79"/>
+			<label kind="guard" x="195" y="-51">ICUcount==5</label>
+			<label kind="synchronisation" x="85" y="-51">ICUTemperate!</label>
+			<label kind="assignment" x="94" y="-68">ICU_workt=0,ICUcount=0</label>
+			<nail x="178" y="-34"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">IntegrateControlUnit</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id80" x="-518" y="-255">
+			<urgent/>
+		</location>
+		<location id="id81" x="-603" y="-255">
+			<urgent/>
+		</location>
+		<location id="id82" x="25" y="153">
+			<urgent/>
+		</location>
+		<location id="id83" x="-552" y="-144">
+			<name x="-612" y="-161">ICUOff</name>
+		</location>
+		<location id="id84" x="-34" y="0">
+			<name x="-102" y="0">ICUWork</name>
+		</location>
+		<location id="id85" x="-144" y="-144">
+			<label kind="invariant" x="-178" y="-127">I_time&lt;=6</label>
+		</location>
+		<location id="id86" x="136" y="-59">
+			<name x="102" y="-93">DataLoad</name>
+		</location>
+		<location id="id87" x="-382" y="-144">
+			<urgent/>
+		</location>
+		<location id="id88" x="-331" y="0">
+			<urgent/>
+		</location>
+		<location id="id89" x="-263" y="-144">
+			<name x="-289" y="-127">ICUOn</name>
+		</location>
+		<location id="id90" x="-552" y="0">
+			<urgent/>
+		</location>
+		<location id="id91" x="-476" y="-144">
+			<urgent/>
+		</location>
+		<location id="id92" x="102" y="153">
+			<urgent/>
+		</location>
+		<location id="id93" x="110" y="-144">
+			<name x="127" y="-161">ICUInit</name>
+			<urgent/>
+		</location>
+		<location id="id94" x="272" y="-59">
+			<urgent/>
+		</location>
+		<branchpoint id="id95" x="-34" y="-144">
+		</branchpoint>
+		<branchpoint id="id96" x="272" y="0">
+		</branchpoint>
+		<init ref="id83"/>
+		<transition>
+			<source ref="id94"/>
+			<target ref="id96"/>
+		</transition>
+		<transition>
+			<source ref="id95"/>
+			<target ref="id83"/>
+			<label kind="assignment" x="272" y="0">ICU_WorkingCurrentControl_ICUOff=1</label>
+			<label kind="probability" x="-68" y="-221">5</label>
+			<nail x="-34" y="-246"/>
+			<nail x="-263" y="-246"/>
+		</transition>
+		<transition>
+			<source ref="id95"/>
+			<target ref="id93"/>
+			<label kind="synchronisation" x="-8" y="-170">ICUInitResult!</label>
+			<label kind="assignment" x="-8" y="-144">ICU_Init=1,ICU_Init_ICUInit=1</label>
+			<label kind="probability" x="25" y="-187">95</label>
+		</transition>
+		<transition>
+			<source ref="id85"/>
+			<target ref="id95"/>
+			<label kind="guard" x="-127" y="-170">I_time&gt;=6</label>
+			<label kind="assignment" x="-127" y="-144">ICU_Open=0</label>
+		</transition>
+		<transition>
+			<source ref="id96"/>
+			<target ref="id84"/>
+			<label kind="assignment" x="136" y="51">ICU_Load=0,ICU_DataLoad_ICUWork=1,ICU_Init_ICUWork=1</label>
+			<label kind="probability" x="85" y="51">2</label>
+			<nail x="187" y="51"/>
+			<nail x="34" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id96"/>
+			<target ref="id84"/>
+			<label kind="synchronisation" x="77" y="-17">ICUDataLoadResult!</label>
+			<label kind="assignment" x="77" y="0">ICU_Load=1</label>
+			<label kind="probability" x="34" y="0">8</label>
+		</transition>
+		<transition>
+			<source ref="id93"/>
+			<target ref="id84"/>
+		</transition>
+		<transition>
+			<source ref="id80"/>
+			<target ref="id83"/>
+			<label kind="synchronisation" x="-722" y="-204">ICUWorkingCurrentCloseResult!</label>
+		</transition>
+		<transition>
+			<source ref="id81"/>
+			<target ref="id80"/>
+			<label kind="synchronisation" x="-654" y="-297">ICUSensorWorkingCurrentClose!</label>
+		</transition>
+		<transition>
+			<source ref="id83"/>
+			<target ref="id81"/>
+			<label kind="synchronisation" x="-739" y="-229">ICUWorkingCurrentClose?</label>
+		</transition>
+		<transition>
+			<source ref="id92"/>
+			<target ref="id84"/>
+			<label kind="synchronisation" x="59" y="93">ICUWorkingCurrentOpenResult!</label>
+		</transition>
+		<transition>
+			<source ref="id82"/>
+			<target ref="id92"/>
+			<label kind="synchronisation" x="17" y="170">ICUSensorWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id84"/>
+			<target ref="id82"/>
+			<label kind="synchronisation" x="17" y="110">ICUWorkingCurrentOpen?</label>
+		</transition>
+		<transition>
+			<source ref="id91"/>
+			<target ref="id87"/>
+			<label kind="synchronisation" x="-510" y="-127">ICUSensorWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id88"/>
+			<target ref="id90"/>
+			<label kind="synchronisation" x="-552" y="17">ICUSensorWorkingCurrentClose!</label>
+		</transition>
+		<transition>
+			<source ref="id90"/>
+			<target ref="id83"/>
+			<label kind="synchronisation" x="-688" y="-51">ICUWorkingCurrentCloseResult!</label>
+		</transition>
+		<transition>
+			<source ref="id87"/>
+			<target ref="id89"/>
+			<label kind="synchronisation" x="-467" y="-178">ICUWorkingCurrentOpenResult!</label>
+			<label kind="assignment" x="-364" y="-144">ICU_Open=1,ICU_WorkingCurrentControl_ICUOn=1</label>
+		</transition>
+		<transition>
+			<source ref="id84"/>
+			<target ref="id88"/>
+			<label kind="synchronisation" x="-289" y="8">ICUWorkingCurrentClose?</label>
+		</transition>
+		<transition>
+			<source ref="id83"/>
+			<target ref="id91"/>
+			<label kind="synchronisation" x="-595" y="-110">ICUWorkingCurrentOpen?</label>
+		</transition>
+		<transition>
+			<source ref="id86"/>
+			<target ref="id94"/>
+			<label kind="synchronisation" x="178" y="-85">ICUDataLib?</label>
+		</transition>
+		<transition>
+			<source ref="id84"/>
+			<target ref="id86"/>
+			<label kind="synchronisation" x="17" y="-42">ICUDataLoadCommand?</label>
+			<label kind="assignment" x="178" y="-85">ICU_DataLoad_DataLoad=1</label>
+		</transition>
+		<transition>
+			<source ref="id89"/>
+			<target ref="id85"/>
+			<label kind="synchronisation" x="-246" y="-178">ICUInitCommand?</label>
+			<label kind="assignment" x="-238" y="-144">I_time=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>JamProcessUnit</name>
+		<location id="id97" x="85" y="-229">
+		</location>
+		<location id="id98" x="-25" y="-238">
+		</location>
+		<location id="id99" x="67" y="-42">
+			<urgent/>
+		</location>
+		<location id="id100" x="-18" y="-42">
+			<urgent/>
+		</location>
+		<location id="id101" x="-552" y="119">
+			<urgent/>
+		</location>
+		<location id="id102" x="-551" y="51">
+			<urgent/>
+		</location>
+		<location id="id103" x="-391" y="34">
+			<name x="-374" y="34">JPUOff</name>
+		</location>
+		<location id="id104" x="25" y="-144">
+			<name x="-51" y="-144">JPUWork</name>
+		</location>
+		<location id="id105" x="-238" y="-144">
+			<label kind="invariant" x="-280" y="-187">J_time&lt;=4</label>
+		</location>
+		<location id="id106" x="330" y="-263">
+			<name x="306" y="-297">DataLoad</name>
+		</location>
+		<location id="id107" x="-389" y="-84">
+			<urgent/>
+		</location>
+		<location id="id108" x="204" y="85">
+			<urgent/>
+		</location>
+		<location id="id109" x="-389" y="-144">
+			<name x="-450" y="-161">JPUOn</name>
+		</location>
+		<location id="id110" x="330" y="-195">
+			<urgent/>
+		</location>
+		<location id="id111" x="-389" y="-34">
+			<urgent/>
+		</location>
+		<location id="id112" x="-136" y="85">
+			<urgent/>
+		</location>
+		<location id="id113" x="-136" y="-144">
+			<name x="-161" y="-187">JPUInit</name>
+			<urgent/>
+		</location>
+		<location id="id114" x="34" y="-297">
+			<name x="51" y="-306">JamProcess</name>
+			<label kind="invariant" x="-42" y="-306">Cont&lt;=1</label>
+		</location>
+		<init ref="id103"/>
+		<transition>
+			<source ref="id97"/>
+			<target ref="id104"/>
+			<label kind="synchronisation" x="42" y="-212">NoJaming!</label>
+			<label kind="assignment" x="-42" y="-306">JPU_DataLoad_JPUWork=1,JPU_Init_JPUWork=1,JPU_JamProcess_JPUWork=1</label>
+		</transition>
+		<transition>
+			<source ref="id114"/>
+			<target ref="id97"/>
+			<label kind="synchronisation" x="68" y="-280">JamConfigureValue0?</label>
+		</transition>
+		<transition>
+			<source ref="id114"/>
+			<target ref="id114"/>
+			<label kind="guard" x="8" y="-357">Cont&gt;=1</label>
+			<label kind="synchronisation" x="-76" y="-348">JamSignal!</label>
+			<label kind="assignment" x="68" y="-280">JPU_JamProcess_JamProcess=1</label>
+			<nail x="-8" y="-339"/>
+			<nail x="76" y="-339"/>
+		</transition>
+		<transition>
+			<source ref="id98"/>
+			<target ref="id114"/>
+			<label kind="synchronisation" x="-59" y="-272">Jaming!</label>
+			<label kind="assignment" x="-59" y="-289">Cont=0</label>
+		</transition>
+		<transition>
+			<source ref="id104"/>
+			<target ref="id98"/>
+			<label kind="synchronisation" x="-119" y="-212">JamConfigureValue1?</label>
+		</transition>
+		<transition>
+			<source ref="id113"/>
+			<target ref="id104"/>
+		</transition>
+		<transition>
+			<source ref="id99"/>
+			<target ref="id104"/>
+			<label kind="synchronisation" x="-17" y="-102">JPUWorkingCurrentOpenResult!</label>
+		</transition>
+		<transition>
+			<source ref="id100"/>
+			<target ref="id99"/>
+			<label kind="synchronisation" x="-69" y="-25">JPUSensorWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id104"/>
+			<target ref="id100"/>
+			<label kind="synchronisation" x="-127" y="-85">JPUWorkingCurrentOpen?</label>
+		</transition>
+		<transition>
+			<source ref="id101"/>
+			<target ref="id103"/>
+			<label kind="synchronisation" x="-629" y="127">JPUWorkingCurrentCloseResult!</label>
+			<label kind="assignment" x="-127" y="-85">JPU_WorkingCurrentControl_JPUOff=1</label>
+		</transition>
+		<transition>
+			<source ref="id102"/>
+			<target ref="id101"/>
+			<label kind="synchronisation" x="-721" y="68">JPUSensorWorkingCurrentClose!</label>
+		</transition>
+		<transition>
+			<source ref="id103"/>
+			<target ref="id102"/>
+			<label kind="synchronisation" x="-644" y="17">JPUWorkingCurrentClose?</label>
+		</transition>
+		<transition>
+			<source ref="id108"/>
+			<target ref="id112"/>
+			<label kind="synchronisation" x="-85" y="93">JPUSensorWorkingCurrentClose!</label>
+		</transition>
+		<transition>
+			<source ref="id111"/>
+			<target ref="id107"/>
+			<label kind="synchronisation" x="-612" y="-68">JPUSensorWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id106"/>
+			<target ref="id110"/>
+			<label kind="synchronisation" x="340" y="-246">JPUDataLib?</label>
+		</transition>
+		<transition>
+			<source ref="id112"/>
+			<target ref="id103"/>
+			<label kind="synchronisation" x="-382" y="93">JPUWorkingCurrentCloseResult!</label>
+			<nail x="-389" y="85"/>
+		</transition>
+		<transition>
+			<source ref="id107"/>
+			<target ref="id109"/>
+			<label kind="synchronisation" x="-610" y="-127">JPUWorkingCurrentOpenResult!</label>
+			<label kind="assignment" x="-382" y="-119">JPU_Open=1,JPU_WorkingCurrentControl_JPUOn=1</label>
+		</transition>
+		<transition>
+			<source ref="id104"/>
+			<target ref="id108"/>
+			<label kind="synchronisation" x="212" y="0">JPUWorkingCurrentClose?</label>
+			<nail x="204" y="-144"/>
+		</transition>
+		<transition>
+			<source ref="id103"/>
+			<target ref="id111"/>
+			<label kind="synchronisation" x="-568" y="-17">JPUWorkingCurrentOpen?</label>
+		</transition>
+		<transition>
+			<source ref="id110"/>
+			<target ref="id104"/>
+			<label kind="synchronisation" x="221" y="-170">JPUDataLoadResult!</label>
+			<label kind="assignment" x="204" y="-204">JPU_Load=1</label>
+		</transition>
+		<transition>
+			<source ref="id104"/>
+			<target ref="id106"/>
+			<label kind="synchronisation" x="161" y="-238">JPUDataLoadCommand?</label>
+			<label kind="assignment" x="204" y="-204">JPU_DataLoad_DataLoad=1</label>
+		</transition>
+		<transition>
+			<source ref="id105"/>
+			<target ref="id113"/>
+			<label kind="guard" x="-229" y="-170">J_time&gt;=4</label>
+			<label kind="synchronisation" x="-229" y="-127">JPUInitResult!</label>
+			<label kind="assignment" x="-255" y="-110">JPU_Open=0,JPU_Init=1,JPU_Init_JPUInit=1</label>
+		</transition>
+		<transition>
+			<source ref="id109"/>
+			<target ref="id105"/>
+			<label kind="synchronisation" x="-374" y="-170">JPUInitCommand?</label>
+			<label kind="assignment" x="-348" y="-144">J_time=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>JPUSensor</name>
+		<location id="id115" x="-204" y="-34">
+			<name x="-238" y="-85">JPUSensorOff</name>
+			<label kind="invariant" x="-230" y="-68">JPU_workt&lt;=1</label>
+		</location>
+		<location id="id116" x="-391" y="-34">
+			<urgent/>
+		</location>
+		<location id="id117" x="212" y="-34">
+			<urgent/>
+		</location>
+		<location id="id118" x="42" y="-34">
+			<name x="-26" y="-85">JPUSensorOn</name>
+			<label kind="invariant" x="-34" y="-68">JPU_workt&lt;=1</label>
+		</location>
+		<init ref="id115"/>
+		<transition>
+			<source ref="id115"/>
+			<target ref="id116"/>
+			<label kind="guard" x="-399" y="102">JPU_workt&gt;=1 &amp;&amp; JPUt&lt;=26</label>
+			<label kind="assignment" x="-340" y="84">JPUcount+=1</label>
+			<nail x="-221" y="101"/>
+			<nail x="-357" y="101"/>
+		</transition>
+		<transition>
+			<source ref="id117"/>
+			<target ref="id118"/>
+			<label kind="guard" x="84" y="-59">JPUcount&lt;5</label>
+			<label kind="assignment" x="85" y="-34">JPU_workt=0,JPUS_WorkingCurrentControl_JPUSensorOn=1</label>
+		</transition>
+		<transition>
+			<source ref="id118"/>
+			<target ref="id117"/>
+			<label kind="guard" x="84" y="8">JPU_workt&gt;=1</label>
+			<label kind="assignment" x="59" y="25">JPUt+=2,JPUcount+=1</label>
+			<nail x="84" y="8"/>
+			<nail x="178" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id116"/>
+			<target ref="id115"/>
+			<label kind="guard" x="-340" y="-59">JPUcount&lt;5</label>
+			<label kind="assignment" x="-340" y="-34">JPU_workt=0,JPUS_WorkingCurrentControl_JPUSensorOff=1</label>
+		</transition>
+		<transition>
+			<source ref="id115"/>
+			<target ref="id116"/>
+			<label kind="guard" x="-383" y="8">JPU_workt&gt;=1 &amp;&amp; JPUt&gt;26</label>
+			<label kind="assignment" x="-366" y="25">JPUt-=5,JPUcount+=1</label>
+			<nail x="-247" y="8"/>
+			<nail x="-340" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id118"/>
+			<target ref="id115"/>
+			<label kind="synchronisation" x="-187" y="25">JPUSensorWorkingCurrentClose?</label>
+			<label kind="assignment" x="-119" y="42">JPU_workt=0</label>
+			<nail x="25" y="25"/>
+			<nail x="-179" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id116"/>
+			<target ref="id115"/>
+			<label kind="guard" x="-442" y="-77">JPUcount==5</label>
+			<label kind="synchronisation" x="-417" y="-111">JPUTemperate!</label>
+			<label kind="assignment" x="-442" y="-94">JPU_workt=0,JPUcount=0</label>
+			<nail x="-298" y="-77"/>
+		</transition>
+		<transition>
+			<source ref="id115"/>
+			<target ref="id118"/>
+			<label kind="synchronisation" x="-187" y="-26">JPUSensorWorkingCurrentOpen?</label>
+			<label kind="assignment" x="-128" y="-9">JPU_workt=0</label>
+		</transition>
+		<transition>
+			<source ref="id117"/>
+			<target ref="id118"/>
+			<label kind="guard" x="161" y="-85">JPUcount==5</label>
+			<label kind="synchronisation" x="25" y="-102">JPUTemperate!</label>
+			<label kind="assignment" x="34" y="-119">JPU_workt=0,JPUcount=0</label>
+			<nail x="118" y="-85"/>
+		</transition>
+	</template>
+	<template>
+		<name>LandingGear</name>
+		<location id="id119" x="-34" y="-42">
+			<name x="-17" y="-51">QLJUp</name>
+			<label kind="invariant" x="-25" y="-17">Q_time&lt;=100</label>
+		</location>
+		<location id="id120" x="-221" y="-42">
+			<name x="-306" y="-51">QLJDown</name>
+			<label kind="invariant" x="-289" y="-17">Q_time&lt;=5</label>
+		</location>
+		<init ref="id120"/>
+		<transition>
+			<source ref="id120"/>
+			<target ref="id120"/>
+			<label kind="synchronisation" x="-272" y="-153">QLJStatus!</label>
+			<nail x="-212" y="-127"/>
+			<nail x="-272" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id119"/>
+			<target ref="id119"/>
+			<label kind="synchronisation" x="-34" y="-161">QLJStatus!</label>
+			<nail x="-25" y="-136"/>
+			<nail x="34" y="-136"/>
+		</transition>
+		<transition>
+			<source ref="id119"/>
+			<target ref="id120"/>
+			<label kind="guard" x="-161" y="-42">Q_time&gt;=100</label>
+			<label kind="assignment" x="-195" y="0">Q_time=0,QLJ_state=0</label>
+			<nail x="-127" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id120"/>
+			<target ref="id119"/>
+			<label kind="guard" x="-170" y="-102">Q_time&gt;=5</label>
+			<label kind="assignment" x="-195" y="-119">Q_time=0,QLJ_state=1</label>
+			<nail x="-127" y="-85"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">SignalProcessUnit</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id121" x="67" y="-42">
+			<urgent/>
+		</location>
+		<location id="id122" x="-18" y="-42">
+			<urgent/>
+		</location>
+		<location id="id123" x="-552" y="119">
+			<urgent/>
+		</location>
+		<location id="id124" x="-551" y="51">
+			<urgent/>
+		</location>
+		<location id="id125" x="25" y="-323">
+			<urgent/>
+		</location>
+		<location id="id126" x="-389" y="26">
+			<name x="-372" y="26">SPUOff</name>
+		</location>
+		<location id="id127" x="25" y="-144">
+			<name x="-59" y="-136">SPUWork</name>
+		</location>
+		<location id="id128" x="-154" y="-289">
+			<name x="-213" y="-331">ReceivePolicy</name>
+			<urgent/>
+		</location>
+		<location id="id129" x="-238" y="-144">
+			<label kind="invariant" x="-280" y="-187">S_time&lt;=4</label>
+		</location>
+		<location id="id130" x="330" y="-263">
+			<name x="313" y="-306">DataLoad</name>
+		</location>
+		<location id="id131" x="-389" y="-84">
+			<urgent/>
+		</location>
+		<location id="id132" x="204" y="85">
+			<urgent/>
+		</location>
+		<location id="id133" x="-389" y="-144">
+			<name x="-450" y="-170">SPUOn</name>
+		</location>
+		<location id="id134" x="330" y="-195">
+			<urgent/>
+		</location>
+		<location id="id135" x="-389" y="-34">
+			<urgent/>
+		</location>
+		<location id="id136" x="-136" y="85">
+			<urgent/>
+		</location>
+		<location id="id137" x="-136" y="-144">
+			<name x="-146" y="-178">SPUInit</name>
+			<urgent/>
+		</location>
+		<init ref="id126"/>
+		<transition>
+			<source ref="id137"/>
+			<target ref="id127"/>
+			<label kind="assignment" x="-146" y="-178">SPU_DataLoad_SPUWork=1,SPU_Init_SPUWork=1</label>
+		</transition>
+		<transition>
+			<source ref="id121"/>
+			<target ref="id127"/>
+			<label kind="synchronisation" x="8" y="-102">SPUWorkingCurrentOpenResult!</label>
+		</transition>
+		<transition>
+			<source ref="id122"/>
+			<target ref="id121"/>
+			<label kind="synchronisation" x="-69" y="-25">SPUSensorWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id127"/>
+			<target ref="id122"/>
+			<label kind="synchronisation" x="-127" y="-85">SPUWorkingCurrentOpen?</label>
+		</transition>
+		<transition>
+			<source ref="id123"/>
+			<target ref="id126"/>
+			<label kind="synchronisation" x="-629" y="127">SPUWorkingCurrentCloseResult!</label>
+			<label kind="assignment" x="-127" y="-85">SPU_WorkingCurrentControl_SPUOff=1</label>
+		</transition>
+		<transition>
+			<source ref="id124"/>
+			<target ref="id123"/>
+			<label kind="synchronisation" x="-721" y="68">SPUSensorWorkingCurrentClose!</label>
+		</transition>
+		<transition>
+			<source ref="id126"/>
+			<target ref="id124"/>
+			<label kind="synchronisation" x="-644" y="17">SPUWorkingCurrentClose?</label>
+		</transition>
+		<transition>
+			<source ref="id132"/>
+			<target ref="id136"/>
+			<label kind="synchronisation" x="-85" y="93">SPUSensorWorkingCurrentClose!</label>
+		</transition>
+		<transition>
+			<source ref="id135"/>
+			<target ref="id131"/>
+			<label kind="synchronisation" x="-619" y="-76">SPUSensorWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id125"/>
+			<target ref="id127"/>
+			<label kind="synchronisation" x="42" y="-255">FilteredPDW!</label>
+			<nail x="92" y="-255"/>
+		</transition>
+		<transition>
+			<source ref="id127"/>
+			<target ref="id125"/>
+			<label kind="synchronisation" x="-18" y="-289">OriginalPDWToSPU?</label>
+		</transition>
+		<transition>
+			<source ref="id130"/>
+			<target ref="id134"/>
+			<label kind="synchronisation" x="340" y="-246">SPUDataLib?</label>
+		</transition>
+		<transition>
+			<source ref="id136"/>
+			<target ref="id126"/>
+			<label kind="synchronisation" x="-382" y="93">SPUWorkingCurrentCloseResult!</label>
+			<nail x="-389" y="85"/>
+		</transition>
+		<transition>
+			<source ref="id131"/>
+			<target ref="id133"/>
+			<label kind="synchronisation" x="-610" y="-127">SPUWorkingCurrentOpenResult!</label>
+			<label kind="assignment" x="-382" y="-119">SPU_Open=1,SPU_WorkingCurrentControl_SPUOn=1</label>
+		</transition>
+		<transition>
+			<source ref="id127"/>
+			<target ref="id132"/>
+			<label kind="synchronisation" x="204" y="-127">SPUWorkingCurrentClose?</label>
+			<nail x="204" y="-144"/>
+		</transition>
+		<transition>
+			<source ref="id126"/>
+			<target ref="id135"/>
+			<label kind="synchronisation" x="-568" y="-17">SPUWorkingCurrentOpen?</label>
+		</transition>
+		<transition>
+			<source ref="id134"/>
+			<target ref="id127"/>
+			<label kind="synchronisation" x="255" y="-178">SPUDataLoadResult!</label>
+			<label kind="assignment" x="170" y="-195">SPU_Load=1</label>
+		</transition>
+		<transition>
+			<source ref="id127"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="136" y="-246">SPUDataLoadCommand?</label>
+			<label kind="assignment" x="170" y="-195">SPU_DataLoad_DataLoad=1</label>
+		</transition>
+		<transition>
+			<source ref="id128"/>
+			<target ref="id127"/>
+			<nail x="-69" y="-280"/>
+		</transition>
+		<transition>
+			<source ref="id129"/>
+			<target ref="id137"/>
+			<label kind="guard" x="-229" y="-170">S_time&gt;=4</label>
+			<label kind="synchronisation" x="-229" y="-127">SPUInitResult!</label>
+			<label kind="assignment" x="-255" y="-110">SPU_Open=0,SPU_Init=1,SPU_Init_SPUInit=1</label>
+		</transition>
+		<transition>
+			<source ref="id127"/>
+			<target ref="id128"/>
+			<label kind="synchronisation" x="-136" y="-221">TrapPolicyToSPU?</label>
+		</transition>
+		<transition>
+			<source ref="id127"/>
+			<target ref="id128"/>
+			<label kind="synchronisation" x="-255" y="-246">ReceivePolicyToSPU?</label>
+			<nail x="-153" y="-204"/>
+		</transition>
+		<transition>
+			<source ref="id133"/>
+			<target ref="id129"/>
+			<label kind="synchronisation" x="-374" y="-170">SPUInitCommand?</label>
+			<label kind="assignment" x="-348" y="-144">S_time=0</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">SignalSource</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id138" x="-153" y="-68">
+			<label kind="invariant" x="-204" y="-110">SS_time&lt;=1</label>
+		</location>
+		<location id="id139" x="-272" y="-68">
+			<name x="-306" y="-102">SSWork</name>
+		</location>
+		<init ref="id139"/>
+		<transition>
+			<source ref="id138"/>
+			<target ref="id139"/>
+			<label kind="guard" x="-246" y="-17">SSFlag==1</label>
+			<nail x="-204" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id139"/>
+			<target ref="id138"/>
+			<label kind="guard" x="-255" y="-93">Init_state==1</label>
+		</transition>
+		<transition>
+			<source ref="id138"/>
+			<target ref="id138"/>
+			<label kind="guard" x="-59" y="-102">SS_time&gt;=1</label>
+			<label kind="synchronisation" x="-59" y="-76">CollectSignal!</label>
+			<label kind="assignment" x="-59" y="-51">SS_time=0</label>
+			<nail x="-69" y="-21"/>
+			<nail x="-69" y="-106"/>
+		</transition>
+	</template>
+	<template>
+		<name>SPUSensor</name>
+		<location id="id140" x="-195" y="-153">
+			<name x="-229" y="-204">SPUSensorOff</name>
+			<label kind="invariant" x="-221" y="-187">SPU_workt&lt;=1</label>
+		</location>
+		<location id="id141" x="-382" y="-153">
+			<urgent/>
+		</location>
+		<location id="id142" x="221" y="-153">
+			<urgent/>
+		</location>
+		<location id="id143" x="51" y="-153">
+			<name x="-17" y="-204">SPUSensorOn</name>
+			<label kind="invariant" x="-25" y="-187">SPU_workt&lt;=1</label>
+		</location>
+		<init ref="id140"/>
+		<transition>
+			<source ref="id140"/>
+			<target ref="id141"/>
+			<label kind="guard" x="-390" y="-17">SPU_workt&gt;=1 &amp;&amp; SPUt&lt;=26</label>
+			<label kind="assignment" x="-331" y="-35">SPUcount+=1</label>
+			<nail x="-212" y="-18"/>
+			<nail x="-348" y="-18"/>
+		</transition>
+		<transition>
+			<source ref="id142"/>
+			<target ref="id143"/>
+			<label kind="guard" x="93" y="-178">SPUcount&lt;5</label>
+			<label kind="assignment" x="94" y="-153">SPU_workt=0,SPUS_WorkingCurrentControl_SPUSensorOn=1</label>
+		</transition>
+		<transition>
+			<source ref="id143"/>
+			<target ref="id142"/>
+			<label kind="guard" x="93" y="-111">SPU_workt&gt;=1</label>
+			<label kind="assignment" x="68" y="-94">SPUt+=2,SPUcount+=1</label>
+			<nail x="93" y="-111"/>
+			<nail x="187" y="-111"/>
+		</transition>
+		<transition>
+			<source ref="id141"/>
+			<target ref="id140"/>
+			<label kind="guard" x="-331" y="-178">SPUcount&lt;5</label>
+			<label kind="assignment" x="-331" y="-153">SPU_workt=0,SPUS_WorkingCurrentControl_SPUSensorOff=1</label>
+		</transition>
+		<transition>
+			<source ref="id140"/>
+			<target ref="id141"/>
+			<label kind="guard" x="-374" y="-111">SPU_workt&gt;=1 &amp;&amp; SPUt&gt;26</label>
+			<label kind="assignment" x="-357" y="-94">SPUt-=5,SPUcount+=1</label>
+			<nail x="-238" y="-111"/>
+			<nail x="-331" y="-111"/>
+		</transition>
+		<transition>
+			<source ref="id143"/>
+			<target ref="id140"/>
+			<label kind="synchronisation" x="-178" y="-94">SPUSensorWorkingCurrentClose?</label>
+			<label kind="assignment" x="-110" y="-77">SPU_workt=0</label>
+			<nail x="34" y="-94"/>
+			<nail x="-170" y="-94"/>
+		</transition>
+		<transition>
+			<source ref="id141"/>
+			<target ref="id140"/>
+			<label kind="guard" x="-433" y="-196">SPUcount==5</label>
+			<label kind="synchronisation" x="-408" y="-230">SPUTemperate!</label>
+			<label kind="assignment" x="-433" y="-213">SPU_workt=0,SPUcount=0</label>
+			<nail x="-289" y="-196"/>
+		</transition>
+		<transition>
+			<source ref="id140"/>
+			<target ref="id143"/>
+			<label kind="synchronisation" x="-178" y="-145">SPUSensorWorkingCurrentOpen?</label>
+			<label kind="assignment" x="-119" y="-128">SPU_workt=0</label>
+		</transition>
+		<transition>
+			<source ref="id142"/>
+			<target ref="id143"/>
+			<label kind="guard" x="170" y="-204">SPUcount==5</label>
+			<label kind="synchronisation" x="34" y="-221">SPUTemperate!</label>
+			<label kind="assignment" x="43" y="-238">SPU_workt=0,SPUcount=0</label>
+			<nail x="127" y="-204"/>
+		</transition>
+	</template>
+	<template>
+		<name>Transmitters</name>
+		<location id="id144" x="-450" y="76">
+			<name x="-475" y="34">FSJOff</name>
+		</location>
+		<location id="id145" x="-279" y="9">
+			<name x="-263" y="-25">Intend</name>
+			<label kind="invariant" x="-306" y="26">FSJt&lt;=5</label>
+		</location>
+		<location id="id146" x="-110" y="68">
+			<name x="-120" y="34">Ready</name>
+		</location>
+		<location id="id147" x="-110" y="177">
+			<name x="-85" y="170">High</name>
+		</location>
+		<location id="id148" x="-450" y="177">
+			<name x="-501" y="169">Send</name>
+		</location>
+		<init ref="id144"/>
+		<transition>
+			<source ref="id146"/>
+			<target ref="id144"/>
+			<label kind="synchronisation" x="-391" y="51">FSJOffCommand?</label>
+			<label kind="assignment" x="-323" y="77">FSJ_state=0</label>
+		</transition>
+		<transition>
+			<source ref="id148"/>
+			<target ref="id148"/>
+			<label kind="synchronisation" x="-578" y="110">FSJStatus!</label>
+			<nail x="-493" y="110"/>
+			<nail x="-527" y="144"/>
+		</transition>
+		<transition>
+			<source ref="id147"/>
+			<target ref="id147"/>
+			<label kind="synchronisation" x="-144" y="246">FSJStatus!</label>
+			<nail x="-127" y="238"/>
+			<nail x="-85" y="238"/>
+		</transition>
+		<transition>
+			<source ref="id146"/>
+			<target ref="id146"/>
+			<label kind="synchronisation" x="-34" y="51">FSJStatus!</label>
+			<nail x="-42" y="34"/>
+			<nail x="-42" y="85"/>
+		</transition>
+		<transition>
+			<source ref="id145"/>
+			<target ref="id145"/>
+			<label kind="synchronisation" x="-306" y="-84">FSJStatus!</label>
+			<nail x="-255" y="-59"/>
+			<nail x="-306" y="-59"/>
+		</transition>
+		<transition>
+			<source ref="id147"/>
+			<target ref="id146"/>
+			<label kind="synchronisation" x="-50" y="126">HighOff?</label>
+			<label kind="assignment" x="-59" y="102">FSJ_state=2</label>
+			<nail x="-59" y="135"/>
+		</transition>
+		<transition>
+			<source ref="id148"/>
+			<target ref="id146"/>
+			<label kind="synchronisation" x="-314" y="136">HighOff?</label>
+			<label kind="assignment" x="-425" y="119">FSJ_state=2</label>
+		</transition>
+		<transition>
+			<source ref="id148"/>
+			<target ref="id147"/>
+			<label kind="guard" x="-322" y="228">jmflag==0 &amp;&amp; Jamt&gt;3</label>
+			<label kind="assignment" x="-297" y="245">FSJ_state=3</label>
+			<nail x="-263" y="228"/>
+		</transition>
+		<transition>
+			<source ref="id148"/>
+			<target ref="id148"/>
+			<label kind="guard" x="-535" y="211">Jamt&lt;=3</label>
+			<label kind="synchronisation" x="-535" y="255">JamSignal?</label>
+			<label kind="assignment" x="-450" y="254">jmflag=1,Jamt=0</label>
+			<nail x="-484" y="245"/>
+			<nail x="-408" y="245"/>
+		</transition>
+		<transition>
+			<source ref="id147"/>
+			<target ref="id148"/>
+			<label kind="synchronisation" x="-365" y="177">JamSignal?</label>
+			<label kind="assignment" x="-288" y="177">Jamt=0,FSJ_state=4</label>
+		</transition>
+		<transition>
+			<source ref="id146"/>
+			<target ref="id147"/>
+			<label kind="synchronisation" x="-169" y="118">HighOn?</label>
+			<label kind="assignment" x="-195" y="135">FSJ_state=3</label>
+		</transition>
+		<transition>
+			<source ref="id145"/>
+			<target ref="id146"/>
+			<label kind="guard" x="-237" y="-8">FSJt&gt;=5</label>
+			<label kind="assignment" x="-228" y="9">FSJ_state=2,FSJt=0</label>
+		</transition>
+		<transition>
+			<source ref="id144"/>
+			<target ref="id145"/>
+			<label kind="synchronisation" x="-450" y="8">FSJOnCommand?</label>
+			<label kind="assignment" x="-441" y="-9">FSJt=0,FSJ_state=1</label>
+		</transition>
+	</template>
+	<template>
+		<name>WorkingCurrentCommand</name>
+		<location id="id149" x="-365" y="-357">
+		</location>
+		<location id="id150" x="-255" y="-382">
+		</location>
+		<location id="id151" x="289" y="-52">
+		</location>
+		<location id="id152" x="280" y="25">
+		</location>
+		<location id="id153" x="-518" y="-297">
+		</location>
+		<location id="id154" x="-620" y="-221">
+		</location>
+		<location id="id155" x="-663" y="-119">
+		</location>
+		<location id="id156" x="-671" y="-34">
+		</location>
+		<location id="id157" x="-671" y="59">
+		</location>
+		<location id="id158" x="-646" y="136">
+		</location>
+		<location id="id159" x="-221" y="357">
+		</location>
+		<location id="id160" x="-51" y="340">
+		</location>
+		<location id="id161" x="289" y="84">
+		</location>
+		<location id="id162" x="76" y="254">
+		</location>
+		<location id="id163" x="-212" y="-8">
+		</location>
+		<location id="id164" x="255" y="195">
+		</location>
+		<location id="id165" x="-340" y="365">
+		</location>
+		<init ref="id163"/>
+		<transition>
+			<source ref="id149"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-374" y="-331">JPUWorkingCurrentCloseCommandRead!</label>
+			<nail x="-306" y="-331"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id149"/>
+			<label kind="synchronisation" x="-374" y="-314">JPUWorkingCurrentCloseCommandFromOTPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id150"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-255" y="-289">JPUWorkingCurrentOpenCommandRead!</label>
+			<nail x="-212" y="-357"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id150"/>
+			<label kind="synchronisation" x="-263" y="-272">JPUWorkingCurrentOpenCommandFromOTPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id151"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="76" y="-111">JPUWorkingCurrentCloseCommandRead!</label>
+			<nail x="229" y="-94"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id151"/>
+			<label kind="synchronisation" x="76" y="-85">JPUWorkingCurrentCloseCommandFromOPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id152"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="59" y="-18">JPUWorkingCurrentOpenCommandRead!</label>
+			<nail x="212" y="-26"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id152"/>
+			<label kind="synchronisation" x="59" y="-35">JPUWorkingCurrentOpenCommandFromOPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id153"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-595" y="-280">CRUWorkingCurrentCloseCommandRead!</label>
+			<nail x="-425" y="-272"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id153"/>
+			<label kind="synchronisation" x="-603" y="-263">CRUWorkingCurrentCloseCommandFromOTPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id154"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-765" y="-204">CRUWorkingCurrentOpenCommandRead!</label>
+			<nail x="-501" y="-221"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id154"/>
+			<label kind="synchronisation" x="-765" y="-187">CRUWorkingCurrentOpenCommandFromOTPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id155"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-773" y="-144">SPUWorkingCurrentCloseCommandRead!</label>
+			<nail x="-586" y="-136"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id155"/>
+			<label kind="synchronisation" x="-773" y="-102">SPUWorkingCurrentCloseCommandFromOTPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id156"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-773" y="-68">SPUWorkingCurrentOpenCommandRead!</label>
+			<nail x="-637" y="-59"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id156"/>
+			<label kind="synchronisation" x="-773" y="-25">SPUWorkingCurrentOpenCommandFromOTPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id157"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-790" y="8">ICUWorkingCurrentCloseCommandRead!</label>
+			<nail x="-637" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id157"/>
+			<label kind="synchronisation" x="-790" y="25">ICUWorkingCurrentCloseCommandFromOTPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id158"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-799" y="85">ICUWorkingCurrentOpenCommandRead!</label>
+			<nail x="-612" y="85"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id158"/>
+			<label kind="synchronisation" x="-799" y="102">ICUWorkingCurrentOpenCommandFromOTPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id165"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-561" y="323">SPUWorkingCurrentCloseCommandRead!</label>
+			<nail x="-374" y="272"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id165"/>
+			<label kind="synchronisation" x="-578" y="306">SPUWorkingCurrentCloseCommandFromOPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id159"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-425" y="246">SPUWorkingCurrentOpenCommandRead!</label>
+			<nail x="-280" y="272"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id159"/>
+			<label kind="synchronisation" x="-425" y="229">SPUWorkingCurrentOpenCommandFromOPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id160"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-187" y="289">CRUWorkingCurrentCloseCommandRead!</label>
+			<nail x="-127" y="297"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id160"/>
+			<label kind="synchronisation" x="-187" y="272">CRUWorkingCurrentCloseCommandFromOPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id161"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="42" y="50">ICUWorkingCurrentCloseCommandRead!</label>
+			<nail x="187" y="84"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id161"/>
+			<label kind="synchronisation" x="42" y="33">ICUWorkingCurrentCloseCommandFromOPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id162"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-93" y="203">CRUWorkingCurrentOpenCommandRead!</label>
+			<nail x="-25" y="229"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id162"/>
+			<label kind="synchronisation" x="-102" y="186">CRUWorkingCurrentOpenCommandFromOPSend?</label>
+		</transition>
+		<transition>
+			<source ref="id164"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="51" y="144">ICUWorkingCurrentOpenCommandRead!</label>
+			<nail x="153" y="178"/>
+		</transition>
+		<transition>
+			<source ref="id163"/>
+			<target ref="id164"/>
+			<label kind="synchronisation" x="42" y="127">ICUWorkingCurrentOpenCommandFromOPSend?</label>
+		</transition>
+	</template>
+	<template>
+		<name>DataBase</name>
+		<location id="id166" x="-246" y="-25">
+		</location>
+		<location id="id167" x="-85" y="-25">
+		</location>
+		<init ref="id166"/>
+		<transition>
+			<source ref="id167"/>
+			<target ref="id166"/>
+			<label kind="synchronisation" x="-195" y="51">DataLibRead!</label>
+			<nail x="-161" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id166"/>
+			<target ref="id167"/>
+			<label kind="synchronisation" x="-212" y="-59">DataLibSend?</label>
+		</transition>
+	</template>
+	<template>
+		<name>TargetAfterSorted</name>
+		<location id="id168" x="-187" y="-17">
+		</location>
+		<location id="id169" x="-42" y="-17">
+		</location>
+		<init ref="id168"/>
+		<transition>
+			<source ref="id169"/>
+			<target ref="id168"/>
+			<label kind="synchronisation" x="-170" y="51">SortedTargetRead!</label>
+			<nail x="-119" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id168"/>
+			<target ref="id169"/>
+			<label kind="synchronisation" x="-178" y="-59">SortedTargetSend?</label>
+		</transition>
+	</template>
+	<template>
+		<name>TagetAfterIdentified</name>
+		<location id="id170" x="-170" y="-25">
+		</location>
+		<location id="id171" x="-8" y="-25">
+		</location>
+		<init ref="id170"/>
+		<transition>
+			<source ref="id171"/>
+			<target ref="id170"/>
+			<label kind="synchronisation" x="-144" y="42">IdentifiedTargetRead!</label>
+			<nail x="-85" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id170"/>
+			<target ref="id171"/>
+			<label kind="synchronisation" x="-170" y="-68">IdentifiedTargetSend?</label>
+		</transition>
+	</template>
+	<template>
+		<name>TemperatureData</name>
+		<location id="id172" x="-93" y="0">
+		</location>
+		<location id="id173" x="42" y="0">
+		</location>
+		<location id="id174" x="187" y="0">
+		</location>
+		<location id="id175" x="187" y="85">
+		</location>
+		<location id="id176" x="0" y="85">
+		</location>
+		<init ref="id172"/>
+		<transition>
+			<source ref="id176"/>
+			<target ref="id172"/>
+			<label kind="synchronisation" x="-178" y="51">JPUTemperateRead!</label>
+		</transition>
+		<transition>
+			<source ref="id175"/>
+			<target ref="id176"/>
+			<label kind="synchronisation" x="25" y="102">CRUTemperateRead!</label>
+		</transition>
+		<transition>
+			<source ref="id174"/>
+			<target ref="id175"/>
+			<label kind="synchronisation" x="136" y="25">SPUTemperateRead!</label>
+		</transition>
+		<transition>
+			<source ref="id173"/>
+			<target ref="id174"/>
+			<label kind="synchronisation" x="59" y="-42">ICUTemperateRead!</label>
+		</transition>
+		<transition>
+			<source ref="id172"/>
+			<target ref="id173"/>
+			<label kind="synchronisation" x="-102" y="-42">TemperateDataSend?</label>
+		</transition>
+	</template>
+	<template>
+		<name>ICUPowerOpenControl</name>
+		<location id="id177" x="-663" y="-425">
+			<name x="-739" y="-433">ICUPOC</name>
+		</location>
+		<location id="id178" x="-399" y="-425">
+		</location>
+		<init ref="id177"/>
+		<transition>
+			<source ref="id178"/>
+			<target ref="id177"/>
+			<label kind="synchronisation" x="-680" y="-340">ICUWorkingCurrentOpenCommandFromOPSend!</label>
+			<nail x="-527" y="-348"/>
+		</transition>
+		<transition>
+			<source ref="id177"/>
+			<target ref="id178"/>
+			<label kind="synchronisation" x="-680" y="-476">ICUWorkingCurrentOpenCommandFormOP1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>ICUPowerCloseControl</name>
+		<location id="id179" x="-127" y="-204">
+		</location>
+		<location id="id180" x="-391" y="-204">
+			<name x="-467" y="-212">ICUPCC</name>
+		</location>
+		<init ref="id180"/>
+		<transition>
+			<source ref="id179"/>
+			<target ref="id180"/>
+			<label kind="synchronisation" x="-391" y="-119">ICUWorkingCurrentCloseCommandFromOPSend!</label>
+			<nail x="-255" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id180"/>
+			<target ref="id179"/>
+			<label kind="synchronisation" x="-408" y="-255">ICUWorkingCurrentCloseCommandFormOP1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>CRUPowerOpenControl</name>
+		<location id="id181" x="-93" y="-178">
+		</location>
+		<location id="id182" x="-357" y="-178">
+			<name x="-433" y="-186">CRUPOC</name>
+		</location>
+		<init ref="id182"/>
+		<transition>
+			<source ref="id181"/>
+			<target ref="id182"/>
+			<label kind="synchronisation" x="-365" y="-93">CRUWorkingCurrentOpenCommandFromOPSend!</label>
+			<nail x="-221" y="-101"/>
+		</transition>
+		<transition>
+			<source ref="id182"/>
+			<target ref="id181"/>
+			<label kind="synchronisation" x="-374" y="-229">CRUWorkingCurrentOpenCommandFormOP1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>CRUPowerCloseControl</name>
+		<location id="id183" x="26" y="-34">
+		</location>
+		<location id="id184" x="-238" y="-34">
+			<name x="-314" y="-42">CRUPCC</name>
+		</location>
+		<init ref="id184"/>
+		<transition>
+			<source ref="id183"/>
+			<target ref="id184"/>
+			<label kind="synchronisation" x="-246" y="42">CRUWorkingCurrentCloseCommandFromOPSend!</label>
+			<nail x="-102" y="43"/>
+		</transition>
+		<transition>
+			<source ref="id184"/>
+			<target ref="id183"/>
+			<label kind="synchronisation" x="-255" y="-85">CRUWorkingCurrentCloseCommandFormOP1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>SPUPowerOpenControl</name>
+		<location id="id185" x="-93" y="-178">
+		</location>
+		<location id="id186" x="-357" y="-178">
+			<name x="-433" y="-186">SPUPOC</name>
+		</location>
+		<init ref="id186"/>
+		<transition>
+			<source ref="id185"/>
+			<target ref="id186"/>
+			<label kind="synchronisation" x="-365" y="-93">SPUWorkingCurrentOpenCommandFromOPSend!</label>
+			<nail x="-221" y="-101"/>
+		</transition>
+		<transition>
+			<source ref="id186"/>
+			<target ref="id185"/>
+			<label kind="synchronisation" x="-374" y="-229">SPUWorkingCurrentOpenCommandFormOP1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>SPUPowerCloseControl</name>
+		<location id="id187" x="-93" y="-178">
+		</location>
+		<location id="id188" x="-357" y="-178">
+			<name x="-433" y="-186">SPUPCC</name>
+		</location>
+		<init ref="id188"/>
+		<transition>
+			<source ref="id187"/>
+			<target ref="id188"/>
+			<label kind="synchronisation" x="-382" y="-93">SPUWorkingCurrentCloseCommandFromOPSend!</label>
+			<nail x="-221" y="-101"/>
+		</transition>
+		<transition>
+			<source ref="id188"/>
+			<target ref="id187"/>
+			<label kind="synchronisation" x="-374" y="-229">SPUWorkingCurrentCloseCommandFormOP1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>JPUPowerOpenControl</name>
+		<location id="id189" x="-93" y="-102">
+		</location>
+		<location id="id190" x="-357" y="-102">
+			<name x="-433" y="-110">JPUPOC</name>
+		</location>
+		<init ref="id190"/>
+		<transition>
+			<source ref="id189"/>
+			<target ref="id190"/>
+			<label kind="synchronisation" x="-365" y="-17">JPUWorkingCurrentOpenCommandFromOPSend!</label>
+			<nail x="-221" y="-25"/>
+		</transition>
+		<transition>
+			<source ref="id190"/>
+			<target ref="id189"/>
+			<label kind="synchronisation" x="-374" y="-153">JPUWorkingCurrentOpenCommandFormOP1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>JPUPowerCloseControl</name>
+		<location id="id191" x="-17" y="-110">
+		</location>
+		<location id="id192" x="-281" y="-110">
+			<name x="-357" y="-118">JPUPCC</name>
+		</location>
+		<init ref="id192"/>
+		<transition>
+			<source ref="id191"/>
+			<target ref="id192"/>
+			<label kind="synchronisation" x="-306" y="-25">JPUWorkingCurrentCloseCommandFromOPSend!</label>
+			<nail x="-145" y="-33"/>
+		</transition>
+		<transition>
+			<source ref="id192"/>
+			<target ref="id191"/>
+			<label kind="synchronisation" x="-298" y="-161">JPUWorkingCurrentCloseCommandFormOP1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Init</name>
+		<location id="id193" x="-909" y="-671">
+		</location>
+		<location id="id194" x="-714" y="-671">
+			<urgent/>
+		</location>
+		<location id="id195" x="-569" y="-671">
+			<urgent/>
+		</location>
+		<location id="id196" x="-569" y="-578">
+			<urgent/>
+		</location>
+		<location id="id197" x="-756" y="-544">
+		</location>
+		<location id="id198" x="-569" y="-493">
+			<urgent/>
+		</location>
+		<init ref="id193"/>
+		<transition>
+			<source ref="id197"/>
+			<target ref="id197"/>
+			<label kind="synchronisation" x="-935" y="-544">JPUInitResult?</label>
+			<label kind="assignment" x="-909" y="-527">JPUflag=1</label>
+			<nail x="-841" y="-510"/>
+			<nail x="-841" y="-544"/>
+		</transition>
+		<transition>
+			<source ref="id198"/>
+			<target ref="id197"/>
+			<label kind="synchronisation" x="-697" y="-518">JPUInitCommand!</label>
+			<label kind="assignment" x="-680" y="-535">Res_time=0</label>
+			<nail x="-697" y="-493"/>
+		</transition>
+		<transition>
+			<source ref="id197"/>
+			<target ref="id193"/>
+			<label kind="guard" x="-1258" y="-484">Res_time&gt;=10 &amp;&amp; (ICUflag!=1 || SPUflag!=1 || CRUflag!=1 || JPUflag!=1)</label>
+			<label kind="synchronisation" x="-1232" y="-552">DeviceInitResult!</label>
+			<label kind="assignment" x="-1198" y="-527">Resultflag=0</label>
+			<nail x="-816" y="-484"/>
+			<nail x="-1113" y="-484"/>
+			<nail x="-1113" y="-671"/>
+		</transition>
+		<transition>
+			<source ref="id197"/>
+			<target ref="id193"/>
+			<label kind="guard" x="-1088" y="-646">Res_time&lt;10 &amp;&amp; (ICUflag==1 &amp;&amp; SPUflag==1 &amp;&amp; CRUflag==1 &amp;&amp; JPUflag==1)</label>
+			<label kind="synchronisation" x="-1020" y="-629">DeviceInitResult!</label>
+			<label kind="assignment" x="-994" y="-612">Resultflag=1</label>
+			<nail x="-901" y="-578"/>
+		</transition>
+		<transition>
+			<source ref="id197"/>
+			<target ref="id197"/>
+			<label kind="synchronisation" x="-824" y="-603">ICUInitResult?</label>
+			<label kind="assignment" x="-799" y="-620">ICUflag=1</label>
+			<nail x="-756" y="-586"/>
+			<nail x="-798" y="-586"/>
+		</transition>
+		<transition>
+			<source ref="id197"/>
+			<target ref="id197"/>
+			<label kind="synchronisation" x="-790" y="-493">SPUInitResult?</label>
+			<label kind="assignment" x="-782" y="-476">SPUflag=1</label>
+			<nail x="-773" y="-493"/>
+			<nail x="-731" y="-493"/>
+		</transition>
+		<transition>
+			<source ref="id197"/>
+			<target ref="id197"/>
+			<label kind="synchronisation" x="-714" y="-586">CRUInitResult?</label>
+			<label kind="assignment" x="-714" y="-603">CRUflag=1</label>
+			<nail x="-713" y="-561"/>
+			<nail x="-722" y="-586"/>
+		</transition>
+		<transition>
+			<source ref="id196"/>
+			<target ref="id198"/>
+			<label kind="synchronisation" x="-561" y="-552">CRUInitCommand!</label>
+		</transition>
+		<transition>
+			<source ref="id195"/>
+			<target ref="id196"/>
+			<label kind="synchronisation" x="-561" y="-637">SPUInitCommand!</label>
+		</transition>
+		<transition>
+			<source ref="id194"/>
+			<target ref="id195"/>
+			<label kind="synchronisation" x="-697" y="-705">ICUInitCommand!</label>
+		</transition>
+		<transition>
+			<source ref="id193"/>
+			<target ref="id194"/>
+			<label kind="synchronisation" x="-884" y="-697">DeviceInitCommand1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>WorkingCurrentControl</name>
+		<location id="id199" x="-365" y="-561">
+		</location>
+		<location id="id200" x="-561" y="-799">
+		</location>
+		<location id="id201" x="-1139" y="-722">
+		</location>
+		<location id="id202" x="-1071" y="-663">
+		</location>
+		<location id="id203" x="-1079" y="-595">
+		</location>
+		<location id="id204" x="-1122" y="-365">
+		</location>
+		<location id="id205" x="-994" y="-382">
+		</location>
+		<location id="id206" x="-994" y="-221">
+		</location>
+		<location id="id207" x="-935" y="-323">
+		</location>
+		<location id="id208" x="-187" y="-340">
+		</location>
+		<location id="id209" x="-646" y="-544">
+		</location>
+		<location id="id210" x="-527" y="-306">
+		</location>
+		<location id="id211" x="-289" y="-357">
+		</location>
+		<location id="id212" x="-552" y="-221">
+		</location>
+		<location id="id213" x="-1181" y="-561">
+		</location>
+		<location id="id214" x="-263" y="-425">
+		</location>
+		<location id="id215" x="-1045" y="-722">
+		</location>
+		<location id="id216" x="-620" y="-280">
+		</location>
+		<location id="id217" x="-858" y="-280">
+		</location>
+		<location id="id218" x="-1028" y="-450">
+		</location>
+		<location id="id219" x="-1071" y="-535">
+		</location>
+		<location id="id220" x="-484" y="-858">
+		</location>
+		<location id="id221" x="-467" y="-773">
+		</location>
+		<location id="id222" x="-391" y="-637">
+		</location>
+		<location id="id223" x="-272" y="-620">
+		</location>
+		<init ref="id209"/>
+		<transition>
+			<source ref="id199"/>
+			<target ref="id209"/>
+			<label kind="synchronisation" x="-552" y="-544">DeviceWorkingCurrentControlResult!</label>
+		</transition>
+		<transition>
+			<source ref="id223"/>
+			<target ref="id199"/>
+			<label kind="synchronisation" x="-323" y="-586">JPUWorkingCurrentCloseResult?</label>
+		</transition>
+		<transition>
+			<source ref="id222"/>
+			<target ref="id223"/>
+			<label kind="synchronisation" x="-374" y="-663">JPUWorkingCurrentClose!</label>
+		</transition>
+		<transition>
+			<source ref="id209"/>
+			<target ref="id222"/>
+			<label kind="synchronisation" x="-595" y="-603">JPUWorkingCurrentCloseCommandRead?</label>
+		</transition>
+		<transition>
+			<source ref="id221"/>
+			<target ref="id209"/>
+			<label kind="synchronisation" x="-578" y="-739">DeviceWorkingCurrentControlResult!</label>
+		</transition>
+		<transition>
+			<source ref="id220"/>
+			<target ref="id221"/>
+			<label kind="synchronisation" x="-527" y="-816">JPUWorkingCurrentOpenResult?</label>
+		</transition>
+		<transition>
+			<source ref="id200"/>
+			<target ref="id220"/>
+			<label kind="synchronisation" x="-654" y="-841">JPUWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id209"/>
+			<target ref="id200"/>
+			<label kind="synchronisation" x="-748" y="-773">JPUWorkingCurrentOpenCommandRead?</label>
+		</transition>
+		<transition>
+			<source ref="id219"/>
+			<target ref="id209"/>
+			<label kind="synchronisation" x="-1020" y="-535">DeviceWorkingCurrentControlResult!</label>
+		</transition>
+		<transition>
+			<source ref="id218"/>
+			<target ref="id209"/>
+			<label kind="synchronisation" x="-1020" y="-501">DeviceWorkingCurrentControlResult!</label>
+		</transition>
+		<transition>
+			<source ref="id217"/>
+			<target ref="id209"/>
+			<label kind="synchronisation" x="-875" y="-340">DeviceWorkingCurrentControlResult!</label>
+		</transition>
+		<transition>
+			<source ref="id216"/>
+			<target ref="id209"/>
+			<label kind="synchronisation" x="-671" y="-408">DeviceWorkingCurrentControlResult!</label>
+		</transition>
+		<transition>
+			<source ref="id215"/>
+			<target ref="id209"/>
+			<label kind="synchronisation" x="-969" y="-714">DeviceWorkingCurrentControlResult!</label>
+		</transition>
+		<transition>
+			<source ref="id214"/>
+			<target ref="id209"/>
+			<label kind="synchronisation" x="-459" y="-493">DeviceWorkingCurrentControlResult!</label>
+		</transition>
+		<transition>
+			<source ref="id201"/>
+			<target ref="id215"/>
+			<label kind="synchronisation" x="-1130" y="-756">CRUWorkingCurrentCloseResult?</label>
+		</transition>
+		<transition>
+			<source ref="id202"/>
+			<target ref="id201"/>
+			<label kind="synchronisation" x="-1232" y="-705">CRUWorkingCurrentClose!</label>
+		</transition>
+		<transition>
+			<source ref="id209"/>
+			<target ref="id202"/>
+			<label kind="synchronisation" x="-1122" y="-654">CRUWorkingCurrentCloseCommandRead?</label>
+		</transition>
+		<transition>
+			<source ref="id213"/>
+			<target ref="id219"/>
+			<label kind="synchronisation" x="-1292" y="-535">CRUWorkingCurrentOpenResult?</label>
+		</transition>
+		<transition>
+			<source ref="id203"/>
+			<target ref="id213"/>
+			<label kind="synchronisation" x="-1266" y="-612">CRUWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id209"/>
+			<target ref="id203"/>
+			<label kind="synchronisation" x="-1045" y="-612">CRUWorkingCurrentOpenCommandRead?</label>
+		</transition>
+		<transition>
+			<source ref="id204"/>
+			<target ref="id218"/>
+			<label kind="synchronisation" x="-1224" y="-416">SPUWorkingCurrentCloseResult?</label>
+		</transition>
+		<transition>
+			<source ref="id205"/>
+			<target ref="id204"/>
+			<label kind="synchronisation" x="-1130" y="-348">SPUWorkingCurrentClose!</label>
+		</transition>
+		<transition>
+			<source ref="id209"/>
+			<target ref="id205"/>
+			<label kind="synchronisation" x="-943" y="-459">SPUWorkingCurrentCloseCommandRead?</label>
+		</transition>
+		<transition>
+			<source ref="id206"/>
+			<target ref="id217"/>
+			<label kind="synchronisation" x="-926" y="-246">SPUWorkingCurrentOpenResult?</label>
+		</transition>
+		<transition>
+			<source ref="id207"/>
+			<target ref="id206"/>
+			<label kind="synchronisation" x="-1071" y="-289">SPUWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id209"/>
+			<target ref="id207"/>
+			<label kind="synchronisation" x="-918" y="-382">SPUWorkingCurrentOpenCommandRead?</label>
+		</transition>
+		<transition>
+			<source ref="id208"/>
+			<target ref="id214"/>
+			<label kind="synchronisation" x="-263" y="-391">ICUWorkingCurrentCloseResult?</label>
+		</transition>
+		<transition>
+			<source ref="id211"/>
+			<target ref="id208"/>
+			<label kind="synchronisation" x="-357" y="-340">ICUWorkingCurrentClose!</label>
+		</transition>
+		<transition>
+			<source ref="id212"/>
+			<target ref="id216"/>
+			<label kind="synchronisation" x="-765" y="-263">ICUWorkingCurrentOpenResult?</label>
+		</transition>
+		<transition>
+			<source ref="id209"/>
+			<target ref="id211"/>
+			<label kind="synchronisation" x="-569" y="-442">ICUWorkingCurrentCloseCommandRead?</label>
+		</transition>
+		<transition>
+			<source ref="id210"/>
+			<target ref="id212"/>
+			<label kind="synchronisation" x="-535" y="-272">ICUWorkingCurrentOpen!</label>
+		</transition>
+		<transition>
+			<source ref="id209"/>
+			<target ref="id210"/>
+			<label kind="synchronisation" x="-612" y="-374">ICUWorkingCurrentOpenCommandRead?</label>
+		</transition>
+	</template>
+	<template>
+		<name>DataLoad</name>
+		<location id="id224" x="-331" y="-297">
+		</location>
+		<location id="id225" x="-93" y="-297">
+		</location>
+		<location id="id226" x="35" y="-297">
+		</location>
+		<location id="id227" x="35" y="-195">
+		</location>
+		<location id="id228" x="-93" y="-195">
+		</location>
+		<location id="id229" x="-186" y="-195">
+		</location>
+		<location id="id230" x="-297" y="-195">
+		</location>
+		<location id="id231" x="-654" y="-195">
+			<label kind="invariant" x="-773" y="-186">DL_time&lt;=10</label>
+		</location>
+		<location id="id232" x="-399" y="-195">
+		</location>
+		<location id="id233" x="-493" y="-195">
+		</location>
+		<init ref="id224"/>
+		<transition>
+			<source ref="id231"/>
+			<target ref="id231"/>
+			<label kind="synchronisation" x="-815" y="-289">JPUDataLoadResult?</label>
+			<label kind="assignment" x="-773" y="-272">JPU_res=1</label>
+			<nail x="-662" y="-272"/>
+			<nail x="-705" y="-263"/>
+		</transition>
+		<transition>
+			<source ref="id233"/>
+			<target ref="id231"/>
+			<label kind="synchronisation" x="-603" y="-195">JPUDataLib!</label>
+			<label kind="assignment" x="-595" y="-178">DL_time=0</label>
+		</transition>
+		<transition>
+			<source ref="id232"/>
+			<target ref="id233"/>
+			<label kind="synchronisation" x="-518" y="-229">JPUDataLoadCommand!</label>
+		</transition>
+		<transition>
+			<source ref="id231"/>
+			<target ref="id224"/>
+			<label kind="guard" x="-748" y="-340">DL_time&gt;=10 &amp;&amp; (ICU_res==0 || SPU_res==0 || JPU_res==0)</label>
+			<label kind="synchronisation" x="-569" y="-323">DeviceDataLoadResult!</label>
+			<nail x="-603" y="-297"/>
+		</transition>
+		<transition>
+			<source ref="id231"/>
+			<target ref="id224"/>
+			<label kind="guard" x="-552" y="-280">DL_time&lt;10 &amp;&amp; ICU_res==1 &amp;&amp; SPU_res==1 &amp;&amp; JPU_res==1</label>
+			<label kind="synchronisation" x="-492" y="-263">DeviceDataLoadResult!</label>
+			<nail x="-493" y="-271"/>
+		</transition>
+		<transition>
+			<source ref="id231"/>
+			<target ref="id231"/>
+			<label kind="synchronisation" x="-747" y="-152">SPUDataLoadResult?</label>
+			<label kind="assignment" x="-773" y="-170">SPU_res=1</label>
+			<nail x="-637" y="-153"/>
+			<nail x="-688" y="-153"/>
+		</transition>
+		<transition>
+			<source ref="id231"/>
+			<target ref="id231"/>
+			<label kind="synchronisation" x="-832" y="-238">ICUDataLoadResult?</label>
+			<label kind="assignment" x="-773" y="-212">ICU_res=1</label>
+			<nail x="-696" y="-221"/>
+			<nail x="-696" y="-187"/>
+		</transition>
+		<transition>
+			<source ref="id230"/>
+			<target ref="id232"/>
+			<label kind="synchronisation" x="-382" y="-186">SPUDataLib!</label>
+		</transition>
+		<transition>
+			<source ref="id229"/>
+			<target ref="id230"/>
+			<label kind="synchronisation" x="-314" y="-229">SPUDataLoadCommand!</label>
+		</transition>
+		<transition>
+			<source ref="id228"/>
+			<target ref="id229"/>
+			<label kind="synchronisation" x="-178" y="-178">ICUDataLib!</label>
+		</transition>
+		<transition>
+			<source ref="id227"/>
+			<target ref="id228"/>
+			<label kind="synchronisation" x="-76" y="-187">ICUDataLoadCommand!</label>
+		</transition>
+		<transition>
+			<source ref="id226"/>
+			<target ref="id227"/>
+			<label kind="synchronisation" x="44" y="-263">DataLibSend!</label>
+		</transition>
+		<transition>
+			<source ref="id225"/>
+			<target ref="id226"/>
+			<label kind="synchronisation" x="-59" y="-323">DataLib1?</label>
+		</transition>
+		<transition>
+			<source ref="id224"/>
+			<target ref="id225"/>
+			<label kind="synchronisation" x="-306" y="-331">DeviceDataLoadCommand1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>ReconnaissanceGuide</name>
+		<location id="id234" x="-340" y="-8">
+		</location>
+		<location id="id235" x="-212" y="-8">
+		</location>
+		<location id="id236" x="-51" y="-8">
+		</location>
+		<init ref="id235"/>
+		<transition>
+			<source ref="id234"/>
+			<target ref="id235"/>
+			<label kind="synchronisation" x="-331" y="59">TrapPolicyToCRU!</label>
+			<nail x="-263" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id235"/>
+			<target ref="id234"/>
+			<label kind="synchronisation" x="-314" y="-34">TrapPolicy1?</label>
+		</transition>
+		<transition>
+			<source ref="id236"/>
+			<target ref="id235"/>
+			<label kind="synchronisation" x="-187" y="59">ReceivePolicyToCRU!</label>
+			<nail x="-119" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id235"/>
+			<target ref="id236"/>
+			<label kind="synchronisation" x="-178" y="-34">ReceivePolicy1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>SignalSort</name>
+		<location id="id237" x="102" y="-8">
+		</location>
+		<location id="id238" x="-161" y="-8">
+		</location>
+		<location id="id239" x="-25" y="-8">
+		</location>
+		<location id="id240" x="229" y="-8">
+		</location>
+		<init ref="id238"/>
+		<transition>
+			<source ref="id240"/>
+			<target ref="id238"/>
+			<label kind="synchronisation" x="0" y="59">SortedTargetSend!</label>
+			<nail x="25" y="51"/>
+		</transition>
+		<transition>
+			<source ref="id237"/>
+			<target ref="id240"/>
+			<label kind="synchronisation" x="136" y="-42">FilteredPDW?</label>
+		</transition>
+		<transition>
+			<source ref="id239"/>
+			<target ref="id237"/>
+			<label kind="synchronisation" x="-17" y="-42">OriginalPDWToSPU!</label>
+		</transition>
+		<transition>
+			<source ref="id238"/>
+			<target ref="id239"/>
+			<label kind="synchronisation" x="-144" y="-42">OriginalPDW?</label>
+		</transition>
+	</template>
+	<template>
+		<name>SignalIdentify</name>
+		<location id="id241" x="-76" y="0">
+		</location>
+		<location id="id242" x="76" y="0">
+		</location>
+		<location id="id243" x="221" y="0">
+		</location>
+		<init ref="id241"/>
+		<transition>
+			<source ref="id243"/>
+			<target ref="id241"/>
+			<label kind="synchronisation" x="51" y="68">IdentifiedTargetSend!</label>
+			<nail x="85" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id242"/>
+			<target ref="id243"/>
+			<label kind="synchronisation" x="85" y="-34">SortedTargetRead?</label>
+		</transition>
+		<transition>
+			<source ref="id241"/>
+			<target ref="id242"/>
+			<label kind="synchronisation" x="-42" y="-34">DataLibRead?</label>
+		</transition>
+	</template>
+	<template>
+		<name>TargetReport</name>
+		<location id="id244" x="0" y="0">
+		</location>
+		<location id="id245" x="127" y="0">
+		</location>
+		<init ref="id244"/>
+		<transition>
+			<source ref="id245"/>
+			<target ref="id244"/>
+			<label kind="synchronisation" x="25" y="59">TargetInfo!</label>
+			<nail x="68" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id244"/>
+			<target ref="id245"/>
+			<label kind="synchronisation" x="0" y="-34">IdentifiedTargetRead?</label>
+		</transition>
+	</template>
+	<template>
+		<name>SpectrumSurveillance</name>
+		<location id="id246" x="-102" y="8">
+		</location>
+		<location id="id247" x="25" y="8">
+		</location>
+		<init ref="id246"/>
+		<transition>
+			<source ref="id247"/>
+			<target ref="id246"/>
+			<label kind="synchronisation" x="-85" y="76">SpectrumDataSend!</label>
+			<nail x="-42" y="59"/>
+		</transition>
+		<transition>
+			<source ref="id246"/>
+			<target ref="id247"/>
+			<label kind="synchronisation" x="-93" y="-34">SpectrumData?</label>
+		</transition>
+	</template>
+	<template>
+		<name>TemperatureReport</name>
+		<location id="id248" x="-25" y="0">
+			<label kind="invariant" x="-68" y="-59">TR_time&lt;=5</label>
+		</location>
+		<location id="id249" x="212" y="0">
+			<urgent/>
+		</location>
+		<init ref="id248"/>
+		<transition>
+			<source ref="id248"/>
+			<target ref="id248"/>
+			<label kind="synchronisation" x="-204" y="-51">JPUTemperate?</label>
+			<nail x="-93" y="-59"/>
+			<nail x="-93" y="-25"/>
+		</transition>
+		<transition>
+			<source ref="id249"/>
+			<target ref="id248"/>
+			<label kind="synchronisation" x="17" y="-68">TemperateDataToDCD!</label>
+			<label kind="assignment" x="59" y="-42">TR_time=0</label>
+			<nail x="161" y="-42"/>
+			<nail x="25" y="-42"/>
+		</transition>
+		<transition>
+			<source ref="id248"/>
+			<target ref="id249"/>
+			<label kind="guard" x="59" y="0">TR_time&gt;=5</label>
+			<label kind="synchronisation" x="25" y="-17">TemperateDataSend!</label>
+		</transition>
+		<transition>
+			<source ref="id248"/>
+			<target ref="id248"/>
+			<label kind="synchronisation" x="-135" y="68">CRUTemperate?</label>
+			<nail x="-42" y="68"/>
+			<nail x="-84" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id248"/>
+			<target ref="id248"/>
+			<label kind="synchronisation" x="0" y="68">SPUTemperate?</label>
+			<nail x="-8" y="68"/>
+			<nail x="34" y="68"/>
+		</transition>
+		<transition>
+			<source ref="id248"/>
+			<target ref="id248"/>
+			<label kind="synchronisation" x="-203" y="8">ICUTemperate?</label>
+			<nail x="-93" y="34"/>
+			<nail x="-93" y="0"/>
+		</transition>
+	</template>
+	<template>
+		<name>OverTempProtect</name>
+		<location id="id250" x="-680" y="-153">
+		</location>
+		<location id="id251" x="-331" y="-153">
+		</location>
+		<location id="id252" x="25" y="-153">
+		</location>
+		<location id="id253" x="391" y="42">
+			<name x="417" y="34">ReadTemp</name>
+		</location>
+		<location id="id254" x="136" y="42">
+		</location>
+		<location id="id255" x="-127" y="42">
+		</location>
+		<location id="id256" x="-399" y="42">
+		</location>
+		<location id="id257" x="254" y="-26">
+			<name x="221" y="-9">ICUAutoOn</name>
+			<urgent/>
+		</location>
+		<location id="id258" x="255" y="118">
+			<name x="221" y="76">ICUAutoOff</name>
+			<urgent/>
+		</location>
+		<location id="id259" x="9" y="-26">
+			<name x="-25" y="-9">SPUAutoOn</name>
+			<urgent/>
+		</location>
+		<location id="id260" x="17" y="118">
+			<name x="-25" y="67">SPUAutoOff</name>
+			<urgent/>
+		</location>
+		<location id="id261" x="-255" y="-26">
+			<name x="-297" y="-9">CRUAutoOn</name>
+			<urgent/>
+		</location>
+		<location id="id262" x="-255" y="118">
+			<name x="-297" y="67">CRUAutoOff</name>
+			<urgent/>
+		</location>
+		<location id="id263" x="391" y="-153">
+		</location>
+		<location id="id264" x="-544" y="-25">
+			<name x="-587" y="-8">JPUAutoOn</name>
+		</location>
+		<location id="id265" x="-544" y="119">
+			<name x="-587" y="76">JPUAutoOff</name>
+		</location>
+		<location id="id266" x="-680" y="42">
+		</location>
+		<init ref="id250"/>
+		<transition>
+			<source ref="id256"/>
+			<target ref="id266"/>
+			<label kind="guard" x="-612" y="42">JPUt&gt;=75 &amp;&amp; JPUt&lt;=120</label>
+		</transition>
+		<transition>
+			<source ref="id265"/>
+			<target ref="id266"/>
+			<label kind="synchronisation" x="-680" y="136">JPUWorkingCurrentCloseCommandFromOTPSend!</label>
+		</transition>
+		<transition>
+			<source ref="id264"/>
+			<target ref="id266"/>
+			<label kind="synchronisation" x="-671" y="-59">JPUWorkingCurrentOpenCommandFromOTPSend!</label>
+		</transition>
+		<transition>
+			<source ref="id256"/>
+			<target ref="id264"/>
+			<label kind="guard" x="-459" y="-25">JPUt&lt;75</label>
+		</transition>
+		<transition>
+			<source ref="id256"/>
+			<target ref="id265"/>
+			<label kind="guard" x="-467" y="93">JPUt&gt;120</label>
+		</transition>
+		<transition>
+			<source ref="id263"/>
+			<target ref="id253"/>
+			<label kind="synchronisation" x="246" y="-127">JPUTemperateRead?</label>
+		</transition>
+		<transition>
+			<source ref="id255"/>
+			<target ref="id262"/>
+			<label kind="guard" x="-204" y="93">CRUt&gt;120</label>
+		</transition>
+		<transition>
+			<source ref="id255"/>
+			<target ref="id261"/>
+			<label kind="guard" x="-195" y="-17">CRUt&lt;75</label>
+		</transition>
+		<transition>
+			<source ref="id254"/>
+			<target ref="id260"/>
+			<label kind="guard" x="68" y="93">SPUt&gt;120</label>
+		</transition>
+		<transition>
+			<source ref="id254"/>
+			<target ref="id259"/>
+			<label kind="guard" x="60" y="-26">SPUt&lt;75</label>
+		</transition>
+		<transition>
+			<source ref="id253"/>
+			<target ref="id258"/>
+			<label kind="guard" x="314" y="93">ICUt&gt;120</label>
+		</transition>
+		<transition>
+			<source ref="id253"/>
+			<target ref="id257"/>
+			<label kind="guard" x="306" y="-26">ICUt&lt;75</label>
+		</transition>
+		<transition>
+			<source ref="id266"/>
+			<target ref="id250"/>
+		</transition>
+		<transition>
+			<source ref="id255"/>
+			<target ref="id256"/>
+			<label kind="guard" x="-340" y="42">CRUt&gt;=75 &amp;&amp; CRUt&lt;=120</label>
+		</transition>
+		<transition>
+			<source ref="id262"/>
+			<target ref="id256"/>
+			<label kind="synchronisation" x="-408" y="153">CRUWorkingCurrentCloseCommandFromOTPSend!</label>
+		</transition>
+		<transition>
+			<source ref="id261"/>
+			<target ref="id256"/>
+			<label kind="synchronisation" x="-399" y="-85">CRUWorkingCurrentOpenCommandFromOTPSend!</label>
+		</transition>
+		<transition>
+			<source ref="id260"/>
+			<target ref="id255"/>
+			<label kind="synchronisation" x="-170" y="127">SPUWorkingCurrentCloseCommandFromOTPSend!</label>
+		</transition>
+		<transition>
+			<source ref="id259"/>
+			<target ref="id255"/>
+			<label kind="synchronisation" x="-161" y="-60">SPUWorkingCurrentOpenCommandFromOTPSend!</label>
+		</transition>
+		<transition>
+			<source ref="id254"/>
+			<target ref="id255"/>
+			<label kind="guard" x="-68" y="42">SPUt&gt;=75 &amp;&amp; SPUt&lt;=120</label>
+		</transition>
+		<transition>
+			<source ref="id253"/>
+			<target ref="id254"/>
+			<label kind="guard" x="187" y="42">ICUt&gt;=75 &amp;&amp; ICUt&lt;=120</label>
+		</transition>
+		<transition>
+			<source ref="id258"/>
+			<target ref="id254"/>
+			<label kind="synchronisation" x="68" y="144">ICUWorkingCurrentCloseCommandFromOTPSend!</label>
+		</transition>
+		<transition>
+			<source ref="id257"/>
+			<target ref="id254"/>
+			<label kind="synchronisation" x="60" y="-77">ICUWorkingCurrentOpenCommandFromOTPSend!</label>
+		</transition>
+		<transition>
+			<source ref="id252"/>
+			<target ref="id263"/>
+			<label kind="synchronisation" x="127" y="-178">CRUTemperateRead?</label>
+		</transition>
+		<transition>
+			<source ref="id251"/>
+			<target ref="id252"/>
+			<label kind="synchronisation" x="-229" y="-178">SPUTemperateRead?</label>
+		</transition>
+		<transition>
+			<source ref="id250"/>
+			<target ref="id251"/>
+			<label kind="synchronisation" x="-578" y="-178">ICUTemperateRead?</label>
+		</transition>
+	</template>
+	<template>
+		<name>JamProcess</name>
+		<location id="id267" x="136" y="-34">
+			<urgent/>
+		</location>
+		<location id="id268" x="-374" y="-195">
+		</location>
+		<location id="id269" x="-510" y="-195">
+		</location>
+		<location id="id270" x="-629" y="-119">
+		</location>
+		<location id="id271" x="-195" y="-119">
+		</location>
+		<location id="id272" x="255" y="-119">
+			<urgent/>
+		</location>
+		<location id="id273" x="-348" y="-119">
+		</location>
+		<location id="id274" x="-501" y="-119">
+		</location>
+		<location id="id275" x="136" y="-119">
+		</location>
+		<location id="id276" x="-629" y="144">
+		</location>
+		<location id="id277" x="-629" y="42">
+		</location>
+		<location id="id278" x="-102" y="-119">
+		</location>
+		<location id="id279" x="17" y="-119">
+		</location>
+		<init ref="id270"/>
+		<transition>
+			<source ref="id278"/>
+			<target ref="id279"/>
+			<label kind="synchronisation" x="-85" y="-153">QLJStatus?</label>
+		</transition>
+		<transition>
+			<source ref="id271"/>
+			<target ref="id278"/>
+			<label kind="synchronisation" x="-187" y="-153">FSJStatus?</label>
+		</transition>
+		<transition>
+			<source ref="id277"/>
+			<target ref="id270"/>
+			<label kind="synchronisation" x="-731" y="-8">NoJamResult!</label>
+		</transition>
+		<transition>
+			<source ref="id276"/>
+			<target ref="id277"/>
+			<label kind="synchronisation" x="-714" y="85">NoJaming?</label>
+		</transition>
+		<transition>
+			<source ref="id267"/>
+			<target ref="id275"/>
+			<label kind="synchronisation" x="25" y="-85">JamResult!</label>
+			<nail x="102" y="-68"/>
+		</transition>
+		<transition>
+			<source ref="id275"/>
+			<target ref="id267"/>
+			<label kind="synchronisation" x="144" y="-85">Jaming?</label>
+		</transition>
+		<transition>
+			<source ref="id271"/>
+			<target ref="id273"/>
+			<label kind="synchronisation" x="-314" y="-59">JamProhibited1?</label>
+			<nail x="-263" y="-59"/>
+		</transition>
+		<transition>
+			<source ref="id273"/>
+			<target ref="id273"/>
+			<label kind="synchronisation" x="-391" y="-42">JamProhibited1?</label>
+			<nail x="-374" y="-42"/>
+			<nail x="-323" y="-42"/>
+		</transition>
+		<transition>
+			<source ref="id269"/>
+			<target ref="id270"/>
+			<label kind="synchronisation" x="-646" y="-221">JamProhibited1?</label>
+			<nail x="-629" y="-195"/>
+		</transition>
+		<transition>
+			<source ref="id270"/>
+			<target ref="id270"/>
+			<label kind="synchronisation" x="-782" y="-195">JamProhibited1?</label>
+			<nail x="-654" y="-187"/>
+			<nail x="-688" y="-161"/>
+		</transition>
+		<transition>
+			<source ref="id272"/>
+			<target ref="id276"/>
+			<label kind="synchronisation" x="-382" y="119">JamConfigureValue0!</label>
+			<nail x="255" y="136"/>
+		</transition>
+		<transition>
+			<source ref="id269"/>
+			<target ref="id269"/>
+			<label kind="synchronisation" x="-569" y="-297">TargetDelete1?</label>
+			<nail x="-484" y="-272"/>
+			<nail x="-535" y="-272"/>
+		</transition>
+		<transition>
+			<source ref="id270"/>
+			<target ref="id270"/>
+			<label kind="synchronisation" x="-790" y="-119">TargetDelete1?</label>
+			<nail x="-680" y="-136"/>
+			<nail x="-680" y="-85"/>
+		</transition>
+		<transition>
+			<source ref="id271"/>
+			<target ref="id270"/>
+			<label kind="synchronisation" x="-374" y="8">TargetDelete1?</label>
+			<nail x="-195" y="8"/>
+			<nail x="-535" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id273"/>
+			<target ref="id270"/>
+			<label kind="synchronisation" x="-518" y="-34">TargetDelete1?</label>
+			<nail x="-467" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id268"/>
+			<target ref="id271"/>
+			<label kind="synchronisation" x="-323" y="-195">JamStyle1?</label>
+		</transition>
+		<transition>
+			<source ref="id269"/>
+			<target ref="id268"/>
+			<label kind="synchronisation" x="-493" y="-221">TargetJamLib1?</label>
+		</transition>
+		<transition>
+			<source ref="id270"/>
+			<target ref="id269"/>
+			<label kind="synchronisation" x="-544" y="-178">JamAllowed1?</label>
+		</transition>
+		<transition>
+			<source ref="id279"/>
+			<target ref="id275"/>
+			<label kind="guard" x="-25" y="-187">FSJ_state==3 &amp;&amp; QLJ_state==1</label>
+			<label kind="synchronisation" x="8" y="-161">JamConfigureValue1!</label>
+		</transition>
+		<transition>
+			<source ref="id273"/>
+			<target ref="id271"/>
+			<label kind="synchronisation" x="-314" y="-119">JamAllowed1?</label>
+		</transition>
+		<transition>
+			<source ref="id275"/>
+			<target ref="id272"/>
+			<label kind="synchronisation" x="239" y="-186">JamProhibited1?</label>
+			<nail x="196" y="-178"/>
+		</transition>
+		<transition>
+			<source ref="id275"/>
+			<target ref="id272"/>
+			<label kind="synchronisation" x="153" y="-110">TargetDelete1?</label>
+		</transition>
+		<transition>
+			<source ref="id274"/>
+			<target ref="id273"/>
+			<label kind="synchronisation" x="-459" y="-144">JamStyle1?</label>
+		</transition>
+		<transition>
+			<source ref="id270"/>
+			<target ref="id274"/>
+			<label kind="synchronisation" x="-586" y="-110">TargetJamLib1?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer1</name>
+		<location id="id280" x="100" y="100">
+		</location>
+		<location id="id281" x="200" y="100">
+			<name x="212" y="110">Finished</name>
+		</location>
+		<init ref="id280"/>
+		<transition>
+			<source ref="id280"/>
+			<target ref="id281"/>
+			<label kind="guard" x="102" y="144">WCC_CRUPowerCloseControl_CRUWorkingCurrentCloseCommandFromOP==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer2</name>
+		<location id="id282" x="100" y="100">
+		</location>
+		<location id="id283" x="200" y="100">
+			<name x="200" y="100">Finished</name>
+		</location>
+		<init ref="id282"/>
+		<transition>
+			<source ref="id282"/>
+			<target ref="id283"/>
+			<label kind="guard" x="200" y="100">WCC_CRUPowerOpenControl_CRUWorkingCurrentOpenCommandFromOP==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer3</name>
+		<location id="id284" x="100" y="100">
+		</location>
+		<location id="id285" x="200" y="100">
+			<name x="200" y="100">a</name>
+		</location>
+		<location id="id286" x="300" y="100">
+			<name x="300" y="100">b</name>
+		</location>
+		<location id="id287" x="400" y="100">
+			<name x="400" y="100">c</name>
+		</location>
+		<location id="id288" x="500" y="100">
+			<name x="500" y="100">d</name>
+		</location>
+		<location id="id289" x="600" y="100">
+			<name x="600" y="100">e</name>
+		</location>
+		<location id="id290" x="700" y="100">
+			<name x="700" y="100">f</name>
+		</location>
+		<location id="id291" x="800" y="100">
+			<name x="800" y="100">g</name>
+		</location>
+		<location id="id292" x="900" y="100">
+			<name x="900" y="100">Finished</name>
+		</location>
+		<init ref="id284"/>
+		<transition>
+			<source ref="id284"/>
+			<target ref="id285"/>
+			<label kind="guard" x="200" y="100">DB_DataLoad_DataLibBak==1</label>
+		</transition>
+		<transition>
+			<source ref="id285"/>
+			<target ref="id286"/>
+			<label kind="guard" x="300" y="100">DCD_DataLoad_DeviceDataLoadResultDisplay==1</label>
+		</transition>
+		<transition>
+			<source ref="id286"/>
+			<target ref="id287"/>
+			<label kind="guard" x="400" y="100">ICU_DataLoad_DataLoad==1</label>
+		</transition>
+		<transition>
+			<source ref="id287"/>
+			<target ref="id288"/>
+			<label kind="guard" x="500" y="100">SPU_DataLoad_DataLoad==1</label>
+		</transition>
+		<transition>
+			<source ref="id288"/>
+			<target ref="id289"/>
+			<label kind="guard" x="600" y="100">JPU_DataLoad_DataLoad==1</label>
+		</transition>
+		<transition>
+			<source ref="id289"/>
+			<target ref="id290"/>
+			<label kind="guard" x="700" y="100">ICU_DataLoad_ICUWork==1</label>
+		</transition>
+		<transition>
+			<source ref="id290"/>
+			<target ref="id291"/>
+			<label kind="guard" x="800" y="100">SPU_DataLoad_SPUWork==1</label>
+		</transition>
+		<transition>
+			<source ref="id291"/>
+			<target ref="id292"/>
+			<label kind="guard" x="900" y="100">JPU_DataLoad_JPUWork==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer4</name>
+		<location id="id293" x="100" y="100">
+		</location>
+		<location id="id294" x="200" y="100">
+			<name x="200" y="100">Finished</name>
+		</location>
+		<init ref="id293"/>
+		<transition>
+			<source ref="id293"/>
+			<target ref="id294"/>
+			<label kind="guard" x="200" y="100">WCC_ICUPowerCloseControl_ICUWorkingCurrentCloseCommandFromOP==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer5</name>
+		<location id="id295" x="100" y="100">
+		</location>
+		<location id="id296" x="200" y="100">
+			<name x="200" y="100">Finished</name>
+		</location>
+		<init ref="id295"/>
+		<transition>
+			<source ref="id295"/>
+			<target ref="id296"/>
+			<label kind="guard" x="200" y="100">WCC_ICUPowerOpenControl_ICUWorkingCurrentOpenCommandFromOP==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer6</name>
+		<location id="id297" x="100" y="100">
+		</location>
+		<location id="id298" x="200" y="100">
+			<name x="200" y="100">a</name>
+		</location>
+		<location id="id299" x="300" y="100">
+			<name x="300" y="100">b</name>
+		</location>
+		<location id="id300" x="400" y="100">
+			<name x="400" y="100">c</name>
+		</location>
+		<location id="id301" x="500" y="100">
+			<name x="500" y="100">d</name>
+		</location>
+		<location id="id302" x="600" y="100">
+			<name x="600" y="100">e</name>
+		</location>
+		<location id="id303" x="700" y="100">
+			<name x="700" y="100">f</name>
+		</location>
+		<location id="id304" x="800" y="100">
+			<name x="800" y="100">g</name>
+		</location>
+		<location id="id305" x="900" y="100">
+			<name x="900" y="100">h</name>
+		</location>
+		<location id="id306" x="1000" y="100">
+			<name x="1000" y="100">Finished</name>
+		</location>
+		<init ref="id297"/>
+		<transition>
+			<source ref="id297"/>
+			<target ref="id298"/>
+			<label kind="guard" x="200" y="100">DCD_Init_DeviceInitResultDisplay==1</label>
+		</transition>
+		<transition>
+			<source ref="id298"/>
+			<target ref="id299"/>
+			<label kind="guard" x="300" y="100">ICU_Init_ICUInit==1</label>
+		</transition>
+		<transition>
+			<source ref="id299"/>
+			<target ref="id300"/>
+			<label kind="guard" x="400" y="100">SPU_Init_SPUInit==1</label>
+		</transition>
+		<transition>
+			<source ref="id300"/>
+			<target ref="id301"/>
+			<label kind="guard" x="500" y="100">CRU_Init_CRUInit==1</label>
+		</transition>
+		<transition>
+			<source ref="id301"/>
+			<target ref="id302"/>
+			<label kind="guard" x="600" y="100">JPU_Init_JPUInit==1</label>
+		</transition>
+		<transition>
+			<source ref="id302"/>
+			<target ref="id303"/>
+			<label kind="guard" x="700" y="100">ICU_Init_ICUWork==1</label>
+		</transition>
+		<transition>
+			<source ref="id303"/>
+			<target ref="id304"/>
+			<label kind="guard" x="800" y="100">SPU_Init_SPUWork==1</label>
+		</transition>
+		<transition>
+			<source ref="id304"/>
+			<target ref="id305"/>
+			<label kind="guard" x="900" y="100">CRU_Init_CRUWork==1</label>
+		</transition>
+		<transition>
+			<source ref="id305"/>
+			<target ref="id306"/>
+			<label kind="guard" x="1000" y="100">JPU_Init_JPUWork==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer7</name>
+		<location id="id307" x="100" y="100">
+		</location>
+		<location id="id308" x="200" y="100">
+			<name x="200" y="100">a</name>
+		</location>
+		<location id="id309" x="300" y="100">
+			<name x="300" y="100">b</name>
+		</location>
+		<location id="id310" x="400" y="100">
+			<name x="400" y="100">c</name>
+		</location>
+		<location id="id311" x="500" y="100">
+			<name x="500" y="100">Finished</name>
+		</location>
+		<init ref="id307"/>
+		<transition>
+			<source ref="id307"/>
+			<target ref="id308"/>
+			<label kind="guard" x="200" y="100">JPU_JamProcess_JPUWork==1</label>
+		</transition>
+		<transition>
+			<source ref="id308"/>
+			<target ref="id309"/>
+			<label kind="guard" x="300" y="100">JPU_JamProcess_JamProcess==1</label>
+		</transition>
+		<transition>
+			<source ref="id309"/>
+			<target ref="id310"/>
+			<label kind="guard" x="400" y="100">DCD_JamProcess_NoJamStatusDisplay==1</label>
+		</transition>
+		<transition>
+			<source ref="id310"/>
+			<target ref="id311"/>
+			<label kind="guard" x="500" y="100">DCD_JamProcess_JamStatusDisplay==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer8</name>
+		<location id="id312" x="100" y="100">
+		</location>
+		<location id="id313" x="200" y="100">
+			<name x="200" y="100">Finished</name>
+		</location>
+		<init ref="id312"/>
+		<transition>
+			<source ref="id312"/>
+			<target ref="id313"/>
+			<label kind="guard" x="200" y="100">WCC_JPUPowerCloseControl_JPUWorkingCurrentCloseCommandFromOP==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer9</name>
+		<location id="id314" x="100" y="100">
+		</location>
+		<location id="id315" x="200" y="100">
+			<name x="200" y="100">Finished</name>
+		</location>
+		<init ref="id314"/>
+		<transition>
+			<source ref="id314"/>
+			<target ref="id315"/>
+			<label kind="guard" x="200" y="100">WCC_JPUPowerOpenControl_JPUWorkingCurrentOpenCommandFromOP==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer10</name>
+		<location id="id316" x="100" y="100">
+		</location>
+		<location id="id317" x="200" y="100">
+			<name x="200" y="100">a</name>
+		</location>
+		<location id="id318" x="300" y="100">
+			<name x="300" y="100">b</name>
+		</location>
+		<location id="id319" x="400" y="100">
+			<name x="400" y="100">c</name>
+		</location>
+		<location id="id320" x="500" y="100">
+			<name x="500" y="100">d</name>
+		</location>
+		<location id="id321" x="600" y="100">
+			<name x="600" y="100">e</name>
+		</location>
+		<location id="id322" x="700" y="100">
+			<name x="700" y="100">f</name>
+		</location>
+		<location id="id323" x="800" y="100">
+			<name x="800" y="100">g</name>
+		</location>
+		<location id="id324" x="900" y="100">
+			<name x="900" y="100">Finished</name>
+		</location>
+		<init ref="id316"/>
+		<transition>
+			<source ref="id316"/>
+			<target ref="id317"/>
+			<label kind="guard" x="200" y="100">WCC_OverTempProtect_ICUWorkingCurrentOpenCommandFromOTP==1</label>
+		</transition>
+		<transition>
+			<source ref="id317"/>
+			<target ref="id318"/>
+			<label kind="guard" x="300" y="100">WCC_OverTempProtect_ICUWorkingCurrentCloseCommandFromOTP==1</label>
+		</transition>
+		<transition>
+			<source ref="id318"/>
+			<target ref="id319"/>
+			<label kind="guard" x="400" y="100">WCC_OverTempProtect_SPUWorkingCurrentOpenCommandFromOTP==1</label>
+		</transition>
+		<transition>
+			<source ref="id319"/>
+			<target ref="id320"/>
+			<label kind="guard" x="500" y="100">WCC_OverTempProtect_SPUWorkingCurrentCloseCommandFromOTP==1</label>
+		</transition>
+		<transition>
+			<source ref="id320"/>
+			<target ref="id321"/>
+			<label kind="guard" x="600" y="100">WCC_OverTempProtect_CRUWorkingCurrentOpenCommandFromOTP==1</label>
+		</transition>
+		<transition>
+			<source ref="id321"/>
+			<target ref="id322"/>
+			<label kind="guard" x="700" y="100">WCC_OverTempProtect_CRUWorkingCurrentCloseCommandFromOTP==1</label>
+		</transition>
+		<transition>
+			<source ref="id322"/>
+			<target ref="id323"/>
+			<label kind="guard" x="800" y="100">WCC_OverTempProtect_JPUWorkingCurrentCloseCommandFromOTP==1</label>
+		</transition>
+		<transition>
+			<source ref="id323"/>
+			<target ref="id324"/>
+			<label kind="guard" x="900" y="100">WCC_OverTempProtect_JPUWorkingCurrentOpenCommandFromOTP==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer11</name>
+		<location id="id325" x="100" y="100">
+		</location>
+		<location id="id326" x="200" y="100">
+			<name x="200" y="100">a</name>
+		</location>
+		<location id="id327" x="300" y="100">
+			<name x="300" y="100">Finished</name>
+		</location>
+		<init ref="id325"/>
+		<transition>
+			<source ref="id325"/>
+			<target ref="id326"/>
+			<label kind="guard" x="200" y="100">CRU_ReconnaissanceGuide_WorkFollowReceivePolicyExecute==1</label>
+		</transition>
+		<transition>
+			<source ref="id326"/>
+			<target ref="id327"/>
+			<label kind="guard" x="300" y="100">CRU_ReconnaissanceGuide_WorkFollowTrapPolicyExecute==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer12</name>
+		<location id="id328" x="100" y="100">
+		</location>
+		<location id="id329" x="200" y="100">
+			<name x="200" y="100">Finished</name>
+		</location>
+		<init ref="id328"/>
+		<transition>
+			<source ref="id328"/>
+			<target ref="id329"/>
+			<label kind="guard" x="200" y="100">TAI_SignalIdentify_IdentifiedTarget==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer13</name>
+		<location id="id330" x="100" y="100">
+		</location>
+		<location id="id331" x="200" y="100">
+			<name x="200" y="100">Finished</name>
+		</location>
+		<init ref="id330"/>
+		<transition>
+			<source ref="id330"/>
+			<target ref="id331"/>
+			<label kind="guard" x="200" y="100">TAS_SignalSort_SortedTarget==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer14</name>
+		<location id="id332" x="100" y="100">
+		</location>
+		<location id="id333" x="200" y="100">
+			<name x="200" y="100">Finished</name>
+		</location>
+		<init ref="id332"/>
+		<transition>
+			<source ref="id332"/>
+			<target ref="id333"/>
+			<label kind="guard" x="200" y="100">DCD_SpectrumSurveillance_SpectrumDisplay==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer15</name>
+		<location id="id334" x="100" y="100">
+		</location>
+		<location id="id335" x="200" y="100">
+			<name x="200" y="100">Finished</name>
+		</location>
+		<init ref="id334"/>
+		<transition>
+			<source ref="id334"/>
+			<target ref="id335"/>
+			<label kind="guard" x="200" y="100">WCC_SPUPowerCloseControl_SPUWorkingCurrentCloseCommandFromOP==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer16</name>
+		<location id="id336" x="100" y="100">
+		</location>
+		<location id="id337" x="200" y="100">
+			<name x="200" y="100">Finished</name>
+		</location>
+		<init ref="id336"/>
+		<transition>
+			<source ref="id336"/>
+			<target ref="id337"/>
+			<label kind="guard" x="200" y="100">WCC_SPUPowerOpenControl_SPUWorkingCurrentOpenCommandFromOP==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer17</name>
+		<location id="id338" x="100" y="100">
+		</location>
+		<location id="id339" x="200" y="100">
+			<name x="200" y="100">Finished</name>
+		</location>
+		<init ref="id338"/>
+		<transition>
+			<source ref="id338"/>
+			<target ref="id339"/>
+			<label kind="guard" x="200" y="100">DCD_TargetReport_TargetInfoDisplay==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer18</name>
+		<location id="id340" x="100" y="100">
+		</location>
+		<location id="id341" x="200" y="100">
+			<name x="200" y="100">a</name>
+		</location>
+		<location id="id342" x="300" y="100">
+			<name x="300" y="100">b</name>
+		</location>
+		<location id="id343" x="400" y="100">
+			<name x="400" y="100">c</name>
+		</location>
+		<location id="id344" x="500" y="100">
+			<name x="500" y="100">d</name>
+		</location>
+		<location id="id345" x="600" y="100">
+			<name x="600" y="100">Finished</name>
+		</location>
+		<init ref="id340"/>
+		<transition>
+			<source ref="id340"/>
+			<target ref="id341"/>
+			<label kind="guard" x="200" y="100">TD_TemperatureReport_ICUTemperate==1</label>
+		</transition>
+		<transition>
+			<source ref="id341"/>
+			<target ref="id342"/>
+			<label kind="guard" x="300" y="100">TD_TemperatureReport_SPUTemperate==1</label>
+		</transition>
+		<transition>
+			<source ref="id342"/>
+			<target ref="id343"/>
+			<label kind="guard" x="400" y="100">TD_TemperatureReport_CRUTemperate==1</label>
+		</transition>
+		<transition>
+			<source ref="id343"/>
+			<target ref="id344"/>
+			<label kind="guard" x="500" y="100">TD_TemperatureReport_JPUTemperate==1</label>
+		</transition>
+		<transition>
+			<source ref="id344"/>
+			<target ref="id345"/>
+			<label kind="guard" x="600" y="100">DCD_TemperatureReport_TemperateDataDisplay==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>Observer19</name>
+		<location id="id346" x="100" y="100">
+		</location>
+		<location id="id347" x="200" y="100">
+			<name x="200" y="100">a</name>
+		</location>
+		<location id="id348" x="300" y="100">
+			<name x="300" y="100">b</name>
+		</location>
+		<location id="id349" x="400" y="100">
+			<name x="400" y="100">c</name>
+		</location>
+		<location id="id350" x="500" y="100">
+			<name x="500" y="100">d</name>
+		</location>
+		<location id="id351" x="600" y="100">
+			<name x="600" y="100">e</name>
+		</location>
+		<location id="id352" x="700" y="100">
+			<name x="700" y="100">f</name>
+		</location>
+		<location id="id353" x="800" y="100">
+			<name x="800" y="100">g</name>
+		</location>
+		<location id="id354" x="900" y="100">
+			<name x="900" y="100">h</name>
+		</location>
+		<location id="id355" x="1000" y="100">
+			<name x="1000" y="100">i</name>
+		</location>
+		<location id="id356" x="1100" y="100">
+			<name x="1100" y="100">j</name>
+		</location>
+		<location id="id357" x="1200" y="100">
+			<name x="1200" y="100">k</name>
+		</location>
+		<location id="id358" x="1300" y="100">
+			<name x="1300" y="100">l</name>
+		</location>
+		<location id="id359" x="1400" y="100">
+			<name x="1400" y="100">m</name>
+		</location>
+		<location id="id360" x="1500" y="100">
+			<name x="1500" y="100">n</name>
+		</location>
+		<location id="id361" x="1600" y="100">
+			<name x="1600" y="100">o</name>
+		</location>
+		<location id="id362" x="1700" y="100">
+			<name x="1700" y="100">p</name>
+		</location>
+		<location id="id363" x="1800" y="100">
+			<name x="1800" y="100">Finished</name>
+		</location>
+		<init ref="id346"/>
+		<transition>
+			<source ref="id346"/>
+			<target ref="id347"/>
+			<label kind="guard" x="200" y="100">DCD_WorkingCurrentControl_DeviceWorkingCurrentStatusDisplay==1</label>
+		</transition>
+		<transition>
+			<source ref="id347"/>
+			<target ref="id348"/>
+			<label kind="guard" x="300" y="100">ICU_WorkingCurrentControl_ICUOn==1</label>
+		</transition>
+		<transition>
+			<source ref="id348"/>
+			<target ref="id349"/>
+			<label kind="guard" x="400" y="100">ICUS_WorkingCurrentControl_ICUSensorOn==1</label>
+		</transition>
+		<transition>
+			<source ref="id349"/>
+			<target ref="id350"/>
+			<label kind="guard" x="500" y="100">ICU_WorkingCurrentControl_ICUOff==1</label>
+		</transition>
+		<transition>
+			<source ref="id350"/>
+			<target ref="id351"/>
+			<label kind="guard" x="600" y="100">ICUS_WorkingCurrentControl_ICUSensorOff==1</label>
+		</transition>
+		<transition>
+			<source ref="id351"/>
+			<target ref="id352"/>
+			<label kind="guard" x="700" y="100">SPU_WorkingCurrentControl_SPUOn==1</label>
+		</transition>
+		<transition>
+			<source ref="id352"/>
+			<target ref="id353"/>
+			<label kind="guard" x="800" y="100">SPUS_WorkingCurrentControl_SPUSensorOn==1</label>
+		</transition>
+		<transition>
+			<source ref="id353"/>
+			<target ref="id354"/>
+			<label kind="guard" x="900" y="100">SPU_WorkingCurrentControl_SPUOff==1</label>
+		</transition>
+		<transition>
+			<source ref="id354"/>
+			<target ref="id355"/>
+			<label kind="guard" x="1000" y="100">SPUS_WorkingCurrentControl_SPUSensorOff==1</label>
+		</transition>
+		<transition>
+			<source ref="id355"/>
+			<target ref="id356"/>
+			<label kind="guard" x="1100" y="100">CRU_WorkingCurrentControl_CRUOn==1</label>
+		</transition>
+		<transition>
+			<source ref="id356"/>
+			<target ref="id357"/>
+			<label kind="guard" x="1200" y="100">CRUS_WorkingCurrentControl_CRUSensorOn==1</label>
+		</transition>
+		<transition>
+			<source ref="id357"/>
+			<target ref="id358"/>
+			<label kind="guard" x="1300" y="100">CRU_WorkingCurrentControl_CRUOff==1</label>
+		</transition>
+		<transition>
+			<source ref="id358"/>
+			<target ref="id359"/>
+			<label kind="guard" x="1400" y="100">CRUS_WorkingCurrentControl_CRUSensorOff==1</label>
+		</transition>
+		<transition>
+			<source ref="id359"/>
+			<target ref="id360"/>
+			<label kind="guard" x="1500" y="100">JPU_WorkingCurrentControl_JPUOn==1</label>
+		</transition>
+		<transition>
+			<source ref="id360"/>
+			<target ref="id361"/>
+			<label kind="guard" x="1600" y="100">JPU_WorkingCurrentControl_JPUOff==1</label>
+		</transition>
+		<transition>
+			<source ref="id361"/>
+			<target ref="id362"/>
+			<label kind="guard" x="1700" y="100">JPUS_WorkingCurrentControl_JPUSensorOn==1</label>
+		</transition>
+		<transition>
+			<source ref="id362"/>
+			<target ref="id363"/>
+			<label kind="guard" x="1800" y="100">JPUS_WorkingCurrentControl_JPUSensorOff==1</label>
+		</transition>
+	</template>
+	<system>//1
+system CRUPowerCloseControl,DisplayControlDevice,CommandOperator,WorkingCurrentCommand,Observer1;
+
+//2
+system CRUPowerOpenControl,DisplayControlDevice,CommandOperator,WorkingCurrentCommand,Observer2;
+
+//3
+system CommandOperator,DataBase,DisplayControlDevice,JamProcessUnit,IntegrateControlUnit,SignalProcessUnit,Observer3;
+
+//4
+system ICUPowerCloseControl,DisplayControlDevice,CommandOperator,WorkingCurrentCommand,Observer4
+
+//5
+system ICUPowerOpenControl,DisplayControlDevice,CommandOperator,WorkingCurrentCommand,Observer5;
+
+//6
+system CollecteReceiveUnit,CommandOperator,DisplayControlDevice,JamProcessUnit,IntegrateControlUnit,SignalProcessUnit,CollecteReceiveUnit,Observer6;
+</system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt; Observer1.Finished</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Observer4.Finished</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

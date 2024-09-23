@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan MeaAngStoIns,MeaAngLoadIns;
+chan SunVisibleSignStoIns,SunVisibleSignLoadIns;
+chan ThrusterpowerstateStoIns,ThrusterpowerstateLoadIns;
+chan CurrentmodeLoadIns,CurrentmodeStoIns;
+chan TriAttAngLoadIns,TriAttAngStoIns,TriAnguVelLoadIns,TriAnguVelStoIns;
+
+chan TarAttAngLoadIns,TarAttAngStoIns,TarAnguVelLoadIns,TarAnguVelStoIns;
+
+chan TriConQuaLoadIns,TriConQuaStoIns;
+chan ThrComLogLoadIns,ThrComLogStoIns;
+
+chan NextcyclemodeLoadIns,NextcyclemodeStoIns;
+
+int NextMode;
+
+double Suntimer;
+clock SunAngle;
+broadcast chan SunSensorpoweronSignal,SunSensorpoweroffSignal;
+broadcast chan SunSensorpowerstateperIns,SunMeaAngperIns,SunVisibleSignperIns;
+int[0,1] SunSensorpowerstate=0;
+int[0,1] SunVisibleSign;
+int[0,1] SunSensorpowerIns=0;
+int[0,1] SunSensorpowerInsStoIns=0;
+
+
+
+broadcast chan GyropoweronSignal,GyropoweroffSignal;
+broadcast chan PulseCountperIns,GyropowerstateperIns;
+int[0,1] Gyropowerstate=0;
+int[0,1] GyropowerInsStoIns=0;
+int[0,1] GyropowerIns=0;
+int[0,1] AnguAngVelAnaStoIns=0;
+int[0,1] PulseCountStoIns=0;
+
+broadcast chan ThrusterpoweronSignal,ThrusterpoweroffSignal;
+broadcast chan ThrusterpowerstateperIns;
+int[0,1] Thrusterpowerstate=0;
+int[0,1] ThrusterpowerInsStoIns=0;
+int[0,1] ThrusterpowerIns=0;
+
+broadcast chan RASMIns,PASMIns,RDSMIns,CSMIns;
+broadcast chan RASMControl,PASMControl,RDSMControl,CSMControl;
+
+//0:RDSM速率阻尼，1：PASM俯仰搜索，2：RASM滚动搜索，3：CSM对日巡航
+int Currentmode=0;
+
+broadcast chan InterrupttimerstartIns;
+clock timer;
+int Interruptcount=0;
+broadcast chan Interruptsignal;
+
+
+broadcast chan ControlOutput;
+broadcast chan CSMTelcontrolIns;
+broadcast chan RDSMTelcontrolIns;
+broadcast chan TeldataTraIns;
+broadcast chan CSMCommand,RDSMCommand;
+int[0,1] TeldataStoIns=0;
+int[0,1] TelMdata=0;
+
+int[0,1] CSMC=0;
+int[0,1] RDSMC=0;
+
+int[0,1] PulsecountStoIns=0;
+
+clock GDA_t;
+
+chan PulseCountAcqIns;
+
+
+chan GyropoweronInsStoIns,GyropoweroffInsStoIns,GyropoweronInsLoadIns,GyropoweroffInsLoadIns;
+int[0,1] GyropoweronInsStoInsV,GyropoweroffInsStoInsV;
+
+chan SunSensorpoweronInsStoIns,SunSensorpoweroffInsStoIns,SunSensorpoweronInsLoadIns,SunSensorpoweroffInsLoadIns;
+int[0,1] SunSensorpoweronInsStoInsV,SunSensorpoweroffInsStoInsV;
+
+chan ThrusterpoweronInsStoIns,ThrusterpoweroffInsStoIns,ThrusterpoweronInsLoadIns,ThrusterpoweroffInsLoadIns;
+int[0,1] ThrusterpoweronInsStoInsV,ThrusterpoweroffInsStoInsV;
+
+chan AnguVelAnaStoIns,AnguVelAnaLoadIns,GyropowerstateStoIns,GyropowerstateLoadIns;
+</declaration>
+	<template>
+		<name>InterruptTimer</name>
+		<location id="id0" x="-255" y="-85">
+			<name x="-297" y="-119">Init</name>
+			<label kind="invariant" x="-221" y="-59">timer&lt;=32</label>
+		</location>
+		<init ref="id0"/>
+		<transition id="id1">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-178" y="-102">timer&gt;=32 &amp;&amp; Interruptcount&gt;=5</label>
+			<label kind="assignment" x="-178" y="-119">Interruptcount=0,timer=0</label>
+			<nail x="-187" y="-68"/>
+			<nail x="-187" y="-110"/>
+		</transition>
+		<transition id="id2">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-476" y="-51">timer&gt;=32 &amp;&amp; Interruptcount&lt;5</label>
+			<label kind="assignment" x="-280" y="-34">timer=0,
+Interruptcount=Interruptcount+1</label>
+			<nail x="-272" y="-34"/>
+			<nail x="-238" y="-34"/>
+		</transition>
+		<transition id="id3">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-323" y="-153">InterrupttimerstartIns?</label>
+			<nail x="-272" y="-127"/>
+			<nail x="-238" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>InterruptTimerInitialization</name>
+		<location id="id4" x="-144" y="-59">
+			<name x="-212" y="-68">Start</name>
+		</location>
+		<location id="id5" x="17" y="-59">
+			<name x="51" y="-68">End</name>
+		</location>
+		<init ref="id4"/>
+		<transition id="id6">
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<nail x="17" y="8"/>
+			<nail x="-144" y="8"/>
+		</transition>
+		<transition id="id7">
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-153" y="-93">InterrupttimerstartIns!</label>
+		</transition>
+	</template>
+	<system>system InterruptTimerInitialization,InterruptTimer;</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment/>
+		</query>
+	</queries>
+</nta>

@@ -1,0 +1,13 @@
+@startuml
+skinparam componentStyle uml1
+component [CS] #DAE3F3
+component [PG] #FFF2CC
+component [OP] #FFF2CC
+component [LC] #E2F0D9
+[CS] --> interface1
+interface1 - [PG]
+[PG] --> interface2
+interface2 - [OP]
+[CS] --> interface3
+interface3 - [LC]
+@enduml

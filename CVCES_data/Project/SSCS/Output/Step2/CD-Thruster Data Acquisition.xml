@@ -1,0 +1,22 @@
+@startuml
+skinparam componentStyle uml1
+component [TPCO] #DAE3F3
+component [TDA] #DAE3F3
+component [STPonI] #DAE3F3
+component [STPoffI] #DAE3F3
+component [TPI] #E2F0D9
+component [TD] #E2F0D9
+component [TCT] #FFF2CC
+[STPoffI] --> interface1
+interface1 -- [TPI]
+[STPonI] --> interface2
+interface2 -- [TPI]
+[TPCO] --> interface3
+interface3 -- [TPI]
+[TPCO] --> interface4
+interface4 -- [TCT]
+[TDA] --> interface5
+interface5 -- [TCT]
+[TDA] --> interface6
+interface6 -- [TD]
+@enduml

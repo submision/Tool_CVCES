@@ -1,0 +1,7 @@
+@startuml
+skinparam componentStyle uml1
+component [32ITI] #DAE3F3
+component [32IT] #FFF2CC
+[32ITI] --> interface1
+interface1 -- [32IT]
+@enduml

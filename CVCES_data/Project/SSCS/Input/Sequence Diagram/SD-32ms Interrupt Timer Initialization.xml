@@ -1,0 +1,4 @@
+Controller as 32ITI
+Entity as 32IT
+32ITI -> 32IT : 32ms interrupt timer start instruction[event]     
+32IT -> 32ITI : 32ms interrupt timer start state[state]

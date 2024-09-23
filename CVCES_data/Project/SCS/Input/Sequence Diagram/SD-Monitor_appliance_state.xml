@@ -1,0 +1,7 @@
+Controller as MAS
+Entity as PS, LI, AD
+Datastorage as HD
+MAS -> PS : power state acquisition[event]
+PS -> LI : light_power_acquisition_instruction[event]
+PS -> AD : audio_power_acquisition_instruction[event]
+MAS -> HD : appliance status storage

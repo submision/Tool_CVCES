@@ -1,0 +1,24 @@
+Controller as WorCurCon
+Entity as DCD, ICU, CRU, SPU, JPU, ICUS, CRUS, SPUS, JPUS
+Datastorage as WCC
+par
+	WCC -> WorCurCon : ICUWorkingCurrentOpenCommandRead[event]
+	WorCurCon -> ICU : ICUWorkingCurrentOpen[event]
+	ICU -> ICUS : ICUSensorWorkingCurrentOpen[event]
+	ICU -> DCD : ICUWorkingCurrentOpenResult[event]
+else
+	WCC -> WorCurCon : CRUWorkingCurrentOpenCommandRead[event]
+	WorCurCon -> CRU : CRUWorkingCurrentOpen[event]
+	CRU -> CRUS : CRUSensorWorkingCurrentOpen[event]
+	CRU -> DCD : CRUWorkingCurrentOpenResult[event]
+else
+	WCC -> WorCurCon : SPUWorkingCurrentOpenCommandRead[event]
+	WorCurCon -> SPU : SPUWorkingCurrentOpen[event]
+	SPU -> SPUS : SPUSensorWorkingCurrentOpen[event]
+	SPU -> DCD : SPUWorkingCurrentOpenResult[event]
+else
+	WCC -> WorCurCon : JPUWorkingCurrentOpenCommandRead[event]
+	WorCurCon -> JPU : JPUWorkingCurrentOpen[event]
+	JPU -> JPUS : JPUSensorWorkingCurrentOpen[event]
+	JPU -> DCD : JPUWorkingCurrentOpenResult[event]
+end

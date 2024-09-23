@@ -1,0 +1,22 @@
+@startuml
+skinparam componentStyle uml1
+component [TR] #DAE3F3
+component [TD] #E2F0D9
+component [DCD] #FFF2CC
+component [ICUS] #FFF2CC
+component [CRUS] #FFF2CC
+component [SPUS] #FFF2CC
+component [JPUS] #FFF2CC
+[TR] --> interface1
+interface1 -- [ICUS]
+[TR] --> interface2
+interface2 -- [CRUS]
+[TR] --> interface3
+interface3 -- [SPUS]
+[TR] --> interface4
+interface4 -- [JPUS]
+[TR] --> interface5
+interface5 -- [TD]
+[TR] --> interface6
+interface6 -- [DCD]
+@enduml

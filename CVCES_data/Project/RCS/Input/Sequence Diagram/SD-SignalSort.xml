@@ -1,0 +1,8 @@
+Controller as SignalSort
+Entity as SPU, CRU, SS
+Datastorage as TAS
+SS -> SignalSort : CollectSignal[event]
+DCD -> SignalSort : OriginalPDW[event]
+SignalSort -> SPU : OriginalPDWToSPU[event]
+SPU -> SignalSort : FilteredPDW[evnet]
+SignalSort -> TAS : SortedTargetSend[event]

@@ -1,0 +1,11 @@
+Controller as UCAS
+Entity as HU, TH, PS, US, LI, AD, LAS, SAS
+US -> TH : read temperature[event]
+US -> HU : read humidity[event]
+opt 
+	US -> PS : turn on[event]
+	UCAS -> PS : turn power switch on[event]
+else
+	US -> PS : turn off[event]
+	UCAS -> PS : turn power switch off[event]
+end

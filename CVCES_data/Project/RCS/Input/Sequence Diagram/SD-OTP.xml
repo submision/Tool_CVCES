@@ -1,0 +1,31 @@
+Controller as OTP
+Datastorage as TD, WCC
+par
+	OTP -> TD : ICUTemperateRead[event]
+	opt ICUTemperate>=120
+		OTP -> WCC : ICUWorkingCurrentCloseCommandFromOTPSend[event]
+	else ICUTemperate<=75
+		OTP -> WCC : ICUWorkingCurrentOpenCommandFromOTPSend[event]
+	end
+else
+	OTP -> TD : CRUTemperateRead[event]
+	opt CRUTemperate>=120
+		OTP -> WCC : CRUWorkingCurrentCloseCommandFromOTPSend[event]
+	else CRUTemperate<=75
+		OTP -> WCC : CRUWorkingCurrentOpenCommandFromOTPSend[event]
+	end
+else 
+	OTP -> TD : SPUTemperateRead[event]
+	opt SPUTemperate>=120
+		OTP -> WCC : SPUWorkingCurrentCloseCommandFromOTPSend[event]
+	else SPUTemperate<=75
+		OTP -> WCC : SPUWorkingCurrentOpenCommandFromOTPSend[event]
+	end
+else
+	OTP -> TD : JPUTemperateRead[event]
+	opt JPUTemperate>=120
+		OTP -> WCC : JPUWorkingCurrentCloseCommandFromOTPSend[event]
+	else JPUTemperate<=75
+		OTP -> WCC : JPUWorkingCurrentOpenCommandFromOTPSend[event]
+	end
+end

@@ -1,0 +1,14 @@
+Controller as CS
+Entity as LI, AD, LAS, SAS, DCS, WCS, DR, WD
+Datastorage as HD
+CS -> DCS : door entry value acquisition[event]
+CS -> WCS : window entry value acquisition[event]
+opt safe == 0
+	par
+		CS -> SAS : activate sound alarm[event]
+		SAS -> AD : turn on audio[event]
+	else
+		CS -> LAS : activate light alarm[event]
+		LAS -> LI : turn on light[event]
+	end
+end

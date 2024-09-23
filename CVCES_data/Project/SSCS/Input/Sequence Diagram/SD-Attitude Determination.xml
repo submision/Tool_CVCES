@@ -1,0 +1,14 @@
+Controller as AD
+Datastorage as MR, GD, SSD, ADR
+MR -> AD : Current mode[value]
+AD -> MR : Current mode load instruction[event]
+AD -> GD : Angular velocity analog load instruction[event]
+GD -> AD : Angular velocity analog[value]         
+AD -> SSD : Sun visible sign load instruction[event]
+AD -> SSD : Sun measurement angle load instruction[event]
+SSD -> AD : Sun visible sign[value]
+SSD -> AD : Sun measurement angle[value]        
+AD -> ADR : Triaxial attitude angle storage instruction[event]
+AD -> ADR : Triaxial angular velocity storage instruction[event]
+ADR -> AD : Triaxial attitude angle[value]
+ADR -> AD : Triaxial angular velocity[value]

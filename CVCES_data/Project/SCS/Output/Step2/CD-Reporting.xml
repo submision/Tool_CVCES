@@ -1,0 +1,10 @@
+@startuml
+skinparam componentStyle uml1
+component [Rep] #DAE3F3
+component [HD] #E2F0D9
+component [WRD] #FFF2CC
+[Rep] -> interface1
+interface1 - [HD]
+[Rep] -> interface2
+interface2 - [WRD]
+@enduml

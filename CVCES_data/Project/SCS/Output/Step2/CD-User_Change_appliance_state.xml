@@ -1,0 +1,16 @@
+@startuml
+skinparam componentStyle uml1
+component [UCAS] #DAE3F3
+component [HU] #FFF2CC
+component [TH] #FFF2CC
+component [PS] #FFF2CC
+component [US] #FFF2CC
+[US] -> interface1
+interface1 - [TH]
+[US] -> interface2
+interface2 - [HU]
+[US] -> interface3
+interface3 - [PS]
+[UCAS] -> interface4
+interface4 - [PS]
+@enduml

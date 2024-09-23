@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan LUInitPulse,ACInitPulse;
+chan ACOffPulse;
+chan BrightnessAcqIns,TemperatureAcqIns,OnButton,OffButton,LUOnPulse,LUOffPulse,OpenPulse,ClosePulse,HotPulse,CoolPulse;
+
+chan OpenInstructionStorageIns,CloseInstructionStorageIns,OpenInstructionLoadIns,CloseInstructionLoadIns;
+
+chan HotInstructionStorageIns,CoolInstructionStorageIns,HotInstructionLoadIns,CoolInstructionLoadIns;
+
+int Brightness;
+int RoomBrightness;
+int Temperature;
+int RoomTemperature;
+clock NEt;
+clock OPt;
+clock t,t1;
+clock AUt;
+clock COt;
+clock TCt;
+clock PGt;
+
+int[0,1] OpenStoIns=0,CloseStoIns=0;
+int[0,1] HotStoIns=0,CoolStoIns=0;
+
+
+</declaration>
+	<template>
+		<name>LightCommand</name>
+		<location id="id0" x="-76" y="-68">
+		</location>
+		<init ref="id0"/>
+		<transition id="id1">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="8" y="-42">CloseStoIns==1</label>
+			<label kind="synchronisation" x="-51" y="0">CloseInstructionLoadIns?</label>
+			<label kind="assignment" x="8" y="-25">CloseStoIns=0</label>
+			<nail x="8" y="-25"/>
+			<nail x="-34" y="0"/>
+		</transition>
+		<transition id="id2">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-314" y="0">CloseInstructionStorageIns?</label>
+			<label kind="assignment" x="-255" y="-25">CloseStoIns=1</label>
+			<nail x="-110" y="0"/>
+			<nail x="-144" y="-25"/>
+		</transition>
+		<transition id="id3">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="8" y="-110">OpenStoIns==1</label>
+			<label kind="synchronisation" x="-59" y="-144">OpenInstructionLoadIns?</label>
+			<label kind="assignment" x="8" y="-127">OpenStoIns=0</label>
+			<nail x="-17" y="-127"/>
+			<nail x="8" y="-93"/>
+		</transition>
+		<transition id="id4">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-314" y="-144">OpenInstructionStorageIns?</label>
+			<label kind="assignment" x="-255" y="-127">OpenStoIns=1</label>
+			<nail x="-144" y="-102"/>
+			<nail x="-110" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>ACCommand</name>
+		<location id="id5" x="-76" y="-68">
+		</location>
+		<init ref="id5"/>
+		<transition id="id6">
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="guard" x="8" y="-42">HotStoIns==1</label>
+			<label kind="synchronisation" x="-51" y="0">HotInstructionLoadIns?</label>
+			<label kind="assignment" x="8" y="-25">HotStoIns=0</label>
+			<nail x="8" y="-25"/>
+			<nail x="-34" y="0"/>
+		</transition>
+		<transition id="id7">
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-314" y="0">HotInstructionStorageIns?</label>
+			<label kind="assignment" x="-255" y="-25">HotStoIns=1</label>
+			<nail x="-110" y="0"/>
+			<nail x="-144" y="-25"/>
+		</transition>
+		<transition id="id8">
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="guard" x="8" y="-110">CoolStoIns==1</label>
+			<label kind="synchronisation" x="-59" y="-144">CoolInstructionLoadIns?</label>
+			<label kind="assignment" x="8" y="-127">CoolStoIns=0</label>
+			<nail x="-17" y="-127"/>
+			<nail x="8" y="-93"/>
+		</transition>
+		<transition id="id9">
+			<source ref="id5"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-314" y="-144">CoolInstructionStorageIns?</label>
+			<label kind="assignment" x="-255" y="-127">CoolStoIns=1</label>
+			<nail x="-144" y="-102"/>
+			<nail x="-110" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>NaturalEnvironment</name>
+		<location id="id10" x="-246" y="-17">
+			<name x="-289" y="-51">Morning</name>
+			<label kind="invariant" x="-289" y="-8">NEt&lt;=80</label>
+		</location>
+		<location id="id11" x="-136" y="-42">
+			<name x="-178" y="-42">Noon</name>
+			<label kind="invariant" x="-119" y="-42">NEt&lt;=100</label>
+		</location>
+		<location id="id12" x="-25" y="-17">
+			<name x="-42" y="-51">Dawn</name>
+			<label kind="invariant" x="-42" y="-8">NEt&lt;=80</label>
+		</location>
+		<location id="id13" x="-136" y="8">
+			<name x="-178" y="-17">Night</name>
+			<label kind="invariant" x="-119" y="-17">NEt&lt;=100</label>
+		</location>
+		<init ref="id10"/>
+		<transition id="id14">
+			<source ref="id13"/>
+			<target ref="id10"/>
+			<label kind="assignment" x="-331" y="8">Brightness=150,NEt=0,
+Temperature=18</label>
+			<nail x="-212" y="8"/>
+		</transition>
+		<transition id="id15">
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="assignment" x="-119" y="8">Brightness=50,NEt=0,
+Temperature=10</label>
+			<nail x="-59" y="8"/>
+		</transition>
+		<transition id="id16">
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="assignment" x="-119" y="-85">Brightness=120,NEt=0,
+Temperature=23</label>
+			<nail x="-59" y="-42"/>
+		</transition>
+		<transition id="id17">
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="assignment" x="-323" y="-85">Brightness=300,NEt=0,
+Temperature=40</label>
+			<nail x="-221" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>Operator</name>
+		<declaration>clock t;</declaration>
+		<location id="id18" x="-238" y="-17">
+			<name x="-246" y="-51">Off</name>
+		</location>
+		<location id="id19" x="-119" y="-17">
+			<name x="-127" y="-51">On</name>
+		</location>
+		<init ref="id18"/>
+		<transition id="id20">
+			<source ref="id19"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-212" y="-17">OffButton!</label>
+			<nail x="-144" y="8"/>
+			<nail x="-212" y="8"/>
+		</transition>
+		<transition id="id21">
+			<source ref="id18"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="-212" y="-42">OnButton!</label>
+			<nail x="-212" y="-42"/>
+			<nail x="-144" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>LightSensor</name>
+		<declaration>clock t,t1;</declaration>
+		<location id="id22" x="-450" y="-153">
+			<name x="-476" y="-144">LSWork</name>
+		</location>
+		<init ref="id22"/>
+		<transition id="id23">
+			<source ref="id22"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-484" y="-187">BrightnessAcqIns?</label>
+			<nail x="-382" y="-170"/>
+			<nail x="-382" y="-136"/>
+		</transition>
+	</template>
+	<template>
+		<name>TemperatureSensor</name>
+		<location id="id24" x="-170" y="-59">
+			<name x="-196" y="-50">TSWork</name>
+		</location>
+		<init ref="id24"/>
+		<transition id="id25">
+			<source ref="id24"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-204" y="-93">TemperatureAcqIns?</label>
+			<nail x="-102" y="-76"/>
+			<nail x="-102" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>PulseGenator</name>
+		<declaration>clock t;</declaration>
+		<location id="id26" x="-153" y="0">
+			<name x="-229" y="-8">PGWork</name>
+		</location>
+		<location id="id27" x="-51" y="-42">
+			<name x="-85" y="-76">SendOn</name>
+			<label kind="invariant" x="-34" y="-51">PGt&lt;=2</label>
+		</location>
+		<location id="id28" x="-51" y="34">
+			<name x="-59" y="51">SendOff</name>
+			<label kind="invariant" x="-34" y="25">PGt&lt;=2</label>
+		</location>
+		<init ref="id26"/>
+		<transition id="id29">
+			<source ref="id28"/>
+			<target ref="id26"/>
+			<label kind="guard" x="-144" y="59">PGt&gt;=2</label>
+			<label kind="synchronisation" x="-178" y="42">ClosePulse!</label>
+			<nail x="-153" y="34"/>
+		</transition>
+		<transition id="id30">
+			<source ref="id27"/>
+			<target ref="id26"/>
+			<label kind="guard" x="-153" y="-85">PGt&gt;=2</label>
+			<label kind="synchronisation" x="-178" y="-68">OpenPulse!</label>
+			<nail x="-153" y="-42"/>
+		</transition>
+		<transition id="id31">
+			<source ref="id26"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-85" y="0">OffButton?</label>
+			<label kind="assignment" x="8" y="0">PGt=0</label>
+		</transition>
+		<transition id="id32">
+			<source ref="id26"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="-85" y="-25">OnButton?</label>
+			<label kind="assignment" x="0" y="-25">PGt=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>LightUnit</name>
+		<location id="id33" x="-323" y="-101">
+			<name x="-306" y="-110">LUOff</name>
+		</location>
+		<location id="id34" x="-102" y="-93">
+			<name x="-153" y="-101">LUOn</name>
+		</location>
+		<location id="id35" x="-221" y="-67">
+			<name x="-246" y="-59">delayOn</name>
+			<label kind="invariant" x="-238" y="-100">t&lt;=2</label>
+		</location>
+		<location id="id36" x="-221" y="-127">
+			<name x="-247" y="-161">delayOff</name>
+			<label kind="invariant" x="-238" y="-118">t&lt;=2</label>
+		</location>
+		<location id="id37" x="-459" y="-102">
+			<name x="-493" y="-136">LUInit</name>
+		</location>
+		<init ref="id37"/>
+		<transition id="id38">
+			<source ref="id33"/>
+			<target ref="id37"/>
+			<nail x="-391" y="-136"/>
+		</transition>
+		<transition id="id39">
+			<source ref="id37"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-442" y="-93">LUInitPulse?</label>
+		</transition>
+		<transition id="id40">
+			<source ref="id36"/>
+			<target ref="id34"/>
+			<label kind="guard" x="-179" y="-127">t&gt;=2</label>
+			<label kind="assignment" x="-204" y="-144">RoomBrightness=Brightness+200</label>
+			<nail x="-128" y="-127"/>
+		</transition>
+		<transition id="id41">
+			<source ref="id35"/>
+			<target ref="id33"/>
+			<label kind="guard" x="-272" y="-84">t&gt;=2</label>
+			<label kind="assignment" x="-459" y="-68">RoomBrightness=Brightness</label>
+			<nail x="-289" y="-67"/>
+		</transition>
+		<transition id="id42">
+			<source ref="id34"/>
+			<target ref="id34"/>
+			<label kind="synchronisation" x="-59" y="-76">LUOnPulse?</label>
+			<nail x="-76" y="-59"/>
+			<nail x="-42" y="-85"/>
+		</transition>
+		<transition id="id43">
+			<source ref="id33"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="-408" y="-161">LUOffPulse?</label>
+			<nail x="-323" y="-135"/>
+			<nail x="-366" y="-135"/>
+		</transition>
+		<transition id="id44">
+			<source ref="id34"/>
+			<target ref="id35"/>
+			<label kind="synchronisation" x="-187" y="-67">LUOffPulse?</label>
+			<label kind="assignment" x="-179" y="-84">t=0</label>
+			<nail x="-128" y="-67"/>
+		</transition>
+		<transition id="id45">
+			<source ref="id33"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-315" y="-144">LUOnPulse?</label>
+			<label kind="assignment" x="-272" y="-127">t=0</label>
+			<nail x="-289" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>AirCondition</name>
+		<location id="id46" x="-493" y="-68">
+			<name x="-476" y="-59">ACOff</name>
+		</location>
+		<location id="id47" x="-272" y="-110">
+			<name x="-323" y="-135">ACHot</name>
+		</location>
+		<location id="id48" x="-161" y="-110">
+			<name x="-144" y="-118">delayC</name>
+			<label kind="invariant" x="-178" y="-144">t1&lt;=2</label>
+		</location>
+		<location id="id49" x="-391" y="-110">
+			<name x="-417" y="-144">delayHot</name>
+			<label kind="invariant" x="-408" y="-101">t1&lt;=2</label>
+		</location>
+		<location id="id50" x="-570" y="-68">
+			<name x="-595" y="-102">ACInit</name>
+		</location>
+		<location id="id51" x="-391" y="-17">
+			<name x="-416" y="-8">delayCool</name>
+			<label kind="invariant" x="-408" y="-42">t1&lt;=2</label>
+		</location>
+		<location id="id52" x="-272" y="-17">
+			<name x="-323" y="-8">ACCool</name>
+		</location>
+		<location id="id53" x="-161" y="-17">
+			<name x="-144" y="-25">delayH</name>
+			<label kind="invariant" x="-170" y="-8">t1&lt;=2</label>
+		</location>
+		<init ref="id50"/>
+		<transition id="id54">
+			<source ref="id46"/>
+			<target ref="id50"/>
+			<nail x="-527" y="-17"/>
+		</transition>
+		<transition id="id55">
+			<source ref="id52"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="-348" y="-68">ACOffPulse?</label>
+			<nail x="-340" y="-51"/>
+		</transition>
+		<transition id="id56">
+			<source ref="id47"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="-348" y="-85">ACOffPulse?</label>
+			<nail x="-331" y="-85"/>
+		</transition>
+		<transition id="id57">
+			<source ref="id53"/>
+			<target ref="id47"/>
+			<label kind="guard" x="-229" y="-42">t1&gt;=2</label>
+			<label kind="assignment" x="-187" y="-59">RoomTemperature=Temperature+10</label>
+		</transition>
+		<transition id="id58">
+			<source ref="id52"/>
+			<target ref="id53"/>
+			<label kind="synchronisation" x="-246" y="-17">HotPulse?</label>
+			<label kind="assignment" x="-221" y="0">t1=0</label>
+		</transition>
+		<transition id="id59">
+			<source ref="id52"/>
+			<target ref="id52"/>
+			<label kind="synchronisation" x="-272" y="17">CoolPulse?</label>
+			<nail x="-272" y="17"/>
+			<nail x="-229" y="17"/>
+		</transition>
+		<transition id="id60">
+			<source ref="id51"/>
+			<target ref="id52"/>
+			<label kind="guard" x="-365" y="-17">t1&gt;=2</label>
+			<label kind="assignment" x="-510" y="8">RoomTemperature=Temperature-10</label>
+		</transition>
+		<transition id="id61">
+			<source ref="id46"/>
+			<target ref="id51"/>
+			<label kind="synchronisation" x="-484" y="-17">CoolPulse?</label>
+			<label kind="assignment" x="-450" y="-42">t1=0</label>
+			<nail x="-459" y="-17"/>
+		</transition>
+		<transition id="id62">
+			<source ref="id50"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="-595" y="-51">ACInitPulse?</label>
+		</transition>
+		<transition id="id63">
+			<source ref="id49"/>
+			<target ref="id47"/>
+			<label kind="guard" x="-365" y="-127">t1&gt;=2</label>
+			<label kind="assignment" x="-510" y="-161">RoomTemperature=Temperature+10</label>
+		</transition>
+		<transition id="id64">
+			<source ref="id48"/>
+			<target ref="id52"/>
+			<label kind="guard" x="-229" y="-102">t1&gt;=2</label>
+			<label kind="assignment" x="-187" y="-85">RoomTemperature=Temperature-10</label>
+		</transition>
+		<transition id="id65">
+			<source ref="id47"/>
+			<target ref="id47"/>
+			<label kind="synchronisation" x="-272" y="-161">HotPulse?</label>
+			<nail x="-272" y="-144"/>
+			<nail x="-229" y="-144"/>
+		</transition>
+		<transition id="id66">
+			<source ref="id46"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="-586" y="-127">ACOffPulse?</label>
+			<nail x="-493" y="-102"/>
+			<nail x="-536" y="-102"/>
+		</transition>
+		<transition id="id67">
+			<source ref="id47"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="-246" y="-127">CoolPulse?</label>
+			<label kind="assignment" x="-221" y="-144">t1=0</label>
+		</transition>
+		<transition id="id68">
+			<source ref="id46"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-476" y="-127">HotPulse?</label>
+			<label kind="assignment" x="-442" y="-110">t1=0</label>
+			<nail x="-459" y="-110"/>
+		</transition>
+	</template>
+	<system>system LightSensor,LightUnit,PulseGenator,AirCondition,TemperatureSensor,Operator,NaturalEnvironment;
+    
+
+</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment/>
+		</query>
+	</queries>
+</nta>

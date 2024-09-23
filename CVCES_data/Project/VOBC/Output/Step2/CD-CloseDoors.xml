@@ -1,0 +1,10 @@
+@startuml
+skinparam componentStyle uml1
+component [CloseDoors] #DAE3F3
+component [StationData] #E2F0D9
+component [CL] #FFF2CC
+[CloseDoors] -> interface1
+interface1 - [StationData]
+[CloseDoors] -> interface2
+interface2 - [CL]
+@enduml

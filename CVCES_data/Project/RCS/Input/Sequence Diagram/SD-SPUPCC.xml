@@ -1,0 +1,5 @@
+Controller as SPUPCC
+Entity as DCD
+Datastorage as WCC
+DCD -> SPUPCC : SPUWorkingCurrentCloseCommandFormOP1[event]
+SPUPCC -> WCC : SPUWorkingCurrentCloseCommandFromOPSend[event]

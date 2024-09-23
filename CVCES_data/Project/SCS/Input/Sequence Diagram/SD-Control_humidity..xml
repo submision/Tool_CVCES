@@ -1,0 +1,5 @@
+Controller as CH
+Entity as HU
+Datastorage as HD
+CH -> HD : humidity value acquisition,[event]
+CH -> HU : humidity regulation[event]

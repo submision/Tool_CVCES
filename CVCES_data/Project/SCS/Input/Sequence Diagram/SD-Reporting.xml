@@ -1,0 +1,5 @@
+Controller as Rep
+Entity as WRD
+Datastorage as HD
+Rep -> HD : report acquisition[event]
+Rep -> WRD : send report[event]

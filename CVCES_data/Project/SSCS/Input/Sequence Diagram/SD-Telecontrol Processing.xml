@@ -1,0 +1,6 @@
+Controller as TIP
+Entity as DMC
+Datastorage as MR
+DMC -> TIP : Telecontrol instruction[event]
+TIP -> MR : Next cycle mode storage instruction[event]
+MR -> TIP : Next cycle mode[value]

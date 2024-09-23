@@ -1,0 +1,19 @@
+data dependencies:
+OverTempProtect -> TemperatureReport
+SignalIdentify -> DataLoad
+SignalIdentify -> SignalSort
+WorkingCurrentControl -> ICUPowerCloseControl
+WorkingCurrentControl -> ICUPowerOpenControl
+WorkingCurrentControl -> CRUPowerOpenControl
+WorkingCurrentControl -> CRUPowerCloseControl
+WorkingCurrentControl -> SPUPowerCloseControl
+WorkingCurrentControl -> SPUPowerOpenControl
+WorkingCurrentControl -> JPUPowerCloseControl
+WorkingCurrentControl -> JPUPowerOpenControl
+device dependencies:
+Init -> WorkingCurrentControl
+DataLoad -> Init
+ReconnaissanceGuide -> Init
+SignalSort -> Init
+SpectrumSurveillance -> Init
+JamProcess -> Init

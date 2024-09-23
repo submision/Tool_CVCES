@@ -1,0 +1,9 @@
+Controller as RG
+Entity as DCD, OP, CRU
+opt
+	DCD -> RG : TrapPolicy1[event]
+	RG -> CRU : TrapPolicyToCRU[event]
+else
+	DCD -> RG : ReceivePolicy1[event]
+	RG -> CRU : ReceivePolicyToCRU[event]
+end

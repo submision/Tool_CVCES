@@ -1,0 +1,14 @@
+Controller as SSCO
+Entity as SS
+Datastorage as SSI
+opt SunSensorPowerIns == 1
+	SSCO -> SSI : Sun sensor power on instruction load instruction[event]
+	SSI -> SSCO : Sun sensor power on instruction[event]
+	SSCO -> SS : Sun sensor power on pulse[event]
+	SS -> SSCO : Sun sensor power on state[state]
+else SunSensorPowerIns == 0
+	SSCO -> SSI : Sun sensor power off instruction load instruction[event]
+	SSI -> SSCO : Sun sensor power off instruction[event]
+	SSCO -> SS : Sun sensor power off pulse[event]
+	SS -> SSCO : Sun sensor power off state[state]
+end

@@ -1,0 +1,6 @@
+data dependencies:
+Control_temperature -> Monitor_temperature
+Control_humidity -> Monitor_humidity
+Control_appliance_state -> Monitor_appliance_state
+Executeplan -> Setplan
+Control_security -> User_Change_appliance_state

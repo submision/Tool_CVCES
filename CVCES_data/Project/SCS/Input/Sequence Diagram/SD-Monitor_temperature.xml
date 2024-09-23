@@ -1,0 +1,6 @@
+Controller as MT
+Entity as TEM, TH
+Datastorage as HD
+MT -> TH : temperature acquisition[event]
+TEM -> MT : current temperature[value]
+MT -> HD : temperature value storage[event]

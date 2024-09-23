@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan MeaAngStoIns,MeaAngLoadIns;
+chan SunVisibleSignStoIns,SunVisibleSignLoadIns;
+chan ThrusterpowerstateStoIns,ThrusterpowerstateLoadIns;
+chan CurrentmodeLoadIns,CurrentmodeStoIns;
+chan TriAttAngLoadIns,TriAttAngStoIns,TriAnguVelLoadIns,TriAnguVelStoIns;
+
+chan TarAttAngLoadIns,TarAttAngStoIns,TarAnguVelLoadIns,TarAnguVelStoIns;
+
+chan TriConQuaLoadIns,TriConQuaStoIns;
+chan ThrComLogLoadIns,ThrComLogStoIns;
+
+chan NextcyclemodeLoadIns,NextcyclemodeStoIns;
+
+int NextMode;
+
+double Suntimer;
+clock SunAngle;
+broadcast chan SunSensorpoweronSignal,SunSensorpoweroffSignal;
+broadcast chan SunSensorpowerstateperIns,SunMeaAngperIns,SunVisibleSignperIns;
+int[0,1] SunSensorpowerstate=0;
+int[0,1] SunVisibleSign;
+int[0,1] SunSensorpowerIns=0;
+int[0,1] SunSensorpowerInsStoIns=0;
+
+
+
+broadcast chan GyropoweronSignal,GyropoweroffSignal;
+broadcast chan PulseCountperIns,GyropowerstateperIns;
+int[0,1] Gyropowerstate=0;
+int[0,1] GyropowerInsStoIns=0;
+int[0,1] GyropowerIns=0;
+int[0,1] AnguAngVelAnaStoIns=0;
+int[0,1] PulseCountStoIns=0;
+
+broadcast chan ThrusterpoweronSignal,ThrusterpoweroffSignal;
+broadcast chan ThrusterpowerstateperIns;
+int[0,1] Thrusterpowerstate=0;
+int[0,1] ThrusterpowerInsStoIns=0;
+int[0,1] ThrusterpowerIns=0;
+
+broadcast chan RASMIns,PASMIns,RDSMIns,CSMIns;
+broadcast chan RASMControl,PASMControl,RDSMControl,CSMControl;
+
+//0:RDSM速率阻尼，1：PASM俯仰搜索，2：RASM滚动搜索，3：CSM对日巡航
+int Currentmode=0;
+
+broadcast chan InterrupttimerstartIns;
+clock timer;
+int Interruptcount=0;
+broadcast chan Interruptsignal;
+
+
+broadcast chan ControlOutput;
+broadcast chan CSMTelcontrolIns;
+broadcast chan RDSMTelcontrolIns;
+broadcast chan TeldataTraIns;
+broadcast chan CSMCommand,RDSMCommand;
+int[0,1] TeldataStoIns=0;
+int[0,1] TelMdata=0;
+
+int[0,1] CSMC=0;
+int[0,1] RDSMC=0;
+
+int[0,1] PulsecountStoIns=0;
+
+clock GDA_t;
+
+chan PulseCountAcqIns;
+
+
+chan GyropoweronInsStoIns,GyropoweroffInsStoIns,GyropoweronInsLoadIns,GyropoweroffInsLoadIns;
+int[0,1] GyropoweronInsStoInsV,GyropoweroffInsStoInsV;
+
+chan SunSensorpoweronInsStoIns,SunSensorpoweroffInsStoIns,SunSensorpoweronInsLoadIns,SunSensorpoweroffInsLoadIns;
+int[0,1] SunSensorpoweronInsStoInsV,SunSensorpoweroffInsStoInsV;
+
+chan ThrusterpoweronInsStoIns,ThrusterpoweroffInsStoIns,ThrusterpoweronInsLoadIns,ThrusterpoweroffInsLoadIns;
+int[0,1] ThrusterpoweronInsStoInsV,ThrusterpoweroffInsStoInsV;
+
+chan AnguVelAnaStoIns,AnguVelAnaLoadIns,GyropowerstateStoIns,GyropowerstateLoadIns;
+</declaration>
+	<template>
+		<name>SunSensor1</name>
+		<location id="id0" x="-518" y="-102">
+			<name x="-535" y="-144">Off</name>
+		</location>
+		<init ref="id0"/>
+		<transition id="id1">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-425" y="-85">SunAngle&lt;=0 &amp;&amp; SunAngle&gt;=-180</label>
+			<label kind="assignment" x="-425" y="-102">SunVisibleSign=0</label>
+			<nail x="-433" y="-59"/>
+			<nail x="-425" y="-85"/>
+		</transition>
+		<transition id="id2">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-535" y="-59">SunAngle&gt;=0 &amp;&amp; SunAngle&lt;=180</label>
+			<label kind="assignment" x="-510" y="-42">SunVisibleSign=1</label>
+			<nail x="-510" y="-59"/>
+			<nail x="-476" y="-59"/>
+		</transition>
+		<transition id="id3">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-416" y="-127">SunVisibleSignperIns?</label>
+			<nail x="-425" y="-136"/>
+			<nail x="-425" y="-102"/>
+		</transition>
+		<transition id="id4">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-663" y="-51">SunMeaAngperIns?</label>
+			<nail x="-561" y="-59"/>
+			<nail x="-527" y="-59"/>
+		</transition>
+		<transition id="id5">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-510" y="-178">SunSensorpowerstateperIns?</label>
+			<label kind="assignment" x="-501" y="-161">SunSensorpowerstate=1</label>
+			<nail x="-467" y="-144"/>
+			<nail x="-501" y="-144"/>
+		</transition>
+		<transition id="id6">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-773" y="-110">SunSensorpoweroffSignal?</label>
+			<nail x="-595" y="-68"/>
+			<nail x="-595" y="-110"/>
+		</transition>
+		<transition id="id7">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-705" y="-170">SunSensorpoweronSignal?</label>
+			<nail x="-552" y="-144"/>
+			<nail x="-595" y="-144"/>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensor2</name>
+		<location id="id8" x="-76" y="-102">
+		</location>
+		<location id="id9" x="-399" y="-102">
+			<name x="-382" y="-110">Off</name>
+		</location>
+		<location id="id10" x="-280" y="-102">
+			<name x="-314" y="-110">On</name>
+		</location>
+		<init ref="id9"/>
+		<transition id="id11">
+			<source ref="id8"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-255" y="-68">SunAngle&lt;=0 &amp;&amp; SunAngle&gt;=-180</label>
+			<label kind="assignment" x="-229" y="-85">SunVisibleSign=0</label>
+			<nail x="-102" y="-85"/>
+			<nail x="-246" y="-85"/>
+		</transition>
+		<transition id="id12">
+			<source ref="id8"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-246" y="-136">SunAngle&gt;=0 &amp;&amp; SunAngle&lt;=180</label>
+			<label kind="assignment" x="-229" y="-119">SunVisibleSign=1</label>
+			<nail x="-102" y="-119"/>
+			<nail x="-246" y="-119"/>
+		</transition>
+		<transition id="id13">
+			<source ref="id10"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-246" y="-102">SunVisibleSignperIns?</label>
+		</transition>
+		<transition id="id14">
+			<source ref="id10"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-391" y="-68">SunMeaAngperIns?</label>
+			<nail x="-246" y="-68"/>
+			<nail x="-280" y="-68"/>
+		</transition>
+		<transition id="id15">
+			<source ref="id10"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-442" y="-153">SunSensorpowerstateperIns?</label>
+			<label kind="assignment" x="-246" y="-153">SunSensorpowerstate=1</label>
+			<nail x="-246" y="-136"/>
+			<nail x="-280" y="-136"/>
+		</transition>
+		<transition id="id16">
+			<source ref="id10"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-459" y="-85">SunSensorpoweroffSignal?</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-373" y="-85"/>
+		</transition>
+		<transition id="id17">
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-459" y="-136">SunSensorpoweronSignal?</label>
+			<nail x="-373" y="-119"/>
+			<nail x="-306" y="-119"/>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensor3</name>
+		<location id="id18" x="-76" y="-102">
+		</location>
+		<location id="id19" x="-399" y="-102">
+			<name x="-382" y="-110">Off</name>
+		</location>
+		<location id="id20" x="-280" y="-102">
+			<name x="-314" y="-110">On</name>
+		</location>
+		<init ref="id19"/>
+		<transition id="id21">
+			<source ref="id18"/>
+			<target ref="id20"/>
+			<label kind="guard" x="-255" y="-68">SunAngle&lt;=0 &amp;&amp; SunAngle&gt;=-180</label>
+			<label kind="assignment" x="-229" y="-85">SunVisibleSign=0</label>
+			<nail x="-102" y="-85"/>
+			<nail x="-246" y="-85"/>
+		</transition>
+		<transition id="id22">
+			<source ref="id18"/>
+			<target ref="id20"/>
+			<label kind="guard" x="-246" y="-136">SunAngle&gt;=0 &amp;&amp; SunAngle&lt;=180</label>
+			<label kind="assignment" x="-229" y="-119">SunVisibleSign=1</label>
+			<nail x="-102" y="-119"/>
+			<nail x="-246" y="-119"/>
+		</transition>
+		<transition id="id23">
+			<source ref="id20"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-246" y="-102">SunVisibleSignperIns?</label>
+		</transition>
+		<transition id="id24">
+			<source ref="id20"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-391" y="-68">SunMeaAngperIns?</label>
+			<nail x="-246" y="-68"/>
+			<nail x="-280" y="-68"/>
+		</transition>
+		<transition id="id25">
+			<source ref="id20"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-442" y="-153">SunSensorpowerstateperIns?</label>
+			<label kind="assignment" x="-246" y="-153">SunSensorpowerstate=1</label>
+			<nail x="-246" y="-136"/>
+			<nail x="-280" y="-136"/>
+		</transition>
+		<transition id="id26">
+			<source ref="id20"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="-459" y="-85">SunSensorpoweroffSignal?</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-373" y="-85"/>
+		</transition>
+		<transition id="id27">
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="synchronisation" x="-459" y="-136">SunSensorpoweronSignal?</label>
+			<nail x="-373" y="-119"/>
+			<nail x="-306" y="-119"/>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensor4</name>
+		<location id="id28" x="-76" y="-102">
+		</location>
+		<location id="id29" x="-399" y="-102">
+			<name x="-382" y="-110">Off</name>
+		</location>
+		<location id="id30" x="-280" y="-102">
+			<name x="-314" y="-110">On</name>
+		</location>
+		<init ref="id29"/>
+		<transition id="id31">
+			<source ref="id28"/>
+			<target ref="id30"/>
+			<label kind="guard" x="-255" y="-68">SunAngle&lt;=0 &amp;&amp; SunAngle&gt;=-180</label>
+			<label kind="assignment" x="-229" y="-85">SunVisibleSign=0</label>
+			<nail x="-102" y="-85"/>
+			<nail x="-246" y="-85"/>
+		</transition>
+		<transition id="id32">
+			<source ref="id28"/>
+			<target ref="id30"/>
+			<label kind="guard" x="-246" y="-136">SunAngle&gt;=0 &amp;&amp; SunAngle&lt;=180</label>
+			<label kind="assignment" x="-229" y="-119">SunVisibleSign=1</label>
+			<nail x="-102" y="-119"/>
+			<nail x="-246" y="-119"/>
+		</transition>
+		<transition id="id33">
+			<source ref="id30"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-246" y="-102">SunVisibleSignperIns?</label>
+		</transition>
+		<transition id="id34">
+			<source ref="id30"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="-391" y="-68">SunMeaAngperIns?</label>
+			<nail x="-246" y="-68"/>
+			<nail x="-280" y="-68"/>
+		</transition>
+		<transition id="id35">
+			<source ref="id30"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="-442" y="-153">SunSensorpowerstateperIns?</label>
+			<label kind="assignment" x="-246" y="-153">SunSensorpowerstate=1</label>
+			<nail x="-246" y="-136"/>
+			<nail x="-280" y="-136"/>
+		</transition>
+		<transition id="id36">
+			<source ref="id30"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="-459" y="-85">SunSensorpoweroffSignal?</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-373" y="-85"/>
+		</transition>
+		<transition id="id37">
+			<source ref="id29"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="-459" y="-136">SunSensorpoweronSignal?</label>
+			<nail x="-373" y="-119"/>
+			<nail x="-306" y="-119"/>
+		</transition>
+	</template>
+	<template>
+		<name>StoreSunSensorPonIns</name>
+		<location id="id38" x="-127" y="-76">
+			<name x="-161" y="-110">Start</name>
+		</location>
+		<location id="id39" x="34" y="-76">
+			<name x="34" y="-110">End</name>
+		</location>
+		<init ref="id38"/>
+		<transition id="id40">
+			<source ref="id39"/>
+			<target ref="id38"/>
+			<nail x="34" y="-42"/>
+			<nail x="-127" y="-42"/>
+		</transition>
+		<transition id="id41">
+			<source ref="id38"/>
+			<target ref="id39"/>
+			<label kind="synchronisation" x="-144" y="-127">SunSensorpoweronInsStoIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>StoreSunSensorPoffIns</name>
+		<location id="id42" x="-127" y="-76">
+			<name x="-161" y="-110">Start</name>
+		</location>
+		<location id="id43" x="34" y="-76">
+			<name x="34" y="-110">End</name>
+		</location>
+		<init ref="id42"/>
+		<transition id="id44">
+			<source ref="id43"/>
+			<target ref="id42"/>
+			<nail x="34" y="-42"/>
+			<nail x="-127" y="-42"/>
+		</transition>
+		<transition id="id45">
+			<source ref="id42"/>
+			<target ref="id43"/>
+			<label kind="synchronisation" x="-144" y="-127">SunSensorpoweroffInsStoIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensorInstruction</name>
+		<location id="id46" x="-314" y="8">
+			<name x="-374" y="0">StoOff</name>
+		</location>
+		<location id="id47" x="-170" y="-34">
+			<name x="-178" y="-68">SSI</name>
+		</location>
+		<location id="id48" x="-25" y="8">
+			<name x="-8" y="0">StoOn</name>
+		</location>
+		<init ref="id47"/>
+		<transition id="id49">
+			<source ref="id47"/>
+			<target ref="id47"/>
+			<label kind="synchronisation" x="-374" y="-93">SunSensorpoweroffInsLoadIns?</label>
+			<label kind="assignment" x="-374" y="-76">SunSensorpoweroffInsStoInsV=0</label>
+			<nail x="-17" y="-76"/>
+			<nail x="-144" y="-76"/>
+		</transition>
+		<transition id="id50">
+			<source ref="id47"/>
+			<target ref="id47"/>
+			<label kind="synchronisation" x="-136" y="-93">SunSensorpoweronInsLoadIns?</label>
+			<label kind="assignment" x="-136" y="-76">SunSensorpoweronInsStoInsV=0</label>
+			<nail x="-323" y="-76"/>
+			<nail x="-195" y="-76"/>
+		</transition>
+		<transition id="id51">
+			<source ref="id46"/>
+			<target ref="id47"/>
+			<label kind="assignment" x="-297" y="8">SunSensorpowerIns=0</label>
+			<nail x="-187" y="8"/>
+		</transition>
+		<transition id="id52">
+			<source ref="id47"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="-374" y="-42">SunSensorpoweroffInsStoIns?</label>
+			<label kind="assignment" x="-374" y="-25">SunSensorpoweroffInsStoInsV=1</label>
+		</transition>
+		<transition id="id53">
+			<source ref="id48"/>
+			<target ref="id47"/>
+			<label kind="assignment" x="-144" y="8">SunSensorpowerIns=1</label>
+			<nail x="-153" y="8"/>
+		</transition>
+		<transition id="id54">
+			<source ref="id47"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="-119" y="-42">SunSensorpoweronInsStoIns?</label>
+			<label kind="assignment" x="-136" y="-25">SunSensorpoweronInsStoInsV=1</label>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensorControlOutput</name>
+		<location id="id55" x="-289" y="59">
+			<name x="-272" y="59">L1</name>
+		</location>
+		<location id="id56" x="-127" y="59">
+			<name x="-110" y="59">Start</name>
+		</location>
+		<location id="id57" x="34" y="59">
+			<name x="-8" y="59">L2</name>
+		</location>
+		<location id="id58" x="-127" y="153">
+			<name x="-137" y="119">End</name>
+		</location>
+		<init ref="id56"/>
+		<transition id="id59">
+			<source ref="id58"/>
+			<target ref="id56"/>
+		</transition>
+		<transition id="id60">
+			<source ref="id55"/>
+			<target ref="id58"/>
+			<label kind="synchronisation" x="-391" y="110">SunSensorpoweroffSignal!</label>
+		</transition>
+		<transition id="id61">
+			<source ref="id56"/>
+			<target ref="id55"/>
+			<label kind="guard" x="-323" y="25">SunSensorpowerIns==0</label>
+		</transition>
+		<transition id="id62">
+			<source ref="id57"/>
+			<target ref="id58"/>
+			<label kind="synchronisation" x="-42" y="110">SunSensorpoweronSignal!</label>
+		</transition>
+		<transition id="id63">
+			<source ref="id56"/>
+			<target ref="id57"/>
+			<label kind="guard" x="-119" y="34">SunSensorpowerIns==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensorDataAcquisition</name>
+		<declaration>clock St;</declaration>
+		<location id="id64" x="-8" y="-153">
+			<name x="-34" y="-144">L1</name>
+			<label kind="invariant" x="-68" y="-170">St&lt;=5</label>
+		</location>
+		<location id="id65" x="-195" y="-153">
+			<name x="-178" y="-170">Start</name>
+		</location>
+		<location id="id66" x="-195" y="-85">
+			<name x="-170" y="-102">L3</name>
+		</location>
+		<location id="id67" x="-272" y="-119">
+			<name x="-314" y="-136">End</name>
+		</location>
+		<location id="id68" x="51" y="-110">
+			<name x="41" y="-144">L2</name>
+		</location>
+		<init ref="id65"/>
+		<transition id="id69">
+			<source ref="id64"/>
+			<target ref="id68"/>
+			<label kind="synchronisation" x="25" y="-161">SunVisibleSignStoIns!</label>
+		</transition>
+		<transition id="id70">
+			<source ref="id67"/>
+			<target ref="id65"/>
+			<label kind="synchronisation" x="-331" y="-161">MeaAngStoIns!</label>
+		</transition>
+		<transition id="id71">
+			<source ref="id66"/>
+			<target ref="id67"/>
+			<label kind="synchronisation" x="-348" y="-102">SunMeaAngperIns!</label>
+		</transition>
+		<transition id="id72">
+			<source ref="id68"/>
+			<target ref="id66"/>
+			<label kind="guard" x="-68" y="-136">St&gt;=5</label>
+			<label kind="synchronisation" x="-178" y="-85">SunSensorpowerstateperIns!</label>
+			<nail x="-8" y="-85"/>
+		</transition>
+		<transition id="id73">
+			<source ref="id65"/>
+			<target ref="id64"/>
+			<label kind="synchronisation" x="-178" y="-153">SunVisibleSignperIns!</label>
+			<label kind="assignment" x="-127" y="-178">St=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensorData</name>
+		<location id="id74" x="0" y="0">
+		</location>
+		<init ref="id74"/>
+		<transition id="id75">
+			<source ref="id74"/>
+			<target ref="id74"/>
+			<label kind="synchronisation" x="85" y="0">SunVisibleSignLoadIns?</label>
+			<nail x="76" y="-17"/>
+			<nail x="76" y="34"/>
+		</transition>
+		<transition id="id76">
+			<source ref="id74"/>
+			<target ref="id74"/>
+			<label kind="synchronisation" x="-229" y="-8">SunVisibleSignStoIns?</label>
+			<nail x="-76" y="-17"/>
+			<nail x="-76" y="34"/>
+		</transition>
+		<transition id="id77">
+			<source ref="id74"/>
+			<target ref="id74"/>
+			<label kind="synchronisation" x="-59" y="76">MeaAngLoadIns?</label>
+			<nail x="-42" y="68"/>
+			<nail x="34" y="68"/>
+		</transition>
+		<transition id="id78">
+			<source ref="id74"/>
+			<target ref="id74"/>
+			<label kind="synchronisation" x="-51" y="-102">MeaAngStoIns?</label>
+			<nail x="-42" y="-68"/>
+			<nail x="59" y="-68"/>
+		</transition>
+	</template>
+	<system>system SunSensor1,SunSensor2,SunSensor3,SunSensor4,SunSensorInstruction,SunSensorData,
+StoreSunSensorPonIns,StoreSunSensorPoffIns,SunSensorControlOutput,SunSensorDataAcquisition;
+</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment/>
+		</query>
+	</queries>
+</nta>

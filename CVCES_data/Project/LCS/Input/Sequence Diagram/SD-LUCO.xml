@@ -1,0 +1,14 @@
+Controller as LUCO
+Entity as LU
+Datastorage as LC
+par
+	LUCO -> LC : OpenInstructionLoadIns[event]
+	LC -> LUCO : OpenInstruction[event]
+	LUCO -> LU : LUOnPulse[event]
+	LU -> LUCO : LUOn[state]
+else
+	LUCO -> LC : CloseInstructionLoadIns[event]
+	LC -> LUCO : CloseInstruction[event]
+	LUCO -> LU : LUOffPulse[event]
+	LU -> LUCO : LUOff[state]
+end

@@ -1,0 +1,11 @@
+Controller as TP
+Entity as DMC
+Datastorage as MR, ADR
+TP -> MR : Current mode load instruction[event]
+MR -> TP : Current mode[value]
+TP -> ADR : Triaxial attitude angle load instruction[event]
+ADR -> TP : Triaxial attitude angle[value]              
+TP -> ADR : Triaxial angular velocity load instruction[event]
+ADR -> TP : Triaxial angular velocity[value]
+TP -> DMC : Telemetry data transmission instruction[event]
+DMC -> TP : Telemetry data[value]

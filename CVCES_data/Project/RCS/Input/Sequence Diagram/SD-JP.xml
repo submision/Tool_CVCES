@@ -1,0 +1,13 @@
+Controller as JP
+Entity as DCD, JPU, Transmitters, LandingGear
+Datastorage as DB
+DCD -> JP : TargetJamLib1[event]
+DCD -> JP : JamStyle1[event]
+DCD -> JP : JamAllowed1[event]
+Transmitters -> JP : FSJStatus[event]
+LandingGear -> JP : QLJStatus[event]
+JP -> JPU : JamConfigureValue1[event]
+DCD -> JP : TargetDelete1[event]
+JP -> JPU : JamConfigureValue0[event]
+JPU -> JP : NoJaming[event]
+JP -> DCD : NoJamResult[event]

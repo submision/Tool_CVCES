@@ -1,0 +1,4 @@
+Controller as SSSPonI
+Datastorage as SSI
+SSSPonI -> SSI : Sun sensor power on instruction storage instruction[event]
+SSI -> SSSPonI : Sun sensor power on instruction[event]

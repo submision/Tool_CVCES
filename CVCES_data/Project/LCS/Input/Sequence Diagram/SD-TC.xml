@@ -1,0 +1,12 @@
+Controller as TC
+Entity as TS, NE
+Datastorage as ACC
+TC -> TS : TemperatureAcqIns[event]
+NE -> TS : Temperature[value]
+opt Temperature > 30
+	TC -> ACC : CoolInstructionStorageIns[event] 
+	ACC -> TC : CoolInstruction[event]
+else Temperature < 15
+	TC -> ACC : HotInstructionStorageIns[event]
+	ACC -> TC : HotInstruction[event]
+end

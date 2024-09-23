@@ -1,0 +1,7 @@
+Controller as SP
+Entity as WRD
+Datastorage as PD
+WRD -> SP : temperatureplan[event]
+WRD -> SP : humidityplan[event]
+SP -> PD : humidityplanStoIns[event]
+SP -> PD : temperatureplanStoIns[event]

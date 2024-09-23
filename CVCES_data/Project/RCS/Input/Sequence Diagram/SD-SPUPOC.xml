@@ -1,0 +1,5 @@
+Controller as SPUPOC
+Entity as DCD
+Datastorage as WCC
+DCD -> SPUPOC : SPUWorkingCurrentOpenCommandFormOP1
+SPUPOC -> WCC : SPUWorkingCurrentOpenCommandFromOPSend

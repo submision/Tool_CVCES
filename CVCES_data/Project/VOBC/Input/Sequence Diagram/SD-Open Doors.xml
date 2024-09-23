@@ -1,0 +1,8 @@
+Controller as OpenDoors
+Entity as CL
+Datastorage as TrainData
+OpenDoors -> TrainData : OpenTDInsStoIns[event]
+TrainData -> OpenDoors : OpenTDIns[event]
+...5ms...
+OpenDoors -> CL : TVCOpen[event]
+...25ms...

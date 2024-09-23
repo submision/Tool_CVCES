@@ -1,0 +1,13 @@
+Controller as CS
+Entity as PG, OP
+Datastorage as LC
+opt sendoffbutton
+	OP -> PG : OffButton[event]
+	PG -> CS : ClosePulse[event]
+	AS -> LC : CloseInstructionStorageIns[event]
+else sendonbutton
+	OP -> PG : OnButton[event]
+	PG -> CS : OpenPulse[event]
+	AS -> LC : OpenInstructionStorageIns[event]
+end
+...5ms...

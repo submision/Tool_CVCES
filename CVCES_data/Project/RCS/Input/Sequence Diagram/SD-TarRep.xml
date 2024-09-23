@@ -1,0 +1,6 @@
+Controller as TarRep
+Entity as DCD
+Datastorage as TAI
+...5ms...
+TAI -> TR : IdentifiedTargetRead[event]
+TR -> DCD : TargetInfo[event]

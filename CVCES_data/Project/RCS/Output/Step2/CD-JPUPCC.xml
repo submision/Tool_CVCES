@@ -1,0 +1,10 @@
+@startuml
+skinparam componentStyle uml1
+component [JPUPCC] #DAE3F3
+component [WCC] #E2F0D9
+component [DCD] #FFF2CC
+[JPUPCC] -> interface1
+interface1 - [DCD]
+[JPUPCC] --> interface2
+interface2 - [WCC]
+@enduml

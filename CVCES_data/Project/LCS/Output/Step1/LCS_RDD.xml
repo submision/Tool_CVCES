@@ -1,0 +1,8 @@
+@startuml
+skinparam componentStyle rectangle
+[LU Control Output] --> [Commanded Save]
+[LU Control Output] --> [Automatic Save]
+[AC Control Output] --> [Temperature Control]
+[LU Control Output] --> [Initialization]
+[AC Control Output] --> [Initialization]
+@enduml

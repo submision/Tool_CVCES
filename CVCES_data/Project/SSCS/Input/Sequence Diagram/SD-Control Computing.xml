@@ -1,0 +1,11 @@
+Controller as CC
+Datastorage as ADR, MR, CCR
+CC -> ADR : Triaxial attitude angle load instruction[event]
+CC -> ADR : Triaxial angular velocity load instruction[event]
+ADR -> CC : Triaxial attitude angle[value]                      
+ADR -> CC : Triaxial angular velocity[value]
+CC -> MR : Target angle load instruction[event]
+CC -> MR : Target angular velocity load instruction[event]
+MR -> CC : Target angle[value]                                         
+MR -> CC : Target angular velocity[value]
+CC -> CCR : Triaxial control quantity storage instruction[event]

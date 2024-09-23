@@ -1,0 +1,20 @@
+Controller as DL
+Entity as DCD, OP, ICU, SPU, JPU
+Datastorage as DB
+DCD -> DL : DeviceDataLoadCommand1[event]
+DCD -> DL : DataLib1[event]
+DL -> DB : DataLibSend[event]
+par
+	DL -> ICU : ICUDataLoadCommand[event]
+	DL -> ICU : ICUDataLib[event]
+	ICU -> DL : ICUDataLoadResult[event]
+else
+	DL -> SPU : SPUDataLoadCommand[event]
+	DL -> SPU : SPUDataLib[event]
+	SPU -> DL : SPUDataLoadResult[event]
+else
+	DL -> JPU : JPUDataLoadCommand[event]
+	DL -> JPU : JPUDataLib[event]
+	JPU -> DL : JPUDataLoadResult[event]
+end
+DL -> DCD : DeviceDataLoadResult[event]

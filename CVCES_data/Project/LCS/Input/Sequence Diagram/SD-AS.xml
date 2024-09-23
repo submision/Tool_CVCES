@@ -1,0 +1,12 @@
+Controller as AS
+Entity as LS, NE
+Datastorage as LC
+AS -> LS : BrightnessAcqIns[event]
+NE -> LS : Brightness[value]
+opt Brightness < 100
+	AS -> LC : OpenInstructionStorageIns[event]
+	LC -> AS : OpenInstruction[event]
+else Brightness > 200
+	AS -> LC : CloseInstructionStorageIns[event]
+	LC -> AS : CloseInstruction[event]
+end

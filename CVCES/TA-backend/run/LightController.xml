@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan AutoSIns;
+chan AutoSFIns;
+chan ConflictRIns;
+chan ConflictRFIns;
+chan CommandedSIns;
+chan CommandedSFIns;
+chan OffTime,OnTime;
+chan OnPulse,OffPulse;
+chan OnButton,OffButton;
+
+int OP_v=0;
+int LU_v=0;</declaration>
+	<template>
+		<name>AutomaticController</name>
+		<location id="id0" x="-773" y="-263">
+			<name x="-807" y="-280">AC</name>
+		</location>
+		<location id="id1" x="-697" y="-212">
+			<name x="-680" y="-221">ASF</name>
+		</location>
+		<location id="id2" x="-773" y="-212">
+			<name x="-807" y="-221">CR</name>
+		</location>
+		<location id="id3" x="-697" y="-263">
+			<name x="-680" y="-280">AS</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-824" y="-246">ConflictRFIns?</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-731" y="-255">AutoSFIns?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-773" y="-204">ConflictRIns!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-765" y="-289">AutoSIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>CommandedController</name>
+		<location id="id4" x="-476" y="-102">
+		</location>
+		<location id="id5" x="-374" y="-102">
+		</location>
+		<location id="id6" x="-586" y="-102">
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-561" y="-93">OffButton?</label>
+			<nail x="-527" y="-136"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-569" y="-161">OffPulse!</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-450" y="-161">OnPulse!</label>
+			<nail x="-433" y="-136"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-450" y="-93">OnButton?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Clock</name>
+		<location id="id7" x="-442" y="-119">
+		</location>
+		<init ref="id7"/>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-561" y="-127">OffTime?</label>
+			<nail x="-493" y="-144"/>
+			<nail x="-493" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="-382" y="-127">OnTime?</label>
+			<nail x="-391" y="-93"/>
+			<nail x="-391" y="-145"/>
+		</transition>
+	</template>
+	<template>
+		<name>LightUnit</name>
+		<location id="id8" x="-229" y="-59">
+			<name x="-239" y="-93">Off</name>
+		</location>
+		<location id="id9" x="-42" y="-59">
+			<name x="-52" y="-93">On</name>
+		</location>
+		<init ref="id8"/>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="34" y="-76">OnPulse?</label>
+			<nail x="17" y="-119"/>
+			<nail x="17" y="-8"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-357" y="-76">OffPulse?</label>
+			<nail x="-280" y="-119"/>
+			<nail x="-280" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-170" y="-17">OffPulse?</label>
+			<label kind="assignment" x="-161" y="-51">LU_v=0</label>
+			<nail x="-136" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-170" y="-127">OnPulse?</label>
+			<label kind="assignment" x="-161" y="-85">LU_v=1</label>
+			<nail x="-144" y="-93"/>
+		</transition>
+	</template>
+	<template>
+		<name>Operator</name>
+		<location id="id10" x="-204" y="-17">
+			<name x="-214" y="-51">Off</name>
+		</location>
+		<location id="id11" x="-76" y="-17">
+			<name x="-86" y="-51">On</name>
+		</location>
+		<init ref="id10"/>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-170" y="8">OffButton!</label>
+			<label kind="assignment" x="-170" y="25">OP_v=0</label>
+			<nail x="-144" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-170" y="-68">OnButton!</label>
+			<label kind="assignment" x="-170" y="-85">OP_v=1</label>
+			<nail x="-144" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>Observer</name>
+		<location id="id12" x="-187" y="68">
+			<name x="-161" y="59">Finished</name>
+		</location>
+		<location id="id13" x="-187" y="-76">
+		</location>
+		<location id="id14" x="-110" y="-76">
+		</location>
+		<location id="id15" x="-110" y="0">
+		</location>
+		<location id="id16" x="-187" y="0">
+		</location>
+		<init ref="id13"/>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-170" y="25">LU_v==0</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-178" y="-25">OP_v==0</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-170" y="-59">LU_v==1</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id14"/>
+			<label kind="guard" x="-170" y="-110">OP_v==1</label>
+		</transition>
+	</template>
+	<system>
+system CommandedController,LightUnit,Operator,Observer;
+
+    </system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; Observer.Finished</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; not deadlock</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

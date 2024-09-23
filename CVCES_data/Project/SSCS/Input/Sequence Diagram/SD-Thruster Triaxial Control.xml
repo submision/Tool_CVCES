@@ -1,0 +1,8 @@
+Controller as TTC
+Entity as 32IT
+Datastorage as TTI, TDCR
+32IT -> TTC : Interrupt signal[event]
+TTC -> TDCR : Thruster combination logic load instruction[event]
+TDCR -> TTC : Thruster combination logic[value]
+TTC -> TTI : Triaxial control instruction storage instruction[event]
+TTI -> TTC : Triaxial control instruction[event]

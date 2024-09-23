@@ -1,0 +1,4 @@
+Controller as SGPoffI
+Datastorage as GI
+SGPonI -> GI : Gyro power off instruction storage instruction[event]  
+GI -> SGPonI : Gyro power off instruction[event]

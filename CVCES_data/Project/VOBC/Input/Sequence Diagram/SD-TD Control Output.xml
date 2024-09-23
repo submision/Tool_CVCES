@@ -1,0 +1,14 @@
+Controller as TDCO
+Entity as TrainDoor
+Datastorage as TrainData
+opt OpenTDIns==1
+	TDCO ->  TrainData : OpenTDInsLoadIns[event]
+	TrainData -> TDCO : OpenTDIns[event]
+	TDCO -> TrainDoor : OpenTDPulse[event]
+	TrainDoor -> TDCO : TDOn[state]
+else CloseTDIns==1
+	TDCO ->  TrainData : CloseTDInsLoadIns[event]
+	TrainData -> TDCO : CloseTDIns[event]
+	TDCO -> TrainDoor : CloseTDPulse[event]
+	TrainDoor -> TDCO : TDOff[state]
+end

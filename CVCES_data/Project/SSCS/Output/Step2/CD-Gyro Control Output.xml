@@ -1,0 +1,16 @@
+@startuml
+skinparam componentStyle uml1
+component [GCO] #DAE3F3
+component [SGPonI] #DAE3F3
+component [SGPoffI] #DAE3F3
+component [GI] #E2F0D9
+component [G] #FFF2CC
+[SGPonI] --> interface1
+interface1 -- [GI]
+[SGPoffI] --> interface2
+interface2 -- [GI]
+[GCO] --> interface3
+interface3 -- [GI]
+[GCO] --> interface4
+interface4 -- [G]
+@enduml

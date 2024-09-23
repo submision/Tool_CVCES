@@ -1,0 +1,14 @@
+Controller as GCO
+Entity as G
+Datastorage as GI
+opt GyroPowerIns==1
+	GCO -> GI : Gyro power on instruction load instruction[event]
+	GI -> GCO : Gyro power on instruction[event]
+	GCO -> G : Gyro power on pulse[event]
+	G -> GCO : Gyro power on state[state]
+else GyroPowerIns == 0
+	GCO -> GI : Gyro power off instruction load instruction[event]
+	GI -> GCO : Gyro power off instruction[event]
+	GCO -> G : Gyro power off pulse[event]
+	G -> GCO : Gyro power off state[state]
+end

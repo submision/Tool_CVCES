@@ -1,0 +1,6 @@
+Controller as MH
+Entity as HU, HUM
+Datastorage as HD
+MH -> HU : humidity acquisition[event]
+HUM -> HU : current humidity[value]
+MH -> HD : humidity value storage[event]

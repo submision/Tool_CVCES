@@ -1,0 +1,5 @@
+Controller as ICUPOC
+Entity as DCD
+Datastorage as WCC
+DCD -> ICUPOC : ICUWorkingCurrentOpenCommandFormOP1[event]
+ICUPOC -> WCC : ICUWorkingCurrentOpenCommandFromOPSend[event]

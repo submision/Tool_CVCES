@@ -1,0 +1,24 @@
+data dependencies:
+Gyro Control Output -> Store Gyro Power off Instruction
+Gyro Control Output -> Store Gyro Power on Instruction
+Sun Sensor Control Output -> Store Sun Sensor Power off Instruction
+Sun Sensor Control Output -> Store Sun Sensor Power on Instruction
+Thruster Power Control Output -> Store Thruster Power on Instruction
+Thruster Power Control Output -> Store Thruster Power off Instruction
+Thruster Triaxial Control -> Control Computing
+Store Sun Sensor Power off Instruction -> Sun Sensor Data Acquisition
+Store Thruster Power off Instruction -> Thruster Data Acquisition
+Attitude Determination -> Gyro Data Acquisition
+Attitude Determination -> Sun Sensor Data Acquisition
+Mode Switching Management -> Sun Sensor Data Acquisition
+Control Computing -> Attitude Determination
+Control Computing -> Mode Switching Management
+Telemetry Processing -> Gyro Data Acquisition
+Telemetry Processing -> Sun Sensor Data Acquisition
+Mode Switching Management -> Telecontrol Instruction Processing
+device dependencies:
+Gyro Data Acquisition -> Gyro Control Output
+Sun Sensor Data Acquisition -> Sun Sensor Control Output
+Thruster Data Acquisition -> Thruster Power Control Output
+Thruster Triaxial Control -> Thruster Power Control Output
+Thruster Triaxial Control -> 32ms Interrupt Timer Initialization

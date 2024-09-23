@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan MeaAngStoIns,MeaAngLoadIns;
+chan SunVisibleSignStoIns,SunVisibleSignLoadIns;
+chan ThrusterpowerstateStoIns,ThrusterpowerstateLoadIns;
+chan CurrentmodeLoadIns,CurrentmodeStoIns;
+chan TriAttAngLoadIns,TriAttAngStoIns,TriAnguVelLoadIns,TriAnguVelStoIns;
+
+chan TarAttAngLoadIns,TarAttAngStoIns,TarAnguVelLoadIns,TarAnguVelStoIns;
+
+chan TriConQuaLoadIns,TriConQuaStoIns;
+chan ThrComLogLoadIns,ThrComLogStoIns;
+
+chan NextcyclemodeLoadIns,NextcyclemodeStoIns;
+
+int NextMode;
+
+double Suntimer;
+clock SunAngle;
+broadcast chan SunSensorpoweronSignal,SunSensorpoweroffSignal;
+broadcast chan SunSensorpowerstateperIns,SunMeaAngperIns,SunVisibleSignperIns;
+int[0,1] SunSensorpowerstate=0;
+int[0,1] SunVisibleSign;
+int[0,1] SunSensorpowerIns=0;
+int[0,1] SunSensorpowerInsStoIns=0;
+
+
+
+broadcast chan GyropoweronSignal,GyropoweroffSignal;
+broadcast chan PulseCountperIns,GyropowerstateperIns;
+int[0,1] Gyropowerstate=0;
+int[0,1] GyropowerInsStoIns=0;
+int[0,1] GyropowerIns=0;
+int[0,1] AnguAngVelAnaStoIns=0;
+int[0,1] PulseCountStoIns=0;
+
+broadcast chan ThrusterpoweronSignal,ThrusterpoweroffSignal;
+broadcast chan ThrusterpowerstateperIns;
+int[0,1] Thrusterpowerstate=0;
+int[0,1] ThrusterpowerInsStoIns=0;
+int[0,1] ThrusterpowerIns=0;
+
+broadcast chan RASMIns,PASMIns,RDSMIns,CSMIns;
+broadcast chan RASMControl,PASMControl,RDSMControl,CSMControl;
+
+//0:RDSM速率阻尼，1：PASM俯仰搜索，2：RASM滚动搜索，3：CSM对日巡航
+int Currentmode=0;
+
+broadcast chan InterrupttimerstartIns;
+clock timer;
+int Interruptcount=0;
+broadcast chan Interruptsignal;
+
+
+broadcast chan ControlOutput;
+broadcast chan CSMTelcontrolIns;
+broadcast chan RDSMTelcontrolIns;
+broadcast chan TeldataTraIns;
+broadcast chan CSMCommand,RDSMCommand;
+int[0,1] TeldataStoIns=0;
+int[0,1] TelMdata=0;
+
+int[0,1] CSMC=0;
+int[0,1] RDSMC=0;
+
+int[0,1] PulsecountStoIns=0;
+
+clock GDA_t;
+
+chan PulseCountAcqIns;
+
+
+chan GyropoweronInsStoIns,GyropoweroffInsStoIns,GyropoweronInsLoadIns,GyropoweroffInsLoadIns;
+int[0,1] GyropoweronInsStoInsV,GyropoweroffInsStoInsV;
+
+chan SunSensorpoweronInsStoIns,SunSensorpoweroffInsStoIns,SunSensorpoweronInsLoadIns,SunSensorpoweroffInsLoadIns;
+int[0,1] SunSensorpoweronInsStoInsV,SunSensorpoweroffInsStoInsV;
+
+chan ThrusterpoweronInsStoIns,ThrusterpoweroffInsStoIns,ThrusterpoweronInsLoadIns,ThrusterpoweroffInsLoadIns;
+int[0,1] ThrusterpoweronInsStoInsV,ThrusterpoweroffInsStoInsV;
+
+chan AnguVelAnaStoIns,AnguVelAnaLoadIns,GyropowerstateStoIns,GyropowerstateLoadIns;
+</declaration>
+	<template>
+		<name>DataManagementComputer</name>
+		<location id="id0" x="-59" y="-59">
+			<name x="-76" y="-42">DMC</name>
+		</location>
+		<location id="id1" x="85" y="-59">
+			<name x="17" y="-68">RDSMC</name>
+		</location>
+		<location id="id2" x="-195" y="-59">
+			<name x="-170" y="-68">CSMC</name>
+		</location>
+		<init ref="id0"/>
+		<transition id="id3">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-102" y="-136">TeldataTraIns?</label>
+			<label kind="assignment" x="-110" y="-119">TeldataStoIns=1</label>
+			<nail x="-76" y="-93"/>
+			<nail x="-42" y="-93"/>
+		</transition>
+		<transition id="id4">
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-204" y="-93">CSMTelcontrolIns!</label>
+			<nail x="-153" y="-76"/>
+			<nail x="-102" y="-76"/>
+		</transition>
+		<transition id="id5">
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-34" y="-93">RDSMTelcontrolIns!</label>
+			<nail x="42" y="-76"/>
+			<nail x="-17" y="-76"/>
+		</transition>
+		<transition id="id6">
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-187" y="-42">CSMCommand?</label>
+			<nail x="-102" y="-42"/>
+			<nail x="-153" y="-42"/>
+		</transition>
+		<transition id="id7">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-25" y="-42">RDSMCommand?</label>
+			<nail x="-17" y="-42"/>
+			<nail x="42" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>GroundOperator</name>
+		<declaration>clock Opt;</declaration>
+		<location id="id8" x="-119" y="-42">
+			<name x="-170" y="-59">GOP</name>
+			<label kind="invariant" x="-195" y="-42">Opt&lt;=120</label>
+		</location>
+		<init ref="id8"/>
+		<transition id="id9">
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="assignment" x="-93" y="-51">TelMdata=1,Opt=0</label>
+			<nail x="-76" y="-59"/>
+			<nail x="-76" y="-25"/>
+		</transition>
+		<transition id="id10">
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-170" y="-8">RDSMCommand!</label>
+			<label kind="assignment" x="-110" y="-25">Opt=0,CSMC=0,RDSMC=1</label>
+			<nail x="-144" y="-8"/>
+			<nail x="-119" y="-8"/>
+		</transition>
+		<transition id="id11">
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-178" y="-110">SunVisibleSign==1</label>
+			<label kind="synchronisation" x="-170" y="-93">CSMCommand!</label>
+			<label kind="assignment" x="-110" y="-76">Opt=0,CSMC=1,RDSMC=0</label>
+			<nail x="-144" y="-76"/>
+			<nail x="-119" y="-76"/>
+		</transition>
+	</template>
+	<template>
+		<name>ModeRegister</name>
+		<location id="id12" x="-34" y="0">
+		</location>
+		<init ref="id12"/>
+		<transition id="id13">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-17" y="-85">NextcyclemodeLoadIns?</label>
+			<nail x="-25" y="-68"/>
+			<nail x="0" y="-51"/>
+		</transition>
+		<transition id="id14">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-212" y="-85">NextcyclemodeStoIns?</label>
+			<nail x="-59" y="-68"/>
+			<nail x="-85" y="-51"/>
+		</transition>
+		<transition id="id15">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="102" y="17">TarAnguVelStoIns?</label>
+			<nail x="76" y="42"/>
+			<nail x="102" y="17"/>
+		</transition>
+		<transition id="id16">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="102" y="-34">TarAnguVelLoadIns?</label>
+			<nail x="76" y="-34"/>
+			<nail x="102" y="-8"/>
+		</transition>
+		<transition id="id17">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-306" y="25">TarAttAngStoIns?</label>
+			<nail x="-144" y="42"/>
+			<nail x="-170" y="17"/>
+		</transition>
+		<transition id="id18">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-323" y="-34">TarAttAngLoadIns?</label>
+			<nail x="-144" y="-34"/>
+			<nail x="-178" y="-8"/>
+		</transition>
+		<transition id="id19">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-25" y="59">CurrentmodeLoadIns?</label>
+			<nail x="-17" y="59"/>
+			<nail x="25" y="51"/>
+		</transition>
+		<transition id="id20">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-195" y="59">CurrentmodeStoIns?</label>
+			<nail x="-59" y="59"/>
+			<nail x="-85" y="51"/>
+		</transition>
+	</template>
+	<template>
+		<name>TelecontrolInstructionProcessing</name>
+		<location id="id21" x="-153" y="-25">
+			<name x="-187" y="-59">Start</name>
+		</location>
+		<location id="id22" x="-42" y="-25">
+			<name x="-25" y="-42">L2</name>
+		</location>
+		<location id="id23" x="-153" y="59">
+			<name x="-187" y="51">L1</name>
+		</location>
+		<location id="id24" x="-42" y="59">
+			<name x="-25" y="51">End</name>
+		</location>
+		<init ref="id21"/>
+		<transition id="id25">
+			<source ref="id24"/>
+			<target ref="id21"/>
+		</transition>
+		<transition id="id26">
+			<source ref="id23"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-153" y="68">NextcyclemodeStoIns!</label>
+			<label kind="assignment" x="-136" y="85">NextMode=3</label>
+		</transition>
+		<transition id="id27">
+			<source ref="id22"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-25" y="-8">NextcyclemodeStoIns!</label>
+			<label kind="assignment" x="-25" y="17">NextMode=0</label>
+		</transition>
+		<transition id="id28">
+			<source ref="id21"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-306" y="8">CSMTelcontrolIns?</label>
+		</transition>
+		<transition id="id29">
+			<source ref="id21"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="-119" y="-68">RDSMTelcontrolIns?</label>
+		</transition>
+	</template>
+	<system>system TelecontrolInstructionProcessing,DataManagementComputer,GroundOperator,ModeRegister;
+</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment/>
+		</query>
+	</queries>
+</nta>

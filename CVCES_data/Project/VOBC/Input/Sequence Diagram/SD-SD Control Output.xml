@@ -1,0 +1,14 @@
+Controller as SDCO
+Entity as StationDoor
+Datastorage as StationData
+opt OpenSDIns==1
+	SDCO ->  StationData : OpenSDInsLoadIns[event]
+	StationData -> SDCO : OpenSDIns[event]
+	SDCO -> StationDoor : OpenSDPulse[event]
+	StationDoor -> SDCO : SDOn[state]
+else CloseSDIns==1
+	SDCO ->  StationData : CloseSDInsLoadIns[event]
+	StationData -> SDCO : CloseSDIns[event]
+	SDCO -> StationDoor : CloseSDPulse[event]
+	StationDoor -> SDCO : SDOff[state]
+end

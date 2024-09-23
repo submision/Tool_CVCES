@@ -1,0 +1,4 @@
+Controller as SGPonI
+Datastorage as GI
+SGPonI -> GI : Gyro power on instruction storage instruction[event]  
+GI -> SGPonI : Gyro power on instruction[event]

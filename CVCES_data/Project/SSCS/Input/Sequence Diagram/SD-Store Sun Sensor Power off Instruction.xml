@@ -1,0 +1,4 @@
+Controller as SSSPoffI
+Datastorage as SSI
+SSSPoffI -> SSI : Sun sensor power off instruction storage instruction[event]
+SSI -> SSSPoffI : Sun sensor power off instruction[event]

@@ -1,0 +1,5 @@
+Controller as CT
+Entity as TH
+Datastorage as HD
+CT -> HD : temperature value acquisition[event]
+CT -> TH : temperature regulation[event]

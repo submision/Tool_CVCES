@@ -1,0 +1,2916 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan MeaAngStoIns,MeaAngLoadIns;
+chan SunVisibleSignStoIns,SunVisibleSignLoadIns;
+chan ThrusterpowerstateStoIns,ThrusterpowerstateLoadIns;
+chan CurrentmodeLoadIns,CurrentmodeStoIns;
+chan TriAttAngLoadIns,TriAttAngStoIns,TriAnguVelLoadIns,TriAnguVelStoIns;
+
+chan TarAttAngLoadIns,TarAttAngStoIns,TarAnguVelLoadIns,TarAnguVelStoIns;
+
+chan TriConQuaLoadIns,TriConQuaStoIns;
+chan ThrComLogLoadIns,ThrComLogStoIns;
+
+chan NextcyclemodeLoadIns,NextcyclemodeStoIns;
+
+int NextMode;
+
+double Suntimer;
+clock SunAngle;
+broadcast chan SunSensorpoweronSignal,SunSensorpoweroffSignal;
+broadcast chan SunSensorpowerstateperIns,SunMeaAngperIns,SunVisibleSignperIns;
+int[0,1] SunSensorpowerstate=0;
+int[0,1] SunVisibleSign;
+int[0,1] SunSensorpowerIns=0;
+int[0,1] SunSensorpowerInsStoIns=0;
+
+
+
+broadcast chan GyropoweronSignal,GyropoweroffSignal;
+broadcast chan PulseCountperIns,GyropowerstateperIns;
+int[0,1] Gyropowerstate=0;
+int[0,1] GyropowerInsStoIns=0;
+int[0,1] GyropowerIns=0;
+int[0,1] AnguAngVelAnaStoIns=0;
+int[0,1] PulseCountStoIns=0;
+
+broadcast chan ThrusterpoweronSignal,ThrusterpoweroffSignal;
+broadcast chan ThrusterpowerstateperIns;
+int[0,1] Thrusterpowerstate=0;
+int[0,1] ThrusterpowerInsStoIns=0;
+int[0,1] ThrusterpowerIns=0;
+
+broadcast chan RASMIns,PASMIns,RDSMIns,CSMIns;
+broadcast chan RASMControl,PASMControl,RDSMControl,CSMControl;
+
+//0:RDSM速率阻尼，1：PASM俯仰搜索，2：RASM滚动搜索，3：CSM对日巡航
+int Currentmode=0;
+
+broadcast chan InterrupttimerstartIns;
+clock timer;
+int Interruptcount=0;
+broadcast chan Interruptsignal;
+
+
+broadcast chan ControlOutput;
+broadcast chan CSMTelcontrolIns;
+broadcast chan RDSMTelcontrolIns;
+broadcast chan TeldataTraIns;
+broadcast chan CSMCommand,RDSMCommand;
+int[0,1] TeldataStoIns=0;
+int[0,1] TelMdata=0;
+
+int[0,1] CSMC=0;
+int[0,1] RDSMC=0;
+
+int[0,1] PulsecountStoIns=0;
+
+clock GDA_t;
+
+chan PulseCountAcqIns;
+
+
+chan GyropoweronInsStoIns,GyropoweroffInsStoIns,GyropoweronInsLoadIns,GyropoweroffInsLoadIns;
+int[0,1] GyropoweronInsStoInsV,GyropoweroffInsStoInsV;
+
+chan SunSensorpoweronInsStoIns,SunSensorpoweroffInsStoIns,SunSensorpoweronInsLoadIns,SunSensorpoweroffInsLoadIns;
+int[0,1] SunSensorpoweronInsStoInsV,SunSensorpoweroffInsStoInsV;
+
+chan ThrusterpoweronInsStoIns,ThrusterpoweroffInsStoIns,ThrusterpoweronInsLoadIns,ThrusterpoweroffInsLoadIns;
+int[0,1] ThrusterpoweronInsStoInsV,ThrusterpoweroffInsStoInsV;
+
+chan AnguVelAnaStoIns,AnguVelAnaLoadIns,GyropowerstateStoIns,GyropowerstateLoadIns;
+</declaration>
+	<template>
+		<name>Satellite</name>
+		<location id="id0" x="-187" y="-42">
+			<name x="-204" y="-76">RDSM</name>
+		</location>
+		<location id="id1" x="-25" y="-76">
+			<name x="-8" y="-76">RASM</name>
+		</location>
+		<location id="id2" x="-25" y="-8">
+			<name x="-42" y="0">PASM</name>
+		</location>
+		<location id="id3" x="136" y="-42">
+			<name x="110" y="-76">CSM</name>
+		</location>
+		<init ref="id0"/>
+		<transition id="id4">
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="127" y="-25">CSMIns?</label>
+			<nail x="170" y="-59"/>
+			<nail x="170" y="-25"/>
+		</transition>
+		<transition id="id5">
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="8" y="8">RDSMIns?</label>
+			<label kind="assignment" x="-170" y="8">Currentmode=0</label>
+			<nail x="136" y="25"/>
+			<nail x="-187" y="25"/>
+		</transition>
+		<transition id="id6">
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="25" y="-59">CSMIns?</label>
+			<label kind="assignment" x="-136" y="-59">Currentmode=3</label>
+		</transition>
+		<transition id="id7">
+			<source ref="id1"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="42" y="-76">CSMIns?</label>
+			<label kind="assignment" x="-8" y="-93">Currentmode=3</label>
+			<nail x="85" y="-76"/>
+		</transition>
+		<transition id="id8">
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="8" y="-25">CSMIns?</label>
+			<label kind="assignment" x="0" y="-8">Currentmode=3</label>
+			<nail x="85" y="-8"/>
+		</transition>
+		<transition id="id9">
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-110" y="-76">RDSMIns?</label>
+			<label kind="assignment" x="-144" y="-93">Currentmode=0</label>
+			<nail x="-136" y="-76"/>
+		</transition>
+		<transition id="id10">
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-93" y="-42">RASMIns?</label>
+			<label kind="assignment" x="-17" y="-42">Currentmode=2</label>
+		</transition>
+		<transition id="id11">
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-119" y="-24">PASMIns?</label>
+			<label kind="assignment" x="-144" y="-8">Currentmode=1</label>
+			<nail x="-136" y="-8"/>
+		</transition>
+	</template>
+	<template>
+		<name>InterruptTimer</name>
+		<location id="id12" x="-255" y="-85">
+			<name x="-297" y="-119">Init</name>
+			<label kind="invariant" x="-221" y="-59">timer&lt;=32</label>
+		</location>
+		<init ref="id12"/>
+		<transition id="id13">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-178" y="-102">timer&gt;=32 &amp;&amp; Interruptcount&gt;=5</label>
+			<label kind="assignment" x="-178" y="-119">Interruptcount=0,timer=0</label>
+			<nail x="-187" y="-68"/>
+			<nail x="-187" y="-110"/>
+		</transition>
+		<transition id="id14">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-476" y="-51">timer&gt;=32 &amp;&amp; Interruptcount&lt;5</label>
+			<label kind="assignment" x="-280" y="-34">timer=0,
+Interruptcount=Interruptcount+1</label>
+			<nail x="-272" y="-34"/>
+			<nail x="-238" y="-34"/>
+		</transition>
+		<transition id="id15">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-323" y="-153">InterrupttimerstartIns?</label>
+			<nail x="-272" y="-127"/>
+			<nail x="-238" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>DataManagementComputer</name>
+		<location id="id16" x="-59" y="-59">
+			<name x="-76" y="-42">DMC</name>
+		</location>
+		<location id="id17" x="85" y="-59">
+			<name x="17" y="-68">RDSMC</name>
+		</location>
+		<location id="id18" x="-195" y="-59">
+			<name x="-170" y="-68">CSMC</name>
+		</location>
+		<init ref="id16"/>
+		<transition id="id19">
+			<source ref="id16"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="-102" y="-136">TeldataTraIns?</label>
+			<label kind="assignment" x="-110" y="-119">TeldataStoIns=1</label>
+			<nail x="-76" y="-93"/>
+			<nail x="-42" y="-93"/>
+		</transition>
+		<transition id="id20">
+			<source ref="id18"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="-204" y="-93">CSMTelcontrolIns!</label>
+			<nail x="-153" y="-76"/>
+			<nail x="-102" y="-76"/>
+		</transition>
+		<transition id="id21">
+			<source ref="id17"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="-34" y="-93">RDSMTelcontrolIns!</label>
+			<nail x="42" y="-76"/>
+			<nail x="-17" y="-76"/>
+		</transition>
+		<transition id="id22">
+			<source ref="id16"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-187" y="-42">CSMCommand?</label>
+			<nail x="-102" y="-42"/>
+			<nail x="-153" y="-42"/>
+		</transition>
+		<transition id="id23">
+			<source ref="id16"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-25" y="-42">RDSMCommand?</label>
+			<nail x="-17" y="-42"/>
+			<nail x="42" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>GroundOperator</name>
+		<declaration>clock Opt;</declaration>
+		<location id="id24" x="-119" y="-42">
+			<name x="-170" y="-59">GOP</name>
+			<label kind="invariant" x="-195" y="-42">Opt&lt;=120</label>
+		</location>
+		<init ref="id24"/>
+		<transition id="id25">
+			<source ref="id24"/>
+			<target ref="id24"/>
+			<label kind="assignment" x="-93" y="-51">TelMdata=1,Opt=0</label>
+			<nail x="-76" y="-59"/>
+			<nail x="-76" y="-25"/>
+		</transition>
+		<transition id="id26">
+			<source ref="id24"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-170" y="-8">RDSMCommand!</label>
+			<label kind="assignment" x="-110" y="-25">Opt=0,CSMC=0,RDSMC=1</label>
+			<nail x="-144" y="-8"/>
+			<nail x="-119" y="-8"/>
+		</transition>
+		<transition id="id27">
+			<source ref="id24"/>
+			<target ref="id24"/>
+			<label kind="guard" x="-178" y="-110">SunVisibleSign==1</label>
+			<label kind="synchronisation" x="-170" y="-93">CSMCommand!</label>
+			<label kind="assignment" x="-110" y="-76">Opt=0,CSMC=1,RDSMC=0</label>
+			<nail x="-144" y="-76"/>
+			<nail x="-119" y="-76"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster1</name>
+		<location id="id28" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id29" x="-127" y="-93">
+			<name x="-110" y="-102">SendCSM</name>
+			<urgent/>
+		</location>
+		<location id="id30" x="-161" y="25">
+			<name x="-238" y="34">SendRASM</name>
+			<urgent/>
+		</location>
+		<location id="id31" x="-161" y="-93">
+			<name x="-246" y="-119">SendRDSM</name>
+			<urgent/>
+		</location>
+		<location id="id32" x="-127" y="25">
+			<name x="-110" y="17">SendPASM</name>
+			<urgent/>
+		</location>
+		<init ref="id28"/>
+		<transition id="id33">
+			<source ref="id32"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id34">
+			<source ref="id28"/>
+			<target ref="id32"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id35">
+			<source ref="id31"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id36">
+			<source ref="id28"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id37">
+			<source ref="id30"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id38">
+			<source ref="id28"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="-280" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id39">
+			<source ref="id29"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id40">
+			<source ref="id28"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id41">
+			<source ref="id28"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id42">
+			<source ref="id28"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-425" y="-25">ThrusterpoweroffSignal?</label>
+			<nail x="-246" y="-8"/>
+			<nail x="-272" y="-34"/>
+		</transition>
+		<transition id="id43">
+			<source ref="id28"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-416" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-272" y="-42"/>
+			<nail x="-238" y="-68"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster2</name>
+		<location id="id44" x="-289" y="-34">
+			<name x="-272" y="-42">Off</name>
+		</location>
+		<location id="id45" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id46" x="-127" y="-93">
+		</location>
+		<location id="id47" x="-161" y="25">
+		</location>
+		<location id="id48" x="-161" y="-93">
+		</location>
+		<location id="id49" x="-127" y="25">
+		</location>
+		<init ref="id44"/>
+		<transition id="id50">
+			<source ref="id49"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id51">
+			<source ref="id45"/>
+			<target ref="id49"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id52">
+			<source ref="id48"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id53">
+			<source ref="id45"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id54">
+			<source ref="id47"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id55">
+			<source ref="id45"/>
+			<target ref="id47"/>
+			<label kind="synchronisation" x="-272" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id56">
+			<source ref="id46"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id57">
+			<source ref="id45"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id58">
+			<source ref="id45"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id59">
+			<source ref="id45"/>
+			<target ref="id44"/>
+			<label kind="synchronisation" x="-331" y="-17">ThrusterpoweroffSignal?</label>
+			<nail x="-187" y="-17"/>
+			<nail x="-263" y="-17"/>
+		</transition>
+		<transition id="id60">
+			<source ref="id44"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="-331" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-263" y="-51"/>
+			<nail x="-187" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster3</name>
+		<location id="id61" x="-289" y="-34">
+			<name x="-272" y="-42">Off</name>
+		</location>
+		<location id="id62" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id63" x="-127" y="-93">
+		</location>
+		<location id="id64" x="-161" y="25">
+		</location>
+		<location id="id65" x="-161" y="-93">
+		</location>
+		<location id="id66" x="-127" y="25">
+		</location>
+		<init ref="id61"/>
+		<transition id="id67">
+			<source ref="id66"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id68">
+			<source ref="id62"/>
+			<target ref="id66"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id69">
+			<source ref="id65"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id70">
+			<source ref="id62"/>
+			<target ref="id65"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id71">
+			<source ref="id64"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id72">
+			<source ref="id62"/>
+			<target ref="id64"/>
+			<label kind="synchronisation" x="-272" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id73">
+			<source ref="id63"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id74">
+			<source ref="id62"/>
+			<target ref="id63"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id75">
+			<source ref="id62"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id76">
+			<source ref="id62"/>
+			<target ref="id61"/>
+			<label kind="synchronisation" x="-331" y="-17">ThrusterpoweroffSignal?</label>
+			<nail x="-187" y="-17"/>
+			<nail x="-263" y="-17"/>
+		</transition>
+		<transition id="id77">
+			<source ref="id61"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="-331" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-263" y="-51"/>
+			<nail x="-187" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster4</name>
+		<location id="id78" x="-289" y="-34">
+			<name x="-272" y="-42">Off</name>
+		</location>
+		<location id="id79" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id80" x="-127" y="-93">
+		</location>
+		<location id="id81" x="-161" y="25">
+		</location>
+		<location id="id82" x="-161" y="-93">
+		</location>
+		<location id="id83" x="-127" y="25">
+		</location>
+		<init ref="id78"/>
+		<transition id="id84">
+			<source ref="id83"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id85">
+			<source ref="id79"/>
+			<target ref="id83"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id86">
+			<source ref="id82"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id87">
+			<source ref="id79"/>
+			<target ref="id82"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id88">
+			<source ref="id81"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id89">
+			<source ref="id79"/>
+			<target ref="id81"/>
+			<label kind="synchronisation" x="-272" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id90">
+			<source ref="id80"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id91">
+			<source ref="id79"/>
+			<target ref="id80"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id92">
+			<source ref="id79"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id93">
+			<source ref="id79"/>
+			<target ref="id78"/>
+			<label kind="synchronisation" x="-331" y="-17">ThrusterpoweroffSignal?</label>
+			<nail x="-187" y="-17"/>
+			<nail x="-263" y="-17"/>
+		</transition>
+		<transition id="id94">
+			<source ref="id78"/>
+			<target ref="id79"/>
+			<label kind="synchronisation" x="-331" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-263" y="-51"/>
+			<nail x="-187" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster5</name>
+		<location id="id95" x="-289" y="-34">
+			<name x="-272" y="-42">Off</name>
+		</location>
+		<location id="id96" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id97" x="-127" y="-93">
+		</location>
+		<location id="id98" x="-161" y="25">
+		</location>
+		<location id="id99" x="-161" y="-93">
+		</location>
+		<location id="id100" x="-127" y="25">
+		</location>
+		<init ref="id95"/>
+		<transition id="id101">
+			<source ref="id100"/>
+			<target ref="id96"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id102">
+			<source ref="id96"/>
+			<target ref="id100"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id103">
+			<source ref="id99"/>
+			<target ref="id96"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id104">
+			<source ref="id96"/>
+			<target ref="id99"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id105">
+			<source ref="id98"/>
+			<target ref="id96"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id106">
+			<source ref="id96"/>
+			<target ref="id98"/>
+			<label kind="synchronisation" x="-272" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id107">
+			<source ref="id97"/>
+			<target ref="id96"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id108">
+			<source ref="id96"/>
+			<target ref="id97"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id109">
+			<source ref="id96"/>
+			<target ref="id96"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id110">
+			<source ref="id96"/>
+			<target ref="id95"/>
+			<label kind="synchronisation" x="-331" y="-17">ThrusterpoweroffSignal?</label>
+			<nail x="-187" y="-17"/>
+			<nail x="-263" y="-17"/>
+		</transition>
+		<transition id="id111">
+			<source ref="id95"/>
+			<target ref="id96"/>
+			<label kind="synchronisation" x="-331" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-263" y="-51"/>
+			<nail x="-187" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster6</name>
+		<location id="id112" x="-289" y="-34">
+			<name x="-272" y="-42">Off</name>
+		</location>
+		<location id="id113" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id114" x="-127" y="-93">
+		</location>
+		<location id="id115" x="-161" y="25">
+		</location>
+		<location id="id116" x="-161" y="-93">
+		</location>
+		<location id="id117" x="-127" y="25">
+		</location>
+		<init ref="id112"/>
+		<transition id="id118">
+			<source ref="id117"/>
+			<target ref="id113"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id119">
+			<source ref="id113"/>
+			<target ref="id117"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id120">
+			<source ref="id116"/>
+			<target ref="id113"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id121">
+			<source ref="id113"/>
+			<target ref="id116"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id122">
+			<source ref="id115"/>
+			<target ref="id113"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id123">
+			<source ref="id113"/>
+			<target ref="id115"/>
+			<label kind="synchronisation" x="-272" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id124">
+			<source ref="id114"/>
+			<target ref="id113"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id125">
+			<source ref="id113"/>
+			<target ref="id114"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id126">
+			<source ref="id113"/>
+			<target ref="id113"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id127">
+			<source ref="id113"/>
+			<target ref="id112"/>
+			<label kind="synchronisation" x="-331" y="-17">ThrusterpoweroffSignal?</label>
+			<nail x="-187" y="-17"/>
+			<nail x="-263" y="-17"/>
+		</transition>
+		<transition id="id128">
+			<source ref="id112"/>
+			<target ref="id113"/>
+			<label kind="synchronisation" x="-331" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-263" y="-51"/>
+			<nail x="-187" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster7</name>
+		<location id="id129" x="-289" y="-34">
+			<name x="-272" y="-42">Off</name>
+		</location>
+		<location id="id130" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id131" x="-127" y="-93">
+		</location>
+		<location id="id132" x="-161" y="25">
+		</location>
+		<location id="id133" x="-161" y="-93">
+		</location>
+		<location id="id134" x="-127" y="25">
+		</location>
+		<init ref="id129"/>
+		<transition id="id135">
+			<source ref="id134"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id136">
+			<source ref="id130"/>
+			<target ref="id134"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id137">
+			<source ref="id133"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id138">
+			<source ref="id130"/>
+			<target ref="id133"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id139">
+			<source ref="id132"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id140">
+			<source ref="id130"/>
+			<target ref="id132"/>
+			<label kind="synchronisation" x="-272" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id141">
+			<source ref="id131"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id142">
+			<source ref="id130"/>
+			<target ref="id131"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id143">
+			<source ref="id130"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id144">
+			<source ref="id130"/>
+			<target ref="id129"/>
+			<label kind="synchronisation" x="-331" y="-17">ThrusterpoweroffSignal?</label>
+			<nail x="-187" y="-17"/>
+			<nail x="-263" y="-17"/>
+		</transition>
+		<transition id="id145">
+			<source ref="id129"/>
+			<target ref="id130"/>
+			<label kind="synchronisation" x="-331" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-263" y="-51"/>
+			<nail x="-187" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster8</name>
+		<location id="id146" x="-289" y="-34">
+			<name x="-272" y="-42">Off</name>
+		</location>
+		<location id="id147" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id148" x="-127" y="-93">
+		</location>
+		<location id="id149" x="-161" y="25">
+		</location>
+		<location id="id150" x="-161" y="-93">
+		</location>
+		<location id="id151" x="-127" y="25">
+		</location>
+		<init ref="id146"/>
+		<transition id="id152">
+			<source ref="id151"/>
+			<target ref="id147"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id153">
+			<source ref="id147"/>
+			<target ref="id151"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id154">
+			<source ref="id150"/>
+			<target ref="id147"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id155">
+			<source ref="id147"/>
+			<target ref="id150"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id156">
+			<source ref="id149"/>
+			<target ref="id147"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id157">
+			<source ref="id147"/>
+			<target ref="id149"/>
+			<label kind="synchronisation" x="-272" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id158">
+			<source ref="id148"/>
+			<target ref="id147"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id159">
+			<source ref="id147"/>
+			<target ref="id148"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id160">
+			<source ref="id147"/>
+			<target ref="id147"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id161">
+			<source ref="id147"/>
+			<target ref="id146"/>
+			<label kind="synchronisation" x="-331" y="-17">ThrusterpoweroffSignal?</label>
+			<nail x="-187" y="-17"/>
+			<nail x="-263" y="-17"/>
+		</transition>
+		<transition id="id162">
+			<source ref="id146"/>
+			<target ref="id147"/>
+			<label kind="synchronisation" x="-331" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-263" y="-51"/>
+			<nail x="-187" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster9</name>
+		<location id="id163" x="-289" y="-34">
+			<name x="-272" y="-42">Off</name>
+		</location>
+		<location id="id164" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id165" x="-127" y="-93">
+		</location>
+		<location id="id166" x="-161" y="25">
+		</location>
+		<location id="id167" x="-161" y="-93">
+		</location>
+		<location id="id168" x="-127" y="25">
+		</location>
+		<init ref="id163"/>
+		<transition id="id169">
+			<source ref="id168"/>
+			<target ref="id164"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id170">
+			<source ref="id164"/>
+			<target ref="id168"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id171">
+			<source ref="id167"/>
+			<target ref="id164"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id172">
+			<source ref="id164"/>
+			<target ref="id167"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id173">
+			<source ref="id166"/>
+			<target ref="id164"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id174">
+			<source ref="id164"/>
+			<target ref="id166"/>
+			<label kind="synchronisation" x="-272" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id175">
+			<source ref="id165"/>
+			<target ref="id164"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id176">
+			<source ref="id164"/>
+			<target ref="id165"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id177">
+			<source ref="id164"/>
+			<target ref="id164"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id178">
+			<source ref="id164"/>
+			<target ref="id163"/>
+			<label kind="synchronisation" x="-331" y="-17">ThrusterpoweroffSignal?</label>
+			<nail x="-187" y="-17"/>
+			<nail x="-263" y="-17"/>
+		</transition>
+		<transition id="id179">
+			<source ref="id163"/>
+			<target ref="id164"/>
+			<label kind="synchronisation" x="-331" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-263" y="-51"/>
+			<nail x="-187" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster10</name>
+		<location id="id180" x="-289" y="-34">
+			<name x="-272" y="-42">Off</name>
+		</location>
+		<location id="id181" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id182" x="-127" y="-93">
+		</location>
+		<location id="id183" x="-161" y="25">
+		</location>
+		<location id="id184" x="-161" y="-93">
+		</location>
+		<location id="id185" x="-127" y="25">
+		</location>
+		<init ref="id180"/>
+		<transition id="id186">
+			<source ref="id185"/>
+			<target ref="id181"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id187">
+			<source ref="id181"/>
+			<target ref="id185"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id188">
+			<source ref="id184"/>
+			<target ref="id181"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id189">
+			<source ref="id181"/>
+			<target ref="id184"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id190">
+			<source ref="id183"/>
+			<target ref="id181"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id191">
+			<source ref="id181"/>
+			<target ref="id183"/>
+			<label kind="synchronisation" x="-272" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id192">
+			<source ref="id182"/>
+			<target ref="id181"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id193">
+			<source ref="id181"/>
+			<target ref="id182"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id194">
+			<source ref="id181"/>
+			<target ref="id181"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id195">
+			<source ref="id181"/>
+			<target ref="id180"/>
+			<label kind="synchronisation" x="-331" y="-17">ThrusterpoweroffSignal?</label>
+			<nail x="-187" y="-17"/>
+			<nail x="-263" y="-17"/>
+		</transition>
+		<transition id="id196">
+			<source ref="id180"/>
+			<target ref="id181"/>
+			<label kind="synchronisation" x="-331" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-263" y="-51"/>
+			<nail x="-187" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster11</name>
+		<location id="id197" x="-289" y="-34">
+			<name x="-272" y="-42">Off</name>
+		</location>
+		<location id="id198" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id199" x="-127" y="-93">
+		</location>
+		<location id="id200" x="-161" y="25">
+		</location>
+		<location id="id201" x="-161" y="-93">
+		</location>
+		<location id="id202" x="-127" y="25">
+		</location>
+		<init ref="id197"/>
+		<transition id="id203">
+			<source ref="id202"/>
+			<target ref="id198"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id204">
+			<source ref="id198"/>
+			<target ref="id202"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id205">
+			<source ref="id201"/>
+			<target ref="id198"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id206">
+			<source ref="id198"/>
+			<target ref="id201"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id207">
+			<source ref="id200"/>
+			<target ref="id198"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id208">
+			<source ref="id198"/>
+			<target ref="id200"/>
+			<label kind="synchronisation" x="-272" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id209">
+			<source ref="id199"/>
+			<target ref="id198"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id210">
+			<source ref="id198"/>
+			<target ref="id199"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id211">
+			<source ref="id198"/>
+			<target ref="id198"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id212">
+			<source ref="id198"/>
+			<target ref="id197"/>
+			<label kind="synchronisation" x="-331" y="-17">ThrusterpoweroffSignal?</label>
+			<nail x="-187" y="-17"/>
+			<nail x="-263" y="-17"/>
+		</transition>
+		<transition id="id213">
+			<source ref="id197"/>
+			<target ref="id198"/>
+			<label kind="synchronisation" x="-331" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-263" y="-51"/>
+			<nail x="-187" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>TriaxialControlThruster12</name>
+		<location id="id214" x="-289" y="-34">
+			<name x="-272" y="-42">Off</name>
+		</location>
+		<location id="id215" x="-161" y="-34">
+			<name x="-195" y="-42">On</name>
+		</location>
+		<location id="id216" x="-127" y="-93">
+		</location>
+		<location id="id217" x="-161" y="25">
+		</location>
+		<location id="id218" x="-161" y="-93">
+		</location>
+		<location id="id219" x="-127" y="25">
+		</location>
+		<init ref="id214"/>
+		<transition id="id220">
+			<source ref="id219"/>
+			<target ref="id215"/>
+			<label kind="synchronisation" x="-119" y="-17">PASMIns!</label>
+			<nail x="-127" y="-8"/>
+		</transition>
+		<transition id="id221">
+			<source ref="id215"/>
+			<target ref="id219"/>
+			<label kind="synchronisation" x="-119" y="0">PASMControl?</label>
+		</transition>
+		<transition id="id222">
+			<source ref="id218"/>
+			<target ref="id215"/>
+			<label kind="synchronisation" x="-246" y="-102">RDSMIns!</label>
+			<nail x="-178" y="-76"/>
+		</transition>
+		<transition id="id223">
+			<source ref="id215"/>
+			<target ref="id218"/>
+			<label kind="synchronisation" x="-272" y="-85">RDSMControl?</label>
+		</transition>
+		<transition id="id224">
+			<source ref="id217"/>
+			<target ref="id215"/>
+			<label kind="synchronisation" x="-238" y="17">RASMIns!</label>
+			<nail x="-178" y="8"/>
+		</transition>
+		<transition id="id225">
+			<source ref="id215"/>
+			<target ref="id217"/>
+			<label kind="synchronisation" x="-272" y="0">RASMControl?</label>
+		</transition>
+		<transition id="id226">
+			<source ref="id216"/>
+			<target ref="id215"/>
+			<label kind="synchronisation" x="-119" y="-68">CSMIns!</label>
+			<nail x="-127" y="-59"/>
+		</transition>
+		<transition id="id227">
+			<source ref="id215"/>
+			<target ref="id216"/>
+			<label kind="synchronisation" x="-119" y="-85">CSMControl?</label>
+		</transition>
+		<transition id="id228">
+			<source ref="id215"/>
+			<target ref="id215"/>
+			<label kind="synchronisation" x="-119" y="-51">ThrusterpowerstateperIns?</label>
+			<label kind="assignment" x="-119" y="-34">Thrusterpowerstate=1</label>
+			<nail x="-119" y="-17"/>
+			<nail x="-119" y="-51"/>
+		</transition>
+		<transition id="id229">
+			<source ref="id215"/>
+			<target ref="id214"/>
+			<label kind="synchronisation" x="-331" y="-17">ThrusterpoweroffSignal?</label>
+			<nail x="-187" y="-17"/>
+			<nail x="-263" y="-17"/>
+		</transition>
+		<transition id="id230">
+			<source ref="id214"/>
+			<target ref="id215"/>
+			<label kind="synchronisation" x="-331" y="-68">ThrusterpoweronSignal?</label>
+			<nail x="-263" y="-51"/>
+			<nail x="-187" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensor1</name>
+		<location id="id231" x="-518" y="-102">
+			<name x="-535" y="-144">Off</name>
+		</location>
+		<init ref="id231"/>
+		<transition id="id232">
+			<source ref="id231"/>
+			<target ref="id231"/>
+			<label kind="guard" x="-425" y="-85">SunAngle&lt;=0 &amp;&amp; SunAngle&gt;=-180</label>
+			<label kind="assignment" x="-425" y="-102">SunVisibleSign=0</label>
+			<nail x="-433" y="-59"/>
+			<nail x="-425" y="-85"/>
+		</transition>
+		<transition id="id233">
+			<source ref="id231"/>
+			<target ref="id231"/>
+			<label kind="guard" x="-535" y="-59">SunAngle&gt;=0 &amp;&amp; SunAngle&lt;=180</label>
+			<label kind="assignment" x="-510" y="-42">SunVisibleSign=1</label>
+			<nail x="-510" y="-59"/>
+			<nail x="-476" y="-59"/>
+		</transition>
+		<transition id="id234">
+			<source ref="id231"/>
+			<target ref="id231"/>
+			<label kind="synchronisation" x="-416" y="-127">SunVisibleSignperIns?</label>
+			<nail x="-425" y="-136"/>
+			<nail x="-425" y="-102"/>
+		</transition>
+		<transition id="id235">
+			<source ref="id231"/>
+			<target ref="id231"/>
+			<label kind="synchronisation" x="-663" y="-51">SunMeaAngperIns?</label>
+			<nail x="-561" y="-59"/>
+			<nail x="-527" y="-59"/>
+		</transition>
+		<transition id="id236">
+			<source ref="id231"/>
+			<target ref="id231"/>
+			<label kind="synchronisation" x="-510" y="-178">SunSensorpowerstateperIns?</label>
+			<label kind="assignment" x="-501" y="-161">SunSensorpowerstate=1</label>
+			<nail x="-467" y="-144"/>
+			<nail x="-501" y="-144"/>
+		</transition>
+		<transition id="id237">
+			<source ref="id231"/>
+			<target ref="id231"/>
+			<label kind="synchronisation" x="-773" y="-110">SunSensorpoweroffSignal?</label>
+			<nail x="-595" y="-68"/>
+			<nail x="-595" y="-110"/>
+		</transition>
+		<transition id="id238">
+			<source ref="id231"/>
+			<target ref="id231"/>
+			<label kind="synchronisation" x="-705" y="-170">SunSensorpoweronSignal?</label>
+			<nail x="-552" y="-144"/>
+			<nail x="-595" y="-144"/>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensor2</name>
+		<location id="id239" x="-76" y="-102">
+		</location>
+		<location id="id240" x="-399" y="-102">
+			<name x="-382" y="-110">Off</name>
+		</location>
+		<location id="id241" x="-280" y="-102">
+			<name x="-314" y="-110">On</name>
+		</location>
+		<init ref="id240"/>
+		<transition id="id242">
+			<source ref="id239"/>
+			<target ref="id241"/>
+			<label kind="guard" x="-255" y="-68">SunAngle&lt;=0 &amp;&amp; SunAngle&gt;=-180</label>
+			<label kind="assignment" x="-229" y="-85">SunVisibleSign=0</label>
+			<nail x="-102" y="-85"/>
+			<nail x="-246" y="-85"/>
+		</transition>
+		<transition id="id243">
+			<source ref="id239"/>
+			<target ref="id241"/>
+			<label kind="guard" x="-246" y="-136">SunAngle&gt;=0 &amp;&amp; SunAngle&lt;=180</label>
+			<label kind="assignment" x="-229" y="-119">SunVisibleSign=1</label>
+			<nail x="-102" y="-119"/>
+			<nail x="-246" y="-119"/>
+		</transition>
+		<transition id="id244">
+			<source ref="id241"/>
+			<target ref="id239"/>
+			<label kind="synchronisation" x="-246" y="-102">SunVisibleSignperIns?</label>
+		</transition>
+		<transition id="id245">
+			<source ref="id241"/>
+			<target ref="id241"/>
+			<label kind="synchronisation" x="-391" y="-68">SunMeaAngperIns?</label>
+			<nail x="-246" y="-68"/>
+			<nail x="-280" y="-68"/>
+		</transition>
+		<transition id="id246">
+			<source ref="id241"/>
+			<target ref="id241"/>
+			<label kind="synchronisation" x="-442" y="-153">SunSensorpowerstateperIns?</label>
+			<label kind="assignment" x="-246" y="-153">SunSensorpowerstate=1</label>
+			<nail x="-246" y="-136"/>
+			<nail x="-280" y="-136"/>
+		</transition>
+		<transition id="id247">
+			<source ref="id241"/>
+			<target ref="id240"/>
+			<label kind="synchronisation" x="-459" y="-85">SunSensorpoweroffSignal?</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-373" y="-85"/>
+		</transition>
+		<transition id="id248">
+			<source ref="id240"/>
+			<target ref="id241"/>
+			<label kind="synchronisation" x="-459" y="-136">SunSensorpoweronSignal?</label>
+			<nail x="-373" y="-119"/>
+			<nail x="-306" y="-119"/>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensor3</name>
+		<location id="id249" x="-76" y="-102">
+		</location>
+		<location id="id250" x="-399" y="-102">
+			<name x="-382" y="-110">Off</name>
+		</location>
+		<location id="id251" x="-280" y="-102">
+			<name x="-314" y="-110">On</name>
+		</location>
+		<init ref="id250"/>
+		<transition id="id252">
+			<source ref="id249"/>
+			<target ref="id251"/>
+			<label kind="guard" x="-255" y="-68">SunAngle&lt;=0 &amp;&amp; SunAngle&gt;=-180</label>
+			<label kind="assignment" x="-229" y="-85">SunVisibleSign=0</label>
+			<nail x="-102" y="-85"/>
+			<nail x="-246" y="-85"/>
+		</transition>
+		<transition id="id253">
+			<source ref="id249"/>
+			<target ref="id251"/>
+			<label kind="guard" x="-246" y="-136">SunAngle&gt;=0 &amp;&amp; SunAngle&lt;=180</label>
+			<label kind="assignment" x="-229" y="-119">SunVisibleSign=1</label>
+			<nail x="-102" y="-119"/>
+			<nail x="-246" y="-119"/>
+		</transition>
+		<transition id="id254">
+			<source ref="id251"/>
+			<target ref="id249"/>
+			<label kind="synchronisation" x="-246" y="-102">SunVisibleSignperIns?</label>
+		</transition>
+		<transition id="id255">
+			<source ref="id251"/>
+			<target ref="id251"/>
+			<label kind="synchronisation" x="-391" y="-68">SunMeaAngperIns?</label>
+			<nail x="-246" y="-68"/>
+			<nail x="-280" y="-68"/>
+		</transition>
+		<transition id="id256">
+			<source ref="id251"/>
+			<target ref="id251"/>
+			<label kind="synchronisation" x="-442" y="-153">SunSensorpowerstateperIns?</label>
+			<label kind="assignment" x="-246" y="-153">SunSensorpowerstate=1</label>
+			<nail x="-246" y="-136"/>
+			<nail x="-280" y="-136"/>
+		</transition>
+		<transition id="id257">
+			<source ref="id251"/>
+			<target ref="id250"/>
+			<label kind="synchronisation" x="-459" y="-85">SunSensorpoweroffSignal?</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-373" y="-85"/>
+		</transition>
+		<transition id="id258">
+			<source ref="id250"/>
+			<target ref="id251"/>
+			<label kind="synchronisation" x="-459" y="-136">SunSensorpoweronSignal?</label>
+			<nail x="-373" y="-119"/>
+			<nail x="-306" y="-119"/>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensor4</name>
+		<location id="id259" x="-76" y="-102">
+		</location>
+		<location id="id260" x="-399" y="-102">
+			<name x="-382" y="-110">Off</name>
+		</location>
+		<location id="id261" x="-280" y="-102">
+			<name x="-314" y="-110">On</name>
+		</location>
+		<init ref="id260"/>
+		<transition id="id262">
+			<source ref="id259"/>
+			<target ref="id261"/>
+			<label kind="guard" x="-255" y="-68">SunAngle&lt;=0 &amp;&amp; SunAngle&gt;=-180</label>
+			<label kind="assignment" x="-229" y="-85">SunVisibleSign=0</label>
+			<nail x="-102" y="-85"/>
+			<nail x="-246" y="-85"/>
+		</transition>
+		<transition id="id263">
+			<source ref="id259"/>
+			<target ref="id261"/>
+			<label kind="guard" x="-246" y="-136">SunAngle&gt;=0 &amp;&amp; SunAngle&lt;=180</label>
+			<label kind="assignment" x="-229" y="-119">SunVisibleSign=1</label>
+			<nail x="-102" y="-119"/>
+			<nail x="-246" y="-119"/>
+		</transition>
+		<transition id="id264">
+			<source ref="id261"/>
+			<target ref="id259"/>
+			<label kind="synchronisation" x="-246" y="-102">SunVisibleSignperIns?</label>
+		</transition>
+		<transition id="id265">
+			<source ref="id261"/>
+			<target ref="id261"/>
+			<label kind="synchronisation" x="-391" y="-68">SunMeaAngperIns?</label>
+			<nail x="-246" y="-68"/>
+			<nail x="-280" y="-68"/>
+		</transition>
+		<transition id="id266">
+			<source ref="id261"/>
+			<target ref="id261"/>
+			<label kind="synchronisation" x="-442" y="-153">SunSensorpowerstateperIns?</label>
+			<label kind="assignment" x="-246" y="-153">SunSensorpowerstate=1</label>
+			<nail x="-246" y="-136"/>
+			<nail x="-280" y="-136"/>
+		</transition>
+		<transition id="id267">
+			<source ref="id261"/>
+			<target ref="id260"/>
+			<label kind="synchronisation" x="-459" y="-85">SunSensorpoweroffSignal?</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-373" y="-85"/>
+		</transition>
+		<transition id="id268">
+			<source ref="id260"/>
+			<target ref="id261"/>
+			<label kind="synchronisation" x="-459" y="-136">SunSensorpoweronSignal?</label>
+			<nail x="-373" y="-119"/>
+			<nail x="-306" y="-119"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro1</name>
+		<location id="id269" x="-501" y="-110">
+			<name x="-467" y="-119">Off</name>
+		</location>
+		<init ref="id269"/>
+		<transition id="id270">
+			<source ref="id269"/>
+			<target ref="id269"/>
+			<label kind="synchronisation" x="-731" y="-102">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-697" y="-127">Gyropowerstate=1</label>
+			<nail x="-578" y="-127"/>
+			<nail x="-578" y="-85"/>
+		</transition>
+		<transition id="id271">
+			<source ref="id269"/>
+			<target ref="id269"/>
+			<label kind="synchronisation" x="-408" y="-110">PulseCountperIns?</label>
+			<label kind="assignment" x="-399" y="-127">PulsecountStoIns=1</label>
+			<nail x="-416" y="-85"/>
+			<nail x="-416" y="-127"/>
+		</transition>
+		<transition id="id272">
+			<source ref="id269"/>
+			<target ref="id269"/>
+			<label kind="synchronisation" x="-561" y="-76">GyropoweroffSignal?</label>
+			<nail x="-544" y="-76"/>
+			<nail x="-459" y="-76"/>
+		</transition>
+		<transition id="id273">
+			<source ref="id269"/>
+			<target ref="id269"/>
+			<label kind="synchronisation" x="-561" y="-170">GyropoweronSignal?</label>
+			<nail x="-459" y="-144"/>
+			<nail x="-544" y="-144"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro2</name>
+		<location id="id274" x="-229" y="-25">
+			<name x="-212" y="-34">Off</name>
+		</location>
+		<location id="id275" x="-59" y="-25">
+			<name x="-102" y="-34">On</name>
+		</location>
+		<init ref="id274"/>
+		<transition id="id276">
+			<source ref="id275"/>
+			<target ref="id275"/>
+			<label kind="synchronisation" x="-34" y="-8">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-34" y="-25">Gyropowerstate=1</label>
+			<nail x="-34" y="0"/>
+			<nail x="-59" y="17"/>
+		</transition>
+		<transition id="id277">
+			<source ref="id275"/>
+			<target ref="id275"/>
+			<label kind="synchronisation" x="-34" y="-68">PulseCountperIns?</label>
+			<label kind="assignment" x="-34" y="-51">PulsecountStoIns=1</label>
+			<nail x="-34" y="-51"/>
+			<nail x="-59" y="-68"/>
+		</transition>
+		<transition id="id278">
+			<source ref="id275"/>
+			<target ref="id274"/>
+			<label kind="synchronisation" x="-212" y="-8">GyropoweroffSignal?</label>
+			<nail x="-93" y="-8"/>
+			<nail x="-195" y="-8"/>
+		</transition>
+		<transition id="id279">
+			<source ref="id274"/>
+			<target ref="id275"/>
+			<label kind="synchronisation" x="-212" y="-59">GyropoweronSignal?</label>
+			<nail x="-195" y="-42"/>
+			<nail x="-93" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro3</name>
+		<location id="id280" x="-306" y="-59">
+			<name x="-289" y="-68">Off</name>
+		</location>
+		<location id="id281" x="-136" y="-59">
+			<name x="-179" y="-68">On</name>
+		</location>
+		<init ref="id280"/>
+		<transition id="id282">
+			<source ref="id281"/>
+			<target ref="id281"/>
+			<label kind="synchronisation" x="-111" y="-42">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-111" y="-59">Gyropowerstate=1</label>
+			<nail x="-111" y="-34"/>
+			<nail x="-136" y="-17"/>
+		</transition>
+		<transition id="id283">
+			<source ref="id281"/>
+			<target ref="id281"/>
+			<label kind="synchronisation" x="-111" y="-102">PulseCountperIns?</label>
+			<label kind="assignment" x="-111" y="-85">PulsecountStoIns=1</label>
+			<nail x="-111" y="-85"/>
+			<nail x="-136" y="-102"/>
+		</transition>
+		<transition id="id284">
+			<source ref="id281"/>
+			<target ref="id280"/>
+			<label kind="synchronisation" x="-289" y="-42">GyropoweroffSignal?</label>
+			<nail x="-170" y="-42"/>
+			<nail x="-272" y="-42"/>
+		</transition>
+		<transition id="id285">
+			<source ref="id280"/>
+			<target ref="id281"/>
+			<label kind="synchronisation" x="-289" y="-93">GyropoweronSignal?</label>
+			<nail x="-272" y="-76"/>
+			<nail x="-170" y="-76"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro4</name>
+		<location id="id286" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id287" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id286"/>
+		<transition id="id288">
+			<source ref="id287"/>
+			<target ref="id287"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id289">
+			<source ref="id287"/>
+			<target ref="id287"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id290">
+			<source ref="id287"/>
+			<target ref="id286"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id291">
+			<source ref="id286"/>
+			<target ref="id287"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro5</name>
+		<location id="id292" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id293" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id292"/>
+		<transition id="id294">
+			<source ref="id293"/>
+			<target ref="id293"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id295">
+			<source ref="id293"/>
+			<target ref="id293"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id296">
+			<source ref="id293"/>
+			<target ref="id292"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id297">
+			<source ref="id292"/>
+			<target ref="id293"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro6</name>
+		<location id="id298" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id299" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id298"/>
+		<transition id="id300">
+			<source ref="id299"/>
+			<target ref="id299"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id301">
+			<source ref="id299"/>
+			<target ref="id299"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id302">
+			<source ref="id299"/>
+			<target ref="id298"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id303">
+			<source ref="id298"/>
+			<target ref="id299"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro7</name>
+		<location id="id304" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id305" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id304"/>
+		<transition id="id306">
+			<source ref="id305"/>
+			<target ref="id305"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id307">
+			<source ref="id305"/>
+			<target ref="id305"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id308">
+			<source ref="id305"/>
+			<target ref="id304"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id309">
+			<source ref="id304"/>
+			<target ref="id305"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro8</name>
+		<location id="id310" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id311" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id310"/>
+		<transition id="id312">
+			<source ref="id311"/>
+			<target ref="id311"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id313">
+			<source ref="id311"/>
+			<target ref="id311"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id314">
+			<source ref="id311"/>
+			<target ref="id310"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id315">
+			<source ref="id310"/>
+			<target ref="id311"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro9</name>
+		<location id="id316" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id317" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id316"/>
+		<transition id="id318">
+			<source ref="id317"/>
+			<target ref="id317"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id319">
+			<source ref="id317"/>
+			<target ref="id317"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id320">
+			<source ref="id317"/>
+			<target ref="id316"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id321">
+			<source ref="id316"/>
+			<target ref="id317"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>InterruptTimerInitialization</name>
+		<location id="id322" x="-144" y="-59">
+			<name x="-212" y="-68">Start</name>
+		</location>
+		<location id="id323" x="17" y="-59">
+			<name x="51" y="-68">End</name>
+		</location>
+		<init ref="id322"/>
+		<transition id="id324">
+			<source ref="id323"/>
+			<target ref="id322"/>
+			<nail x="17" y="8"/>
+			<nail x="-144" y="8"/>
+		</transition>
+		<transition id="id325">
+			<source ref="id322"/>
+			<target ref="id323"/>
+			<label kind="synchronisation" x="-153" y="-93">InterrupttimerstartIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>StoreGyroPonIns</name>
+		<location id="id326" x="-144" y="-51">
+			<name x="-127" y="-68">Start</name>
+		</location>
+		<location id="id327" x="-17" y="-51">
+			<name x="-51" y="-68">End</name>
+		</location>
+		<init ref="id326"/>
+		<transition id="id328">
+			<source ref="id327"/>
+			<target ref="id326"/>
+			<nail x="-17" y="-17"/>
+			<nail x="-144" y="-17"/>
+		</transition>
+		<transition id="id329">
+			<source ref="id326"/>
+			<target ref="id327"/>
+			<label kind="synchronisation" x="-153" y="-85">GyropoweronInsStoIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>StoreGyroPoffIns</name>
+		<location id="id330" x="-136" y="-25">
+			<name x="-221" y="-34">Start</name>
+		</location>
+		<location id="id331" x="-17" y="-25">
+			<name x="0" y="-34">End</name>
+		</location>
+		<init ref="id330"/>
+		<transition id="id332">
+			<source ref="id331"/>
+			<target ref="id330"/>
+			<nail x="-17" y="25"/>
+			<nail x="-136" y="25"/>
+		</transition>
+		<transition id="id333">
+			<source ref="id330"/>
+			<target ref="id331"/>
+			<label kind="synchronisation" x="-170" y="-59">GyropoweroffInsStoIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>GyroInstruction</name>
+		<location id="id334" x="-314" y="8">
+			<name x="-374" y="0">StoOff</name>
+		</location>
+		<location id="id335" x="-170" y="-34">
+			<name x="-178" y="-68">GI</name>
+		</location>
+		<location id="id336" x="-25" y="8">
+			<name x="-8" y="0">StoOn</name>
+		</location>
+		<init ref="id335"/>
+		<transition id="id337">
+			<source ref="id335"/>
+			<target ref="id335"/>
+			<label kind="synchronisation" x="-374" y="-93">GyropoweroffInsLoadIns?</label>
+			<label kind="assignment" x="-374" y="-76">GyropoweroffInsStoInsV=0</label>
+			<nail x="-17" y="-76"/>
+			<nail x="-144" y="-76"/>
+		</transition>
+		<transition id="id338">
+			<source ref="id335"/>
+			<target ref="id335"/>
+			<label kind="synchronisation" x="-136" y="-93">GyropoweronInsLoadIns?</label>
+			<label kind="assignment" x="-136" y="-76">GyropoweronInsStoInsV=0</label>
+			<nail x="-323" y="-76"/>
+			<nail x="-195" y="-76"/>
+		</transition>
+		<transition id="id339">
+			<source ref="id334"/>
+			<target ref="id335"/>
+			<label kind="assignment" x="-297" y="8">GyropowerIns=0</label>
+			<nail x="-187" y="8"/>
+		</transition>
+		<transition id="id340">
+			<source ref="id335"/>
+			<target ref="id334"/>
+			<label kind="synchronisation" x="-374" y="-42">GyropoweroffInsStoIns?</label>
+			<label kind="assignment" x="-374" y="-25">GyropoweroffInsStoInsV=1</label>
+		</transition>
+		<transition id="id341">
+			<source ref="id336"/>
+			<target ref="id335"/>
+			<label kind="assignment" x="-144" y="8">GyropowerIns=1</label>
+			<nail x="-153" y="8"/>
+		</transition>
+		<transition id="id342">
+			<source ref="id335"/>
+			<target ref="id336"/>
+			<label kind="synchronisation" x="-119" y="-42">GyropoweronInsStoIns?</label>
+			<label kind="assignment" x="-136" y="-25">GyropoweronInsStoInsV=1</label>
+		</transition>
+	</template>
+	<template>
+		<name>GyroControlOutput</name>
+		<location id="id343" x="-34" y="-51">
+			<name x="-17" y="-51">L2</name>
+		</location>
+		<location id="id344" x="-161" y="-51">
+			<name x="-144" y="-51">Start</name>
+		</location>
+		<location id="id345" x="-289" y="-51">
+			<name x="-331" y="-59">L1</name>
+		</location>
+		<location id="id346" x="-161" y="34">
+			<name x="-144" y="25">End</name>
+		</location>
+		<init ref="id344"/>
+		<transition id="id347">
+			<source ref="id346"/>
+			<target ref="id344"/>
+		</transition>
+		<transition id="id348">
+			<source ref="id345"/>
+			<target ref="id346"/>
+			<label kind="synchronisation" x="-365" y="8">GyropoweroffSignal!</label>
+		</transition>
+		<transition id="id349">
+			<source ref="id344"/>
+			<target ref="id345"/>
+			<label kind="guard" x="-297" y="-85">GyropowerIns==0</label>
+		</transition>
+		<transition id="id350">
+			<source ref="id343"/>
+			<target ref="id346"/>
+			<label kind="synchronisation" x="-110" y="0">GyropoweronSignal!</label>
+		</transition>
+		<transition id="id351">
+			<source ref="id344"/>
+			<target ref="id343"/>
+			<label kind="guard" x="-153" y="-85">GyropowerIns==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>StoreSunSensorPonIns</name>
+		<location id="id352" x="-127" y="-76">
+			<name x="-161" y="-110">Start</name>
+		</location>
+		<location id="id353" x="34" y="-76">
+			<name x="34" y="-110">End</name>
+		</location>
+		<init ref="id352"/>
+		<transition id="id354">
+			<source ref="id353"/>
+			<target ref="id352"/>
+			<nail x="34" y="-42"/>
+			<nail x="-127" y="-42"/>
+		</transition>
+		<transition id="id355">
+			<source ref="id352"/>
+			<target ref="id353"/>
+			<label kind="synchronisation" x="-144" y="-127">SunSensorpoweronInsStoIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>StoreSunSensorPoffIns</name>
+		<location id="id356" x="-127" y="-76">
+			<name x="-161" y="-110">Start</name>
+		</location>
+		<location id="id357" x="34" y="-76">
+			<name x="34" y="-110">End</name>
+		</location>
+		<init ref="id356"/>
+		<transition id="id358">
+			<source ref="id357"/>
+			<target ref="id356"/>
+			<nail x="34" y="-42"/>
+			<nail x="-127" y="-42"/>
+		</transition>
+		<transition id="id359">
+			<source ref="id356"/>
+			<target ref="id357"/>
+			<label kind="synchronisation" x="-144" y="-127">SunSensorpoweroffInsStoIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensorInstruction</name>
+		<location id="id360" x="-314" y="8">
+			<name x="-374" y="0">StoOff</name>
+		</location>
+		<location id="id361" x="-170" y="-34">
+			<name x="-178" y="-68">SSI</name>
+		</location>
+		<location id="id362" x="-25" y="8">
+			<name x="-8" y="0">StoOn</name>
+		</location>
+		<init ref="id361"/>
+		<transition id="id363">
+			<source ref="id361"/>
+			<target ref="id361"/>
+			<label kind="synchronisation" x="-374" y="-93">SunSensorpoweroffInsLoadIns?</label>
+			<label kind="assignment" x="-374" y="-76">SunSensorpoweroffInsStoInsV=0</label>
+			<nail x="-17" y="-76"/>
+			<nail x="-144" y="-76"/>
+		</transition>
+		<transition id="id364">
+			<source ref="id361"/>
+			<target ref="id361"/>
+			<label kind="synchronisation" x="-136" y="-93">SunSensorpoweronInsLoadIns?</label>
+			<label kind="assignment" x="-136" y="-76">SunSensorpoweronInsStoInsV=0</label>
+			<nail x="-323" y="-76"/>
+			<nail x="-195" y="-76"/>
+		</transition>
+		<transition id="id365">
+			<source ref="id360"/>
+			<target ref="id361"/>
+			<label kind="assignment" x="-297" y="8">SunSensorpowerIns=0</label>
+			<nail x="-187" y="8"/>
+		</transition>
+		<transition id="id366">
+			<source ref="id361"/>
+			<target ref="id360"/>
+			<label kind="synchronisation" x="-374" y="-42">SunSensorpoweroffInsStoIns?</label>
+			<label kind="assignment" x="-374" y="-25">SunSensorpoweroffInsStoInsV=1</label>
+		</transition>
+		<transition id="id367">
+			<source ref="id362"/>
+			<target ref="id361"/>
+			<label kind="assignment" x="-144" y="8">SunSensorpowerIns=1</label>
+			<nail x="-153" y="8"/>
+		</transition>
+		<transition id="id368">
+			<source ref="id361"/>
+			<target ref="id362"/>
+			<label kind="synchronisation" x="-119" y="-42">SunSensorpoweronInsStoIns?</label>
+			<label kind="assignment" x="-136" y="-25">SunSensorpoweronInsStoInsV=1</label>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensorControlOutput</name>
+		<location id="id369" x="-289" y="59">
+			<name x="-272" y="59">L1</name>
+		</location>
+		<location id="id370" x="-127" y="59">
+			<name x="-110" y="59">Start</name>
+		</location>
+		<location id="id371" x="34" y="59">
+			<name x="-8" y="59">L2</name>
+		</location>
+		<location id="id372" x="-127" y="153">
+			<name x="-137" y="119">End</name>
+		</location>
+		<init ref="id370"/>
+		<transition id="id373">
+			<source ref="id372"/>
+			<target ref="id370"/>
+		</transition>
+		<transition id="id374">
+			<source ref="id369"/>
+			<target ref="id372"/>
+			<label kind="synchronisation" x="-391" y="110">SunSensorpoweroffSignal!</label>
+		</transition>
+		<transition id="id375">
+			<source ref="id370"/>
+			<target ref="id369"/>
+			<label kind="guard" x="-323" y="25">SunSensorpowerIns==0</label>
+		</transition>
+		<transition id="id376">
+			<source ref="id371"/>
+			<target ref="id372"/>
+			<label kind="synchronisation" x="-42" y="110">SunSensorpoweronSignal!</label>
+		</transition>
+		<transition id="id377">
+			<source ref="id370"/>
+			<target ref="id371"/>
+			<label kind="guard" x="-119" y="34">SunSensorpowerIns==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>StoreThrusterPonIns</name>
+		<location id="id378" x="-9" y="-119">
+			<name x="-43" y="-136">End</name>
+		</location>
+		<location id="id379" x="-136" y="-119">
+			<name x="-119" y="-136">Start</name>
+		</location>
+		<init ref="id379"/>
+		<transition id="id380">
+			<source ref="id378"/>
+			<target ref="id379"/>
+			<nail x="-9" y="-85"/>
+			<nail x="-136" y="-85"/>
+		</transition>
+		<transition id="id381">
+			<source ref="id379"/>
+			<target ref="id378"/>
+			<label kind="synchronisation" x="-153" y="-153">ThrusterpoweronInsStoIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>StoreThrusterPoffIns</name>
+		<location id="id382" x="-9" y="-119">
+			<name x="-43" y="-136">End</name>
+		</location>
+		<location id="id383" x="-136" y="-119">
+			<name x="-119" y="-136">Start</name>
+		</location>
+		<init ref="id383"/>
+		<transition id="id384">
+			<source ref="id382"/>
+			<target ref="id383"/>
+			<nail x="-9" y="-85"/>
+			<nail x="-136" y="-85"/>
+		</transition>
+		<transition id="id385">
+			<source ref="id383"/>
+			<target ref="id382"/>
+			<label kind="synchronisation" x="-153" y="-153">ThrusterpoweroffInsStoIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>ThrusterPowerInstruction</name>
+		<location id="id386" x="-314" y="8">
+			<name x="-374" y="0">StoOff</name>
+		</location>
+		<location id="id387" x="-170" y="-34">
+			<name x="-178" y="-68">TPI</name>
+		</location>
+		<location id="id388" x="-25" y="8">
+			<name x="-8" y="0">StoOn</name>
+		</location>
+		<init ref="id387"/>
+		<transition id="id389">
+			<source ref="id387"/>
+			<target ref="id387"/>
+			<label kind="synchronisation" x="-374" y="-93">ThrusterpoweroffInsLoadIns?</label>
+			<label kind="assignment" x="-374" y="-76">ThrusterpoweroffInsStoInsV=0</label>
+			<nail x="-17" y="-76"/>
+			<nail x="-144" y="-76"/>
+		</transition>
+		<transition id="id390">
+			<source ref="id387"/>
+			<target ref="id387"/>
+			<label kind="synchronisation" x="-136" y="-93">ThrusterpoweronInsLoadIns?</label>
+			<label kind="assignment" x="-136" y="-76">ThrusterpoweronInsStoInsV=0</label>
+			<nail x="-323" y="-76"/>
+			<nail x="-195" y="-76"/>
+		</transition>
+		<transition id="id391">
+			<source ref="id386"/>
+			<target ref="id387"/>
+			<label kind="assignment" x="-297" y="8">ThrusterpowerIns=0</label>
+			<nail x="-187" y="8"/>
+		</transition>
+		<transition id="id392">
+			<source ref="id387"/>
+			<target ref="id386"/>
+			<label kind="synchronisation" x="-374" y="-42">ThrusterpoweroffInsStoIns?</label>
+			<label kind="assignment" x="-374" y="-25">ThrusterpoweroffInsStoInsV=1</label>
+		</transition>
+		<transition id="id393">
+			<source ref="id388"/>
+			<target ref="id387"/>
+			<label kind="assignment" x="-161" y="8">ThrusterpowerIns=1</label>
+			<nail x="-153" y="8"/>
+		</transition>
+		<transition id="id394">
+			<source ref="id387"/>
+			<target ref="id388"/>
+			<label kind="synchronisation" x="-119" y="-42">ThrusterpoweronInsStoIns?</label>
+			<label kind="assignment" x="-136" y="-25">ThrusterpoweronInsStoInsV=1</label>
+		</transition>
+	</template>
+	<template>
+		<name>ThrusterPowerControlOutput</name>
+		<location id="id395" x="-204" y="68">
+			<name x="-187" y="68">L1</name>
+		</location>
+		<location id="id396" x="-59" y="68">
+			<name x="-42" y="68">Start</name>
+		</location>
+		<location id="id397" x="93" y="68">
+			<name x="51" y="68">L2</name>
+		</location>
+		<location id="id398" x="-59" y="170">
+			<name x="-69" y="136">End</name>
+		</location>
+		<init ref="id396"/>
+		<transition id="id399">
+			<source ref="id398"/>
+			<target ref="id396"/>
+		</transition>
+		<transition id="id400">
+			<source ref="id395"/>
+			<target ref="id398"/>
+			<label kind="synchronisation" x="-212" y="85">ThrusterpoweroffSignal!</label>
+		</transition>
+		<transition id="id401">
+			<source ref="id396"/>
+			<target ref="id395"/>
+			<label kind="guard" x="-204" y="42">ThrusterpowerIns==0</label>
+		</transition>
+		<transition id="id402">
+			<source ref="id397"/>
+			<target ref="id398"/>
+			<label kind="synchronisation" x="-51" y="85">ThrusterpoweronSignal!</label>
+		</transition>
+		<transition id="id403">
+			<source ref="id396"/>
+			<target ref="id397"/>
+			<label kind="guard" x="-51" y="43">ThrusterpowerIns==1</label>
+		</transition>
+	</template>
+	<template>
+		<name>GyroDataAcquisition</name>
+		<declaration>clock Gt;</declaration>
+		<location id="id404" x="263" y="-127">
+			<name x="237" y="-152">L2</name>
+		</location>
+		<location id="id405" x="-59" y="-187">
+			<name x="-42" y="-187">Start</name>
+		</location>
+		<location id="id406" x="263" y="-187">
+			<name x="237" y="-187">L1</name>
+		</location>
+		<location id="id407" x="-59" y="-127">
+			<name x="-42" y="-153">End</name>
+		</location>
+		<location id="id408" x="93" y="-127">
+			<name x="102" y="-153">L3</name>
+			<label kind="invariant" x="110" y="-127">GDA_t&lt;=5</label>
+		</location>
+		<init ref="id405"/>
+		<transition id="id409">
+			<source ref="id404"/>
+			<target ref="id408"/>
+			<label kind="assignment" x="187" y="-127">GDA_t=0</label>
+		</transition>
+		<transition id="id410">
+			<source ref="id407"/>
+			<target ref="id405"/>
+			<label kind="synchronisation" x="-51" y="-170">GyropowerstateStoIns!</label>
+		</transition>
+		<transition id="id411">
+			<source ref="id408"/>
+			<target ref="id407"/>
+			<label kind="guard" x="0" y="-153">GDA_t&gt;=5</label>
+			<label kind="synchronisation" x="-42" y="-127">AnguVelAnaStoIns!</label>
+		</transition>
+		<transition id="id412">
+			<source ref="id406"/>
+			<target ref="id404"/>
+			<label kind="synchronisation" x="110" y="-170">GyropowerstateperIns!</label>
+		</transition>
+		<transition id="id413">
+			<source ref="id405"/>
+			<target ref="id406"/>
+			<label kind="synchronisation" x="42" y="-204">PulseCountperIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>GyroData</name>
+		<location id="id414" x="-416" y="0">
+			<name x="-399" y="8">GD</name>
+		</location>
+		<init ref="id414"/>
+		<transition id="id415">
+			<source ref="id414"/>
+			<target ref="id414"/>
+			<label kind="synchronisation" x="-501" y="76">GyropowerstateLoadIns?</label>
+			<nail x="-382" y="68"/>
+			<nail x="-442" y="68"/>
+		</transition>
+		<transition id="id416">
+			<source ref="id414"/>
+			<target ref="id414"/>
+			<label kind="synchronisation" x="-646" y="-8">AnguVelAnaLoadIns?</label>
+			<nail x="-484" y="-17"/>
+			<nail x="-484" y="25"/>
+		</transition>
+		<transition id="id417">
+			<source ref="id414"/>
+			<target ref="id414"/>
+			<label kind="synchronisation" x="-323" y="-17">GyropowerstateStoIns?</label>
+			<nail x="-340" y="-17"/>
+			<nail x="-340" y="25"/>
+		</transition>
+		<transition id="id418">
+			<source ref="id414"/>
+			<target ref="id414"/>
+			<label kind="synchronisation" x="-476" y="-76">AnguVelAnaStoIns?</label>
+			<nail x="-459" y="-51"/>
+			<nail x="-374" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensorDataAcquisition</name>
+		<declaration>clock St;</declaration>
+		<location id="id419" x="-8" y="-153">
+			<name x="-34" y="-144">L1</name>
+			<label kind="invariant" x="-68" y="-170">St&lt;=5</label>
+		</location>
+		<location id="id420" x="-195" y="-153">
+			<name x="-178" y="-170">Start</name>
+		</location>
+		<location id="id421" x="-195" y="-85">
+			<name x="-170" y="-102">L3</name>
+		</location>
+		<location id="id422" x="-272" y="-119">
+			<name x="-314" y="-136">End</name>
+		</location>
+		<location id="id423" x="51" y="-110">
+			<name x="41" y="-144">L2</name>
+		</location>
+		<init ref="id420"/>
+		<transition id="id424">
+			<source ref="id419"/>
+			<target ref="id423"/>
+			<label kind="synchronisation" x="25" y="-161">SunVisibleSignStoIns!</label>
+		</transition>
+		<transition id="id425">
+			<source ref="id422"/>
+			<target ref="id420"/>
+			<label kind="synchronisation" x="-331" y="-161">MeaAngStoIns!</label>
+		</transition>
+		<transition id="id426">
+			<source ref="id421"/>
+			<target ref="id422"/>
+			<label kind="synchronisation" x="-348" y="-102">SunMeaAngperIns!</label>
+		</transition>
+		<transition id="id427">
+			<source ref="id423"/>
+			<target ref="id421"/>
+			<label kind="guard" x="-68" y="-136">St&gt;=5</label>
+			<label kind="synchronisation" x="-178" y="-85">SunSensorpowerstateperIns!</label>
+			<nail x="-8" y="-85"/>
+		</transition>
+		<transition id="id428">
+			<source ref="id420"/>
+			<target ref="id419"/>
+			<label kind="synchronisation" x="-178" y="-153">SunVisibleSignperIns!</label>
+			<label kind="assignment" x="-127" y="-178">St=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>SunSensorData</name>
+		<location id="id429" x="0" y="0">
+		</location>
+		<init ref="id429"/>
+		<transition id="id430">
+			<source ref="id429"/>
+			<target ref="id429"/>
+			<label kind="synchronisation" x="85" y="0">SunVisibleSignLoadIns?</label>
+			<nail x="76" y="-17"/>
+			<nail x="76" y="34"/>
+		</transition>
+		<transition id="id431">
+			<source ref="id429"/>
+			<target ref="id429"/>
+			<label kind="synchronisation" x="-229" y="-8">SunVisibleSignStoIns?</label>
+			<nail x="-76" y="-17"/>
+			<nail x="-76" y="34"/>
+		</transition>
+		<transition id="id432">
+			<source ref="id429"/>
+			<target ref="id429"/>
+			<label kind="synchronisation" x="-59" y="76">MeaAngLoadIns?</label>
+			<nail x="-42" y="68"/>
+			<nail x="34" y="68"/>
+		</transition>
+		<transition id="id433">
+			<source ref="id429"/>
+			<target ref="id429"/>
+			<label kind="synchronisation" x="-51" y="-102">MeaAngStoIns?</label>
+			<nail x="-42" y="-68"/>
+			<nail x="59" y="-68"/>
+		</transition>
+	</template>
+	<template>
+		<name>ThrusterDataAcquisition</name>
+		<declaration>clock Tt;</declaration>
+		<location id="id434" x="-391" y="68">
+			<name x="-374" y="51">Start</name>
+		</location>
+		<location id="id435" x="-60" y="68">
+			<name x="-102" y="51">End</name>
+		</location>
+		<init ref="id434"/>
+		<transition id="id436">
+			<source ref="id435"/>
+			<target ref="id434"/>
+			<label kind="synchronisation" x="-289" y="102">ThrusterpowerstateStoIns!</label>
+			<nail x="-59" y="102"/>
+			<nail x="-390" y="101"/>
+		</transition>
+		<transition id="id437">
+			<source ref="id434"/>
+			<target ref="id435"/>
+			<label kind="synchronisation" x="-323" y="34">ThrusterpowerstateperIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>ThrusterData</name>
+		<location id="id438" x="-42" y="0">
+		</location>
+		<init ref="id438"/>
+		<transition id="id439">
+			<source ref="id438"/>
+			<target ref="id438"/>
+			<label kind="synchronisation" x="-127" y="76">ThrusterpowerstateLoadIns?</label>
+			<nail x="-76" y="68"/>
+			<nail x="0" y="68"/>
+		</transition>
+		<transition id="id440">
+			<source ref="id438"/>
+			<target ref="id438"/>
+			<label kind="synchronisation" x="-102" y="-76">ThrusterpowerstateStoIns?</label>
+			<nail x="-85" y="-51"/>
+			<nail x="0" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>AttitudeDetermination</name>
+		<declaration>clock At;
+</declaration>
+		<location id="id441" x="-322" y="-51">
+			<name x="-306" y="-51">Start</name>
+		</location>
+		<location id="id442" x="-119" y="-51">
+			<name x="-102" y="-51">L1</name>
+		</location>
+		<location id="id443" x="76" y="-51">
+			<name x="42" y="-51">L2</name>
+		</location>
+		<location id="id444" x="-119" y="8">
+			<name x="-102" y="8">L4</name>
+		</location>
+		<location id="id445" x="76" y="8">
+			<name x="42" y="8">L3</name>
+		</location>
+		<location id="id446" x="-323" y="8">
+			<name x="-306" y="-8">End</name>
+		</location>
+		<init ref="id441"/>
+		<transition id="id447">
+			<source ref="id446"/>
+			<target ref="id441"/>
+			<label kind="synchronisation" x="-306" y="-25">TriAnguVelStoIns!</label>
+		</transition>
+		<transition id="id448">
+			<source ref="id443"/>
+			<target ref="id445"/>
+			<label kind="synchronisation" x="85" y="-34">MeaAngLoadIns!</label>
+		</transition>
+		<transition id="id449">
+			<source ref="id444"/>
+			<target ref="id446"/>
+			<label kind="synchronisation" x="-280" y="17">TriAttAngStoIns!</label>
+		</transition>
+		<transition id="id450">
+			<source ref="id445"/>
+			<target ref="id444"/>
+			<label kind="synchronisation" x="-68" y="25">CurrentmodeLoadIns!</label>
+		</transition>
+		<transition id="id451">
+			<source ref="id442"/>
+			<target ref="id443"/>
+			<label kind="synchronisation" x="-85" y="-85">SunVisibleSignStoIns!</label>
+		</transition>
+		<transition id="id452">
+			<source ref="id441"/>
+			<target ref="id442"/>
+			<label kind="synchronisation" x="-289" y="-85">AnguVelAnaLoadIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>AttitudeDeterminationResult</name>
+		<location id="id453" x="0" y="0">
+		</location>
+		<init ref="id453"/>
+		<transition id="id454">
+			<source ref="id453"/>
+			<target ref="id453"/>
+			<label kind="synchronisation" x="85" y="-17">TriAnguVelLoadIns?</label>
+			<nail x="85" y="-34"/>
+			<nail x="85" y="34"/>
+		</transition>
+		<transition id="id455">
+			<source ref="id453"/>
+			<target ref="id453"/>
+			<label kind="synchronisation" x="-212" y="-17">TriAnguVelStoIns?</label>
+			<nail x="-85" y="-34"/>
+			<nail x="-85" y="34"/>
+		</transition>
+		<transition id="id456">
+			<source ref="id453"/>
+			<target ref="id453"/>
+			<label kind="synchronisation" x="-68" y="76">TriAttAngStoIns?</label>
+			<nail x="-34" y="76"/>
+			<nail x="42" y="76"/>
+		</transition>
+		<transition id="id457">
+			<source ref="id453"/>
+			<target ref="id453"/>
+			<label kind="synchronisation" x="-59" y="-93">TriAttAngLoadIns?</label>
+			<nail x="-34" y="-59"/>
+			<nail x="42" y="-59"/>
+		</transition>
+	</template>
+	<template>
+		<name>ModeRegister</name>
+		<location id="id458" x="-34" y="0">
+		</location>
+		<init ref="id458"/>
+		<transition id="id459">
+			<source ref="id458"/>
+			<target ref="id458"/>
+			<label kind="synchronisation" x="-17" y="-85">NextcyclemodeLoadIns?</label>
+			<nail x="-25" y="-68"/>
+			<nail x="0" y="-51"/>
+		</transition>
+		<transition id="id460">
+			<source ref="id458"/>
+			<target ref="id458"/>
+			<label kind="synchronisation" x="-212" y="-85">NextcyclemodeStoIns?</label>
+			<nail x="-59" y="-68"/>
+			<nail x="-85" y="-51"/>
+		</transition>
+		<transition id="id461">
+			<source ref="id458"/>
+			<target ref="id458"/>
+			<label kind="synchronisation" x="102" y="17">TarAnguVelStoIns?</label>
+			<nail x="76" y="42"/>
+			<nail x="102" y="17"/>
+		</transition>
+		<transition id="id462">
+			<source ref="id458"/>
+			<target ref="id458"/>
+			<label kind="synchronisation" x="102" y="-34">TarAnguVelLoadIns?</label>
+			<nail x="76" y="-34"/>
+			<nail x="102" y="-8"/>
+		</transition>
+		<transition id="id463">
+			<source ref="id458"/>
+			<target ref="id458"/>
+			<label kind="synchronisation" x="-306" y="25">TarAttAngStoIns?</label>
+			<nail x="-144" y="42"/>
+			<nail x="-170" y="17"/>
+		</transition>
+		<transition id="id464">
+			<source ref="id458"/>
+			<target ref="id458"/>
+			<label kind="synchronisation" x="-323" y="-34">TarAttAngLoadIns?</label>
+			<nail x="-144" y="-34"/>
+			<nail x="-178" y="-8"/>
+		</transition>
+		<transition id="id465">
+			<source ref="id458"/>
+			<target ref="id458"/>
+			<label kind="synchronisation" x="-25" y="59">CurrentmodeLoadIns?</label>
+			<nail x="-17" y="59"/>
+			<nail x="25" y="51"/>
+		</transition>
+		<transition id="id466">
+			<source ref="id458"/>
+			<target ref="id458"/>
+			<label kind="synchronisation" x="-195" y="59">CurrentmodeStoIns?</label>
+			<nail x="-59" y="59"/>
+			<nail x="-85" y="51"/>
+		</transition>
+	</template>
+	<template>
+		<name>ModeSwitchingManagement</name>
+		<declaration>clock Mt;
+</declaration>
+		<location id="id467" x="-349" y="-323">
+			<name x="-340" y="-348">Start</name>
+		</location>
+		<location id="id468" x="-127" y="-323">
+			<name x="-136" y="-357">L1</name>
+			<label kind="invariant" x="-110" y="-323">Mt&lt;=10</label>
+		</location>
+		<location id="id469" x="-127" y="-229">
+			<name x="-110" y="-229">L2</name>
+			<label kind="invariant" x="-110" y="-246">Mt&lt;=30</label>
+		</location>
+		<location id="id470" x="153" y="-323">
+			<name x="119" y="-314">L4</name>
+			<label kind="invariant" x="93" y="-340">Mt&lt;=30</label>
+		</location>
+		<location id="id471" x="-349" y="-229">
+			<name x="-340" y="-255">End</name>
+		</location>
+		<location id="id472" x="8" y="-323">
+			<name x="25" y="-323">L5</name>
+		</location>
+		<location id="id473" x="153" y="-229">
+			<name x="102" y="-246">L3</name>
+		</location>
+		<init ref="id467"/>
+		<transition id="id474">
+			<source ref="id469"/>
+			<target ref="id473"/>
+			<label kind="guard" x="-51" y="-229">Mt&gt;=30 &amp;&amp; SunVisibleSign==0</label>
+		</transition>
+		<transition id="id475">
+			<source ref="id469"/>
+			<target ref="id471"/>
+			<label kind="guard" x="-340" y="-212">Mt&gt;=30 &amp;&amp; SunVisibleSign==1</label>
+		</transition>
+		<transition id="id476">
+			<source ref="id470"/>
+			<target ref="id472"/>
+			<label kind="guard" x="-17" y="-357">Mt&gt;=30 &amp;&amp; SunVisibleSign==0</label>
+		</transition>
+		<transition id="id477">
+			<source ref="id470"/>
+			<target ref="id471"/>
+			<label kind="guard" x="-229" y="-272">Mt&gt;=30 &amp;&amp; SunVisibleSign==1</label>
+		</transition>
+		<transition id="id478">
+			<source ref="id467"/>
+			<target ref="id467"/>
+			<label kind="guard" x="-314" y="-297">SunVisibleSign==1</label>
+			<label kind="synchronisation" x="-314" y="-314">CSMControl!</label>
+			<nail x="-280" y="-306"/>
+			<nail x="-297" y="-280"/>
+		</transition>
+		<transition id="id479">
+			<source ref="id471"/>
+			<target ref="id467"/>
+			<label kind="synchronisation" x="-349" y="-272">CSMControl!</label>
+		</transition>
+		<transition id="id480">
+			<source ref="id472"/>
+			<target ref="id468"/>
+			<label kind="synchronisation" x="-102" y="-340">RDSMControl!</label>
+			<label kind="assignment" x="-34" y="-323">Mt=0</label>
+		</transition>
+		<transition id="id481">
+			<source ref="id473"/>
+			<target ref="id470"/>
+			<label kind="synchronisation" x="59" y="-272">RASMControl!</label>
+			<label kind="assignment" x="119" y="-289">Mt=0</label>
+		</transition>
+		<transition id="id482">
+			<source ref="id468"/>
+			<target ref="id469"/>
+			<label kind="guard" x="-153" y="-306">Mt&gt;=10</label>
+			<label kind="synchronisation" x="-94" y="-306">PASMControl!</label>
+			<label kind="assignment" x="-136" y="-289">Mt=0</label>
+		</transition>
+		<transition id="id483">
+			<source ref="id467"/>
+			<target ref="id468"/>
+			<label kind="guard" x="-297" y="-348">SunVisibleSign==0</label>
+			<label kind="assignment" x="-221" y="-323">Mt=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>ControlComputing</name>
+		<declaration>clock TCCt;</declaration>
+		<location id="id484" x="-280" y="-178">
+			<name x="-290" y="-212">L3</name>
+		</location>
+		<location id="id485" x="-391" y="-263">
+			<name x="-401" y="-297">Start</name>
+		</location>
+		<location id="id486" x="-187" y="-263">
+			<name x="-197" y="-297">L1</name>
+		</location>
+		<location id="id487" x="-391" y="-178">
+			<name x="-401" y="-212">End</name>
+		</location>
+		<location id="id488" x="-187" y="-178">
+			<name x="-197" y="-212">L2</name>
+		</location>
+		<init ref="id485"/>
+		<transition id="id489">
+			<source ref="id484"/>
+			<target ref="id487"/>
+			<label kind="synchronisation" x="-459" y="-161">TarAnguVelLoadIns!</label>
+			<nail x="-297" y="-178"/>
+		</transition>
+		<transition id="id490">
+			<source ref="id488"/>
+			<target ref="id484"/>
+			<label kind="synchronisation" x="-263" y="-161">TarAttAngLoadIns!</label>
+		</transition>
+		<transition id="id491">
+			<source ref="id487"/>
+			<target ref="id485"/>
+			<label kind="synchronisation" x="-552" y="-229">TriConQuaStoIns!</label>
+		</transition>
+		<transition id="id492">
+			<source ref="id486"/>
+			<target ref="id488"/>
+			<label kind="synchronisation" x="-161" y="-229">TriAnguVelLoadIns!</label>
+		</transition>
+		<transition id="id493">
+			<source ref="id485"/>
+			<target ref="id486"/>
+			<label kind="synchronisation" x="-348" y="-289">TriAttAngLoadIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>ControlComputingResult</name>
+		<location id="id494" x="0" y="0">
+		</location>
+		<init ref="id494"/>
+		<transition id="id495">
+			<source ref="id494"/>
+			<target ref="id494"/>
+			<label kind="synchronisation" x="-59" y="68">TriConQuaLoadIns?</label>
+			<nail x="-42" y="68"/>
+			<nail x="42" y="68"/>
+		</transition>
+		<transition id="id496">
+			<source ref="id494"/>
+			<target ref="id494"/>
+			<label kind="synchronisation" x="-59" y="-76">TriConQuaStoIns?</label>
+			<nail x="-51" y="-51"/>
+			<nail x="42" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>ThrusterTriaxialControl</name>
+		<declaration>clock TTCt;</declaration>
+		<location id="id497" x="-306" y="-17">
+			<name x="-365" y="-42">Start</name>
+		</location>
+		<location id="id498" x="-110" y="-17">
+			<name x="-120" y="-51">L1</name>
+		</location>
+		<location id="id499" x="-204" y="59">
+			<name x="-214" y="25">End</name>
+		</location>
+		<init ref="id497"/>
+		<transition id="id500">
+			<source ref="id498"/>
+			<target ref="id499"/>
+			<label kind="guard" x="-144" y="34">Thrusterpowerstate==1</label>
+		</transition>
+		<transition id="id501">
+			<source ref="id497"/>
+			<target ref="id498"/>
+			<label kind="synchronisation" x="-272" y="-42">TriConQuaLoadIns!</label>
+		</transition>
+		<transition id="id502">
+			<source ref="id499"/>
+			<target ref="id497"/>
+			<label kind="synchronisation" x="-340" y="34">CSMControl!</label>
+		</transition>
+	</template>
+	<template>
+		<name>TelecontrolInstructionProcessing</name>
+		<location id="id503" x="-153" y="-25">
+			<name x="-187" y="-59">Start</name>
+		</location>
+		<location id="id504" x="-42" y="-25">
+			<name x="-25" y="-42">L2</name>
+		</location>
+		<location id="id505" x="-153" y="59">
+			<name x="-187" y="51">L1</name>
+		</location>
+		<location id="id506" x="-42" y="59">
+			<name x="-25" y="51">End</name>
+		</location>
+		<init ref="id503"/>
+		<transition id="id507">
+			<source ref="id506"/>
+			<target ref="id503"/>
+		</transition>
+		<transition id="id508">
+			<source ref="id505"/>
+			<target ref="id506"/>
+			<label kind="synchronisation" x="-153" y="68">NextcyclemodeStoIns!</label>
+			<label kind="assignment" x="-136" y="85">NextMode=3</label>
+		</transition>
+		<transition id="id509">
+			<source ref="id504"/>
+			<target ref="id506"/>
+			<label kind="synchronisation" x="-25" y="-8">NextcyclemodeStoIns!</label>
+			<label kind="assignment" x="-25" y="17">NextMode=0</label>
+		</transition>
+		<transition id="id510">
+			<source ref="id503"/>
+			<target ref="id505"/>
+			<label kind="synchronisation" x="-306" y="8">CSMTelcontrolIns?</label>
+		</transition>
+		<transition id="id511">
+			<source ref="id503"/>
+			<target ref="id504"/>
+			<label kind="synchronisation" x="-119" y="-68">RDSMTelcontrolIns?</label>
+		</transition>
+	</template>
+	<system>system SunSensor1,SunSensor2,SunSensor3,SunSensor4,
+SunSensorInstruction,SunSensorData,
+StoreSunSensorPonIns,StoreSunSensorPoffIns,SunSensorControlOutput,SunSensorDataAcquisition,
+Gyro1,Gyro2,Gyro3,Gyro4,Gyro5,Gyro6,Gyro7,Gyro8,Gyro9,
+GyroInstruction,GyroData,
+StoreGyroPonIns,StoreGyroPoffIns,GyroControlOutput,GyroDataAcquisition,
+TriaxialControlThruster1,TriaxialControlThruster2,TriaxialControlThruster3,TriaxialControlThruster4,
+TriaxialControlThruster5,TriaxialControlThruster6,TriaxialControlThruster7,TriaxialControlThruster8,
+TriaxialControlThruster9,TriaxialControlThruster10,TriaxialControlThruster11,TriaxialControlThruster12,
+ThrusterPowerInstruction,ThrusterData,
+StoreThrusterPonIns,StoreThrusterPoffIns,ThrusterPowerControlOutput,ThrusterDataAcquisition,
+Satellite,AttitudeDeterminationResult,ModeRegister,ControlComputingResult,
+InterruptTimerInitialization,InterruptTimer,AttitudeDetermination,ModeSwitchingManagement,ThrusterTriaxialControl,
+TelecontrolInstructionProcessing,DataManagementComputer,GroundOperator;
+</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment/>
+		</query>
+	</queries>
+</nta>

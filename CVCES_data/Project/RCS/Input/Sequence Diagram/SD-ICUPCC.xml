@@ -1,0 +1,5 @@
+Controller as ICUPCC
+Entity as DCD
+Datastorage as WCC
+DCD -> ICUPCC : ICUWorkingCurrentCloseCommandFormOP1[event]
+ICUPCC -> WCC : ICUWorkingCurrentCloseCommandFromOPSend[event]

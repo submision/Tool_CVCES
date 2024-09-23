@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan MeaAngStoIns,MeaAngLoadIns;
+chan SunVisibleSignStoIns,SunVisibleSignLoadIns;
+chan ThrusterpowerstateStoIns,ThrusterpowerstateLoadIns;
+chan CurrentmodeLoadIns,CurrentmodeStoIns;
+chan TriAttAngLoadIns,TriAttAngStoIns,TriAnguVelLoadIns,TriAnguVelStoIns;
+
+chan TarAttAngLoadIns,TarAttAngStoIns,TarAnguVelLoadIns,TarAnguVelStoIns;
+
+chan TriConQuaLoadIns,TriConQuaStoIns;
+chan ThrComLogLoadIns,ThrComLogStoIns;
+
+chan NextcyclemodeLoadIns,NextcyclemodeStoIns;
+
+int NextMode;
+
+double Suntimer;
+clock SunAngle;
+broadcast chan SunSensorpoweronSignal,SunSensorpoweroffSignal;
+broadcast chan SunSensorpowerstateperIns,SunMeaAngperIns,SunVisibleSignperIns;
+int[0,1] SunSensorpowerstate=0;
+int[0,1] SunVisibleSign;
+int[0,1] SunSensorpowerIns=0;
+int[0,1] SunSensorpowerInsStoIns=0;
+
+
+
+broadcast chan GyropoweronSignal,GyropoweroffSignal;
+broadcast chan PulseCountperIns,GyropowerstateperIns;
+int[0,1] Gyropowerstate=0;
+int[0,1] GyropowerInsStoIns=0;
+int[0,1] GyropowerIns=0;
+int[0,1] AnguAngVelAnaStoIns=0;
+int[0,1] PulseCountStoIns=0;
+
+broadcast chan ThrusterpoweronSignal,ThrusterpoweroffSignal;
+broadcast chan ThrusterpowerstateperIns;
+int[0,1] Thrusterpowerstate=0;
+int[0,1] ThrusterpowerInsStoIns=0;
+int[0,1] ThrusterpowerIns=0;
+
+broadcast chan RASMIns,PASMIns,RDSMIns,CSMIns;
+broadcast chan RASMControl,PASMControl,RDSMControl,CSMControl;
+
+//0:RDSM速率阻尼，1：PASM俯仰搜索，2：RASM滚动搜索，3：CSM对日巡航
+int Currentmode=0;
+
+broadcast chan InterrupttimerstartIns;
+clock timer;
+int Interruptcount=0;
+broadcast chan Interruptsignal;
+
+
+broadcast chan ControlOutput;
+broadcast chan CSMTelcontrolIns;
+broadcast chan RDSMTelcontrolIns;
+broadcast chan TeldataTraIns;
+broadcast chan CSMCommand,RDSMCommand;
+int[0,1] TeldataStoIns=0;
+int[0,1] TelMdata=0;
+
+int[0,1] CSMC=0;
+int[0,1] RDSMC=0;
+
+int[0,1] PulsecountStoIns=0;
+
+clock GDA_t;
+
+chan PulseCountAcqIns;
+
+
+chan GyropoweronInsStoIns,GyropoweroffInsStoIns,GyropoweronInsLoadIns,GyropoweroffInsLoadIns;
+int[0,1] GyropoweronInsStoInsV,GyropoweroffInsStoInsV;
+
+chan SunSensorpoweronInsStoIns,SunSensorpoweroffInsStoIns,SunSensorpoweronInsLoadIns,SunSensorpoweroffInsLoadIns;
+int[0,1] SunSensorpoweronInsStoInsV,SunSensorpoweroffInsStoInsV;
+
+chan ThrusterpoweronInsStoIns,ThrusterpoweroffInsStoIns,ThrusterpoweronInsLoadIns,ThrusterpoweroffInsLoadIns;
+int[0,1] ThrusterpoweronInsStoInsV,ThrusterpoweroffInsStoInsV;
+
+chan AnguVelAnaStoIns,AnguVelAnaLoadIns,GyropowerstateStoIns,GyropowerstateLoadIns;
+</declaration>
+	<template>
+		<name>Gyro1</name>
+		<location id="id0" x="-501" y="-110">
+			<name x="-467" y="-119">Off</name>
+		</location>
+		<init ref="id0"/>
+		<transition id="id1">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-731" y="-102">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-697" y="-127">Gyropowerstate=1</label>
+			<nail x="-578" y="-127"/>
+			<nail x="-578" y="-85"/>
+		</transition>
+		<transition id="id2">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-408" y="-110">PulseCountperIns?</label>
+			<label kind="assignment" x="-399" y="-127">PulsecountStoIns=1</label>
+			<nail x="-416" y="-85"/>
+			<nail x="-416" y="-127"/>
+		</transition>
+		<transition id="id3">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-561" y="-76">GyropoweroffSignal?</label>
+			<nail x="-544" y="-76"/>
+			<nail x="-459" y="-76"/>
+		</transition>
+		<transition id="id4">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-561" y="-170">GyropoweronSignal?</label>
+			<nail x="-459" y="-144"/>
+			<nail x="-544" y="-144"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro2</name>
+		<location id="id5" x="-229" y="-25">
+			<name x="-212" y="-34">Off</name>
+		</location>
+		<location id="id6" x="-59" y="-25">
+			<name x="-102" y="-34">On</name>
+		</location>
+		<init ref="id5"/>
+		<transition id="id7">
+			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-34" y="-8">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-34" y="-25">Gyropowerstate=1</label>
+			<nail x="-34" y="0"/>
+			<nail x="-59" y="17"/>
+		</transition>
+		<transition id="id8">
+			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-34" y="-68">PulseCountperIns?</label>
+			<label kind="assignment" x="-34" y="-51">PulsecountStoIns=1</label>
+			<nail x="-34" y="-51"/>
+			<nail x="-59" y="-68"/>
+		</transition>
+		<transition id="id9">
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-212" y="-8">GyropoweroffSignal?</label>
+			<nail x="-93" y="-8"/>
+			<nail x="-195" y="-8"/>
+		</transition>
+		<transition id="id10">
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-212" y="-59">GyropoweronSignal?</label>
+			<nail x="-195" y="-42"/>
+			<nail x="-93" y="-42"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro3</name>
+		<location id="id11" x="-306" y="-59">
+			<name x="-289" y="-68">Off</name>
+		</location>
+		<location id="id12" x="-136" y="-59">
+			<name x="-179" y="-68">On</name>
+		</location>
+		<init ref="id11"/>
+		<transition id="id13">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-111" y="-42">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-111" y="-59">Gyropowerstate=1</label>
+			<nail x="-111" y="-34"/>
+			<nail x="-136" y="-17"/>
+		</transition>
+		<transition id="id14">
+			<source ref="id12"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-111" y="-102">PulseCountperIns?</label>
+			<label kind="assignment" x="-111" y="-85">PulsecountStoIns=1</label>
+			<nail x="-111" y="-85"/>
+			<nail x="-136" y="-102"/>
+		</transition>
+		<transition id="id15">
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="-289" y="-42">GyropoweroffSignal?</label>
+			<nail x="-170" y="-42"/>
+			<nail x="-272" y="-42"/>
+		</transition>
+		<transition id="id16">
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="-289" y="-93">GyropoweronSignal?</label>
+			<nail x="-272" y="-76"/>
+			<nail x="-170" y="-76"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro4</name>
+		<location id="id17" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id18" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id17"/>
+		<transition id="id19">
+			<source ref="id18"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id20">
+			<source ref="id18"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id21">
+			<source ref="id18"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id22">
+			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro5</name>
+		<location id="id23" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id24" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id23"/>
+		<transition id="id25">
+			<source ref="id24"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id26">
+			<source ref="id24"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id27">
+			<source ref="id24"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id28">
+			<source ref="id23"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro6</name>
+		<location id="id29" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id30" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id29"/>
+		<transition id="id31">
+			<source ref="id30"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id32">
+			<source ref="id30"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id33">
+			<source ref="id30"/>
+			<target ref="id29"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id34">
+			<source ref="id29"/>
+			<target ref="id30"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro7</name>
+		<location id="id35" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id36" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id35"/>
+		<transition id="id37">
+			<source ref="id36"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id38">
+			<source ref="id36"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id39">
+			<source ref="id36"/>
+			<target ref="id35"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id40">
+			<source ref="id35"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro8</name>
+		<location id="id41" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id42" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id41"/>
+		<transition id="id43">
+			<source ref="id42"/>
+			<target ref="id42"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id44">
+			<source ref="id42"/>
+			<target ref="id42"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id45">
+			<source ref="id42"/>
+			<target ref="id41"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id46">
+			<source ref="id41"/>
+			<target ref="id42"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>Gyro9</name>
+		<location id="id47" x="-501" y="-110">
+			<name x="-484" y="-119">Off</name>
+		</location>
+		<location id="id48" x="-331" y="-110">
+			<name x="-374" y="-119">On</name>
+		</location>
+		<init ref="id47"/>
+		<transition id="id49">
+			<source ref="id48"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="-306" y="-93">GyropowerstateperIns?</label>
+			<label kind="assignment" x="-306" y="-110">Gyropowerstate=1</label>
+			<nail x="-306" y="-85"/>
+			<nail x="-331" y="-68"/>
+		</transition>
+		<transition id="id50">
+			<source ref="id48"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="-306" y="-153">PulseCountperIns?</label>
+			<label kind="assignment" x="-306" y="-136">PulsecountStoIns=1</label>
+			<nail x="-306" y="-136"/>
+			<nail x="-331" y="-153"/>
+		</transition>
+		<transition id="id51">
+			<source ref="id48"/>
+			<target ref="id47"/>
+			<label kind="synchronisation" x="-484" y="-93">GyropoweroffSignal?</label>
+			<nail x="-365" y="-93"/>
+			<nail x="-467" y="-93"/>
+		</transition>
+		<transition id="id52">
+			<source ref="id47"/>
+			<target ref="id48"/>
+			<label kind="synchronisation" x="-484" y="-144">GyropoweronSignal?</label>
+			<nail x="-467" y="-127"/>
+			<nail x="-365" y="-127"/>
+		</transition>
+	</template>
+	<template>
+		<name>StoreGyroPonIns</name>
+		<location id="id53" x="-144" y="-51">
+			<name x="-127" y="-68">Start</name>
+		</location>
+		<location id="id54" x="-17" y="-51">
+			<name x="-51" y="-68">End</name>
+		</location>
+		<init ref="id53"/>
+		<transition id="id55">
+			<source ref="id54"/>
+			<target ref="id53"/>
+			<nail x="-17" y="-17"/>
+			<nail x="-144" y="-17"/>
+		</transition>
+		<transition id="id56">
+			<source ref="id53"/>
+			<target ref="id54"/>
+			<label kind="synchronisation" x="-153" y="-85">GyropoweronInsStoIns!</label>
+		</transition>
+	</template>
+	<template>
+		<name>GyroInstruction</name>
+		<location id="id57" x="-314" y="8">
+			<name x="-374" y="0">StoOff</name>
+		</location>
+		<location id="id58" x="-170" y="-34">
+			<name x="-178" y="-68">GI</name>
+		</location>
+		<location id="id59" x="-25" y="8">
+			<name x="-8" y="0">StoOn</name>
+		</location>
+		<init ref="id58"/>
+		<transition id="id60">
+			<source ref="id58"/>
+			<target ref="id58"/>
+			<label kind="synchronisation" x="-374" y="-93">GyropoweroffInsLoadIns?</label>
+			<label kind="assignment" x="-374" y="-76">GyropoweroffInsStoInsV=0</label>
+			<nail x="-17" y="-76"/>
+			<nail x="-144" y="-76"/>
+		</transition>
+		<transition id="id61">
+			<source ref="id58"/>
+			<target ref="id58"/>
+			<label kind="synchronisation" x="-136" y="-93">GyropoweronInsLoadIns?</label>
+			<label kind="assignment" x="-136" y="-76">GyropoweronInsStoInsV=0</label>
+			<nail x="-323" y="-76"/>
+			<nail x="-195" y="-76"/>
+		</transition>
+		<transition id="id62">
+			<source ref="id57"/>
+			<target ref="id58"/>
+			<label kind="assignment" x="-297" y="8">GyropowerIns=0</label>
+			<nail x="-187" y="8"/>
+		</transition>
+		<transition id="id63">
+			<source ref="id58"/>
+			<target ref="id57"/>
+			<label kind="synchronisation" x="-374" y="-42">GyropoweroffInsStoIns?</label>
+			<label kind="assignment" x="-374" y="-25">GyropoweroffInsStoInsV=1</label>
+		</transition>
+		<transition id="id64">
+			<source ref="id59"/>
+			<target ref="id58"/>
+			<label kind="assignment" x="-144" y="8">GyropowerIns=1</label>
+			<nail x="-153" y="8"/>
+		</transition>
+		<transition id="id65">
+			<source ref="id58"/>
+			<target ref="id59"/>
+			<label kind="synchronisation" x="-119" y="-42">GyropoweronInsStoIns?</label>
+			<label kind="assignment" x="-136" y="-25">GyropoweronInsStoInsV=1</label>
+		</transition>
+	</template>
+	<system>system Gyro1,Gyro2,Gyro3,Gyro4,Gyro5,Gyro6,Gyro7,Gyro8,Gyro9,
+GyroInstruction,
+StoreGyroPonIns;</system>
+	<queries>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment/>
+		</query>
+	</queries>
+</nta>

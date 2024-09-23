@@ -1,0 +1,18 @@
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1708872063
+  State space representation uses minimal constraint systems
+[2K
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Throughput: 99285 states/sec, Load: 6315 states[K
+ -- Throughput: 93167 states/sec, Load: 8390 states[K
+ -- Throughput: 56923 states/sec, Load: 14451 states[K
+ -- Throughput: 73038 states/sec, Load: 3947 states[K
+[2K -- Formula is NOT satisfied.
+ -- States stored : 359864 states
+ -- States explored : 359864 states
+ -- CPU user time used : 1656 ms
+ -- Virtual memory used : 82420 KiB
+ -- Resident memory used : 38776 KiB

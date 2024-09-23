@@ -1,0 +1,4 @@
+Controller as STPoffI
+Datastorage as TPI
+STPoffI -> TPI : Thruster power off instruction storage instruction[event]
+TPI -> STPoffI : Thruster power off instruction[event]

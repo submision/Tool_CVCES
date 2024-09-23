@@ -1,0 +1,22 @@
+@startuml
+skinparam componentStyle uml1
+component [SSCO] #DAE3F3
+component [SSDA] #DAE3F3
+component [SSSPonI] #DAE3F3
+component [SSSPoffI] #DAE3F3
+component [SSI] #E2F0D9
+component [SSD] #E2F0D9
+component [SS] #FFF2CC
+[SSSPonI] --> interface1
+interface1 -- [SSI]
+[SSSPoffI] --> interface2
+interface2 -- [SSI]
+[SSCO] --> interface3
+interface3 -- [SSI]
+[SSCO] --> interface4
+interface4 -- [SS]
+[SSDA] --> interface5
+interface5 -- [SS]
+[SSDA] --> interface6
+interface6 -- [SSD]
+@enduml

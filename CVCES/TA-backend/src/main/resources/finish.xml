@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+    <declaration>// Place global declarations here.</declaration>
+    <template>
+        <declaration>// Place local declarations here.</declaration>
+        <location id="id2" x="490" y="103">
+            <name x="488" y="70">GyroInitializationSC</name>
+        </location>
+        <location id="id4" x="364" y="188">
+        </location>
+        <location id="id6" x="591" y="185">
+        </location>
+        <location id="id8" x="591" y="287">
+        </location>
+        <location id="id10" x="364" y="286">
+        </location>
+        <location id="id12" x="484" y="356">
+        </location>
+        <init ref="id0"/>
+        <transition>
+            <source ref="id4"/>
+            <target ref="id2"/>
+            <label kind="synchronisation" x="384" y="188">GyroControlPonFIns!</label>
+        </transition>
+        <transition>
+            <source ref="id2"/>
+            <target ref="id6"/>
+            <label kind="synchronisation" x="510" y="103">GyroControlPonFIns?</label>
+        </transition>
+        <transition>
+            <source ref="id6"/>
+            <target ref="id8"/>
+            <label kind="synchronisation" x="591" y="205">StoreGyroPoweronIns!</label>
+        </transition>
+        <transition>
+            <source ref="id8"/>
+            <target ref="id12"/>
+            <label kind="synchronisation" x="571" y="287">StoreGyroPonFIns?</label>
+        </transition>
+        <transition>
+            <source ref="id12"/>
+            <target ref="id10"/>
+            <label kind="synchronisation" x="464" y="356">GyroControloutputIns!</label>
+        </transition>
+        <transition>
+            <source ref="id10"/>
+            <target ref="id4"/>
+            <label kind="synchronisation" x="364" y="266">GyroControlPonFIns?</label>
+        </transition>
+    </template>
+    <system>// Place template instantiations here.
+        Process = Template();
+        // List one or more processes to be composed into a system.
+        system Process;
+    </system>
+    <queries>
+        <query>
+            <formula></formula>
+            <comment></comment>
+        </query>
+    </queries>
+</nta>

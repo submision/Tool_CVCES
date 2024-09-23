@@ -1,0 +1,5 @@
+Controller as SpeSur
+Entity as DCD, CRU, SS
+...1ms...
+CRU -> SpeSur : SpectrumData[event]
+SpeSur -> DCD : SpectrumDataSend[event]

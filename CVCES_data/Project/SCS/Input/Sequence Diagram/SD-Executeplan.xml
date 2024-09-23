@@ -1,0 +1,7 @@
+Controller as EP
+Entity as PS
+Datastorage as PD
+PD -> EP : temperatureplanLoadIns[event]
+PD -> EP : humidityplanLoadIns[event]
+PD -> PS : temperatureregulation[event]
+PD -> PS : humidityregulation[event]

@@ -1,0 +1,11 @@
+Controller as GDA
+Entity as G
+Datastorage as GD
+GDA -> G : Pulse count acquisition instruction[event]
+GDA -> G : Gyro power state perception instruction[event]
+G -> GDA : Pulse count[value]
+G -> GDA : Gyro power state[state]
+GDA -> GD : Angular velocity analog storage instruction[event]
+GDA -> GD : Gyro power state storage instruction[event]
+GD -> GDA : Angular velocity analog[value]
+GD -> GDA : Gyro power state[state]

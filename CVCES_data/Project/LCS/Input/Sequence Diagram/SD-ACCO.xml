@@ -1,0 +1,14 @@
+Controller as ACCO
+Entity as AC
+Datastorage as ACC
+par
+	ACCO -> ACC : HotInstructionLoadIns[event]
+	ACC -> ACCO : HotInstruction[event]
+	ACCO -> AC : HotPulse[event]
+	AC -> ACCO : ACHot[state]
+else
+	ACCO -> ACC : CoolInstructionLoadIns[event]
+	ACC -> ACCO : CoolInstruction[event]
+	ACCO -> AC : CoolPulse[event]
+	AC -> ACCO : ACCool[state]
+end

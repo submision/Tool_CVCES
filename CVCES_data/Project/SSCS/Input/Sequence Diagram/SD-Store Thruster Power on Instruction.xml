@@ -1,0 +1,4 @@
+Controller as STPonI
+Datastorage as TPI
+STPonI -> TPI : Thruster power on instruction storage instruction[event]
+TPI -> STPonI : Thruster power on instruction[event]

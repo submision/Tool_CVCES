@@ -1,0 +1,5 @@
+Controller as CRUPOC
+Entity as DCD
+Datastorage as WCC
+DCD -> CRUPOC : CRUWorkingCurrentOpenCommandFormOP1[event]
+CRUPOC -> WCC : CRUWorkingCurrentOpenCommandFromOPSend[event]

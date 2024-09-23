@@ -1,0 +1,6 @@
+Controller as SI
+Datastorage as TAS, DB, TAI
+DB -> SI : DataLibRead[event]
+...6ms...
+TAS -> SI : SortedTargetRead[event]
+SI -> TAI : IdentifiedTargetSend[event]

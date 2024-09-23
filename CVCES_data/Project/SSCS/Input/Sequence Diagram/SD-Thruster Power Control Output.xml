@@ -1,0 +1,14 @@
+Controller as TPCO
+Entity as TCT
+Datastorage as TPI
+opt ThrusterPowerIns == 1
+	TPCO -> TPI : Thruster power on instruction load instruction[event]
+	TPI -> TPCO : Thruster power on instruction[event]
+	TPCO -> TCT : Thruster power on pulse[event]
+	TCT -> TPCO : Thruster power on state[state]
+else ThrusterPowerIns == 0
+	TPCO -> TPI : Thruster power off instruction load instruction[event]
+	TPI -> TPCO : Thruster power off instruction[event]
+	TPCO -> TCT : Thruster power off pulse[event]
+	TCT -> TPCO : Thruster power off state[state]
+end

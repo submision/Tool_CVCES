@@ -1,0 +1,19 @@
+@startuml
+skinparam componentStyle uml1
+component [SDCO] #DAE3F3
+component [CloseDoors] #DAE3F3
+component [StationData] #E2F0D9
+component [CL] #FFF2CC
+component [StationDoor] #FFF2CC
+component [Driver] #FFF2CC
+[Driver] --> interface1
+interface1 - [CloseDoors]
+[CL] --> interface2
+interface2 - [CloseDoors]
+[CloseDoors] -> interface3
+interface3 - [StationData]
+[SDCO] -> interface4
+interface4 - [StationData]
+[SDCO] -> interface5
+interface5 - [StationDoor]
+@enduml

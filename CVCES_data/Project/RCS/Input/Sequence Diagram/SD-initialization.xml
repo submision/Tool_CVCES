@@ -1,0 +1,17 @@
+Controller as Init
+Entity as DCD, OP, ICU, SPU, CRU, JPU
+DCD -> Init : DeviceInitCommand1[event]
+par
+	Init -> ICU : ICUInitCommand[event]
+	ICU -> Init : ICUInitResult[event]
+else
+	Init -> SPU : SPUInitCommand[event]
+	SPU -> Init : SPUInitResult[event]
+else
+	Init -> CRU : CRUInitCommand[event]
+	CRU -> Init : CRUInitResult[event]
+else
+	Init -> JPU : JPUInitCommand[event]
+	JPU -> Init : JPUInitResult[event]
+end
+Init -> DCD : DCDInitResult[event]
